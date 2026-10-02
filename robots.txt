@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://begzod2330-ops.github.io/osonyodlash.github.io/sitemap.xml
