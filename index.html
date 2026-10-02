@@ -9,6 +9,11 @@
 <meta property="og:title" content="Oson yodlash — kartochkalar bilan nemis tilini o‘rganing">
 <meta property="og:description" content="A1–C2 darajadagi 5000+ nemis so‘zi, o‘qish matnlari va mashqlar — o‘zbek tilida, bepul.">
 <meta property="og:type" content="website">
+<link rel="canonical" href="https://osonyodlash.github.io/">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#151C2E">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Oson yodlash — nemis tili so‘zlarini kartochkalar bilan o‘rganing (A1–C2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Source+Sans+3:wght@400;600;700&display=swap">
@@ -175,6 +180,10 @@ details summary{cursor:pointer;font-weight:600;color:var(--accent);padding:4px 0
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @keyframes pop{from{transform:scale(.97);opacity:.6}to{transform:none;opacity:1}}
 .anim{animation:pop .18s ease-out}
+.top h1{white-space:nowrap;font-size:20px}
+@media (max-width:440px){.top h1{font-size:18px}#synct{display:none}#sync{padding:6px}.top{gap:6px}}
+.seo{margin:28px 0 8px;padding:16px;border-top:1px solid var(--line);color:var(--mut);font-size:14px;line-height:1.55}
+.seo h2{font-size:16px;color:var(--ink);margin:0 0 6px}.seo h3{font-size:14px;color:var(--ink);margin:12px 0 4px}.seo ul{margin:4px 0;padding-left:18px}.seo p{margin:4px 0}
 </style>
 
 <div class="app">
@@ -185,6 +194,21 @@ details summary{cursor:pointer;font-weight:600;color:var(--accent);padding:4px 0
     <button class="icon-btn" data-a="tab" data-t="set" aria-label="Sozlamalar">⚙︎</button>
   </header>
   <main id="view" class="stack"></main>
+  <section class="seo" id="seo">
+    <h2>Oson yodlash — nemis tili so‘zlarini bepul yodlang</h2>
+    <p>Oson yodlash — nemis tilini o‘rganayotganlar uchun o‘zbek tilidagi bepul kartochka sayti. So‘zlarni takrorlash tizimi (interval bilan takrorlash) yordamida yod oling: sayt qaysi so‘zni qachon takrorlash kerakligini o‘zi eslatadi.</p>
+    <h3>Nimalar bor</h3>
+    <ul>
+      <li>A1, A2, B1, B2, C1 va C2 darajalari bo‘yicha 5200 dan ortiq tayyor nemischa so‘z — tarjima, misol gap, ko‘plik shakli va fe'l shakllari bilan.</li>
+      <li>O‘qish matnlari: har bir so‘zni bosib tarjimasini ko‘rish, matn tarjimasi va tushunish savollari.</li>
+      <li>Mashqlar: yozib tekshirish, tinglash, juftlash, gapni to‘ldirish, der/die/das artikllari, ko‘plik va fe’l shakllari.</li>
+      <li>O‘z lug‘atingizni qo‘shish, Excel yoki matndan import va eksport.</li>
+      <li>Telefonga ilova sifatida o‘rnatish va internetsiz ishlash.</li>
+    </ul>
+    <h3>Kimlar uchun</h3>
+    <p>Goethe-Zertifikat, TestDaF yoki telc imtihoniga tayyorlanayotganlar, Germaniyada o‘qish yoki ishlashni rejalashtirayotganlar va nemis tilini noldan boshlayotgan barcha o‘zbekzabon o‘quvchilar uchun.</p>
+    <p>Ro‘yxatdan o‘tish shart emas — kartochkalaringiz brauzeringizda saqlanadi.</p>
+  </section>
 </div>
 <nav class="nav" aria-label="Bo‘limlar"><div id="navi"></div></nav>
 <div class="toast" id="toast" hidden></div>
@@ -320,8 +344,9 @@ function days(){var s={};cards.forEach(function(c){var k=c.d||'-';s[k]=(s[k]||0)
 var TABS=[['home','🏠','Bosh'],['learn','🃏','O‘rganish'],['practice','🎯','Mashq'],['words','📖','Lug‘at'],['add','➕','Qo‘shish']];
 function nav(){var due=queue(cards).all.length;$('navi').innerHTML=TABS.map(function(t){return '<button data-a="tab" data-t="'+t[0]+'" class="'+(tab===t[0]||(tab==='bank'&&t[0]==='add')||(tab==='read'&&t[0]==='practice')?'on':'')+'"'+(tab===t[0]?' aria-current="page"':'')+'><span>'+t[1]+'</span>'+t[2]+(t[0]==='learn'&&due?'<em class="badge-n" style="font-style:normal">'+due+'</em>':'')+'</button>'}).join('');
   $('streakchip').textContent='🔥 '+streak()+' kun'}
-function render(){nav();var v=$('view');v.innerHTML=(VIEWS[tab]||VIEWS.home)();if(AFTER[tab])AFTER[tab]()}
+function render(){nav();seoVis();var v=$('view');v.innerHTML=(VIEWS[tab]||VIEWS.home)();if(AFTER[tab])AFTER[tab]()}
 function go(t){tab=t;window.scrollTo(0,0);render()}
+function seoVis(){var e=document.getElementById('seo');if(e)e.hidden=tab!=='home'}
 
 function scopeBar(){var gs=groups(),ds=days(),dk2=Object.keys(ds).sort().reverse(),f=ui.scope||{};if(!gs.length&&dk2.length<2)return '';
   var h='<div class="grid2">';
@@ -714,4 +739,6 @@ applyTheme();render();
 })();
 </script>
 
+<script>if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+<script data-goatcounter="https://osonyodlash.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </html>
