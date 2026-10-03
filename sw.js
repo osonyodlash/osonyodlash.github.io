@@ -1,5 +1,5 @@
 // Offline: sahifa — avval tarmoq, keyin kesh; lug'at va boshqa fayllar — avval kesh, fonda yangilanadi.
-const C='oy-v2';
+const C='oy-v3';
 const CORE=['./','index.html','manifest.json','bank/a1.json','bank/a2.json','bank/b1.json','bank/b2.json','bank/c1.json','bank/c2.json','bank/texts.json','icons/icon-192.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
