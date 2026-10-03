@@ -182,6 +182,11 @@ details summary{cursor:pointer;font-weight:600;color:var(--accent);padding:4px 0
 .anim{animation:pop .18s ease-out}
 .top h1{white-space:nowrap;font-size:20px}
 @media (max-width:440px){.top h1{font-size:18px}#synct{display:none}#sync{padding:6px}.top{gap:6px}}
+.sug{display:flex;flex-direction:column;gap:4px;margin-top:-4px;padding:6px;border:1px solid var(--line);border-radius:12px;background:var(--sunk)}
+.sug button{display:flex;gap:8px;align-items:baseline;text-align:left;padding:8px 10px;border:0;border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.sug button:hover,.sug button:focus{outline:2px solid var(--line)}.sug b{white-space:nowrap}.sug span{color:var(--mut);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sug i{font-style:normal;font-size:12px;color:var(--mut)}
+.sug[hidden]{display:none}
+.sug .none{padding:4px 6px;font-size:13px;color:var(--mut)}
 .seo{margin:28px 0 8px;padding:16px;border-top:1px solid var(--line);color:var(--mut);font-size:14px;line-height:1.55}
 .seo h2{font-size:16px;color:var(--ink);margin:0 0 6px}.seo h3{font-size:14px;color:var(--ink);margin:12px 0 4px}.seo ul{margin:4px 0;padding-left:18px}.seo p{margin:4px 0}
 </style>
@@ -526,8 +531,9 @@ VIEWS.add=function(){var ec=ui.editId?byId(ui.editId):null,F=ui.af||(ui.af={g:''
   o+='<section class="panel"><div class="row"><h2 class="grow">'+(ec?'So‘zni tahrirlash':'Yangi so‘z')+'</h2>'+(ec?'':'<span class="chip">'+cards.length+' ta</span>')+'</div>';
   o+='<label class="f">Nemischa<input type="text" id="f_de" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="das Haus" value="'+esc(c.de||'')+'"></label>';
   o+='<div class="row">'+['der','die','das'].map(function(a){return '<button class="tog '+a+(a0===a?' on':'')+'" data-a="setart" data-v="'+a+'">'+a+'</button>'}).join('')+'<button class="tog" data-a="setart" data-v="">artiklsiz</button><span class="grow"></span>'+['ä','ö','ü','ß'].map(function(u){return '<button class="tog" data-a="addu" data-v="'+u+'">'+u+'</button>'}).join('')+'</div>';
-  o+='<div id="dup"></div>';
+  o+='<div class="sug" id="sug_de" hidden></div><div id="dup"></div>';
   o+='<label class="f">O‘zbekcha ma’nosi<input type="text" id="f_uz" autocomplete="off" placeholder="uy" value="'+esc(c.uz||'')+'"></label>';
+  if(!ec)o+='<div class="sug" id="sug_uz" hidden></div><p class="mut small" style="margin:-4px 0 0">✨ Nemischa yoki o‘zbekcha yozing — lug‘atda bo‘lsa, qolganini (artikl, sich, ko‘plik, misol) o‘zi to‘ldiradi.</p>';
   o+='<label class="f">Misol gap (ixtiyoriy)<input type="text" id="f_ex" autocomplete="off" placeholder="Das Haus ist groß." value="'+esc(c.ex||'')+'"></label>';
   o+='<div class="grid2"><label class="f">Guruh<input type="text" id="f_g" list="glist" placeholder="Dars 5, Fe’llar…" value="'+esc(ec?c.g||'':F.g)+'"></label><label class="f">Dars sanasi<input type="date" id="f_d" value="'+esc(ec?c.d||td():F.d||td())+'"></label></div><datalist id="glist">'+gs.map(function(g){return '<option value="'+esc(g)+'">'}).join('')+'</datalist>';
   o+='<details'+(ec&&(c.pl||c.pr||c.pp||c.wt||c.lv||c.et||c.tg||c.akk||c.dat)?' open':'')+'><summary>Qo‘shimcha ma’lumot</summary><div class="stack" style="gap:10px;margin-top:8px">';
@@ -554,13 +560,43 @@ AFTER.add=function(){var de=$('f_de');
   function dchk(){var d=dupOf(de.value,ui.editId);$('dup').innerHTML=d?'<div class="dup">Bu so‘z allaqachon bor: <b>'+deHTML(d)+'</b> — '+esc(d.uz)+' <button class="btn sec sm" data-a="wedit" data-id="'+d.id+'">Ochish</button></div>':'';
     var a=artOf({de:de.value});document.querySelectorAll('[data-a=setart]').forEach(function(b){b.classList.toggle('on',!!a&&b.dataset.v===a)})}
   de.addEventListener('input',dchk);dchk();
-  ['f_de','f_uz','f_ex'].forEach(function(i){$(i).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();act('fsave')}})});
+  if(!ui.editId)autoFill(de,$('f_uz'));
+  ['f_de','f_uz','f_ex'].forEach(function(i){$(i).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();var sb=document.querySelector('.sug:not([hidden]) button');if(sb&&(i==='f_de'||i==='f_uz')&&!$('f_uz').value.trim()!==!$('f_de').value.trim()){sb.click();return}act('fsave')}})});
   if(!ui.editId&&!ui.noFocus)setTimeout(function(){try{de.focus()}catch(e){}},30);ui.noFocus=false;
   var tx=$('i_txt');if(!tx)return;function pv(){ui.impText=tx.value;var ps=parse(tx.value),dn=ps.filter(function(x){return dupOf(x.de)}).length;$('ipv').textContent=ps.length?'Topildi: '+ps.length+' ta juftlik'+(dn?' ('+dn+' tasi allaqachon bor, o‘tkazib yuboriladi)':'')+'. Masalan: '+ps[0].de+' — '+ps[0].uz:'Juftliklar shu yerda ko‘rinadi.'}
   tx.addEventListener('input',pv);pv();
   $('i_file').addEventListener('change',function(){var f=this.files[0];if(!f)return;var rd=new FileReader();
     if(/\.xlsx?$/i.test(f.name)){rd.onload=function(){try{var wb=XLSX.read(rd.result,{type:'array'}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});tx.value=rows.filter(function(r){return r[0]&&r[1]}).map(function(r){return r.slice(0,3).join('\t')}).join('\n');pv()}catch(e){$('imsg').textContent='Excel faylni o‘qib bo‘lmadi. CSV qilib saqlab ko‘ring.'}};rd.readAsArrayBuffer(f)}
     else{rd.onload=function(){tx.value=rd.result;pv()};rd.readAsText(f,'utf-8')}})};
+
+/* ----- auto-fill from bank while adding ----- */
+var AFL=null;
+function afList(){var n=0;LVS.forEach(function(l){if(BANK[l])n+=BANK[l].length});if(AFL&&AFL.n===n)return AFL.a;var a=[];
+  LVS.forEach(function(l){(BANK[l]||[]).forEach(function(w){var k=noart(norm(w[0])).replace(/^sich /,'');
+    var us=norm(w[1]).split(/[,;()\/]|\s+-\s+/).map(function(x){return x.trim()}).filter(Boolean);a.push({w:w,l:l,k:k,u:norm(w[1]),us:us})})});AFL={n:n,a:a};return a}
+function afFind(q,side){q=norm(q);if(side==='de')q=noart(q).replace(/^sich /,'');if(q.length<2)return[];var r=[];
+  afList().forEach(function(e){var sc=-1;
+    if(side==='de'){if(e.k===q)sc=0;else if(e.k.indexOf(q)===0)sc=1+e.k.length/100}
+    else{if(e.us.indexOf(q)>=0)sc=0+e.u.length/1000;else if(e.us.some(function(x){return x.indexOf(q)===0}))sc=1+e.u.length/1000;else if(q.length>=3&&e.u.indexOf(q)>=0)sc=2+e.u.length/1000}
+    if(sc>=0)r.push([sc,e])});
+  r.sort(function(x,y){return x[0]-y[0]});var seen={},out=[];for(var i=0;i<r.length&&out.length<6;i++){var key=r[i][1].w[0]+'|'+r[i][1].w[1];if(!seen[key]){seen[key]=1;out.push(r[i][1])}}return out}
+function autoFill(de,uz){LVS.forEach(loadBank);var cur=[],busy=false;
+  function show(side){var inp=side==='de'?de:uz,box=$('sug_'+side),other=$('sug_'+(side==='de'?'uz':'de'));if(other)other.hidden=true;if(!box)return;
+    var q=inp.value.trim();var otherVal=(side==='de'?uz:de).value.trim();
+    if(busy||q.length<2||otherVal){box.hidden=true;return}
+    cur=afFind(q,side);
+    if(!cur.length){box.innerHTML=q.length>=3?'<div class="none">Lug‘atda topilmadi — tarjimani o‘zingiz yozing.</div>':'';box.hidden=q.length<3;return}
+    box.innerHTML=cur.map(function(e,i){return '<button type="button" data-i="'+i+'"><b>'+esc(e.w[0])+'</b><span>'+esc(e.w[1])+'</span><i>'+e.l+'</i></button>'}).join('');box.hidden=false}
+  function pick(e){var w=e.w,set=function(id,v){var x=$(id);if(x&&v)x.value=v};busy=true;
+    de.value=w[0];uz.value=w[1];set('f_ex',w[3]);set('f_et',w[4]);set('f_pl',w[5]);set('f_pr',w[6]);set('f_pp',w[7]);set('f_lv',e.l);
+    var wt=$('f_wt');if(wt&&!wt.value){if(/^(der|die|das) /.test(w[0]))wt.value='Ot';else if(w[6]||w[7]||/^sich /.test(w[0]))wt.value='Fe’l'}
+    if(w[5]||w[6]||w[7]){var dt=document.querySelector('#view details');if(dt)dt.open=true}
+    de.dispatchEvent(new Event('input'));busy=false;['de','uz'].forEach(function(x){var b=$('sug_'+x);if(b)b.hidden=true});
+    var m=$('fmsg');if(m)m.textContent='Lug‘atdan to‘ldirildi ('+e.l+'). Tekshirib, “Qo‘shish”ni bosing.';try{$('f_g').focus()}catch(_){}}
+  ['de','uz'].forEach(function(side){var inp=side==='de'?de:uz,box=$('sug_'+side);if(!box)return;
+    inp.addEventListener('input',function(){show(side)});inp.addEventListener('focus',function(){show(side)});
+    box.addEventListener('mousedown',function(ev){ev.preventDefault()});
+    box.addEventListener('click',function(ev){var b=ev.target.closest('button[data-i]');if(b&&cur[+b.dataset.i])pick(cur[+b.dataset.i])})})}
 
 /* ----- ready-made word bank ----- */
 var LVS=['A1','A2','B1','B2','C1','C2'],BANK={},BANKERR={};
