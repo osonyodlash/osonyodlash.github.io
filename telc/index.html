@@ -325,6 +325,18 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 .ergh .go{padding:9px 14px;font-size:.92rem;flex:none}
 #kh3in{font-size:1.5rem!important;letter-spacing:.06em!important;padding:12px 10px!important}
 #khmt{margin-bottom:0}
+/* Chap menyu: doim yashirin, faqat ☰ bosilganda ochiladi; ichki bo'limlar faqat bo'lim bosilganda */
+@media (min-width:1100px){
+  #drw{transform:translateX(-102%)!important;box-shadow:4px 0 24px rgba(0,0,0,.25)!important}
+  body.dopen #drw{transform:none!important}
+  #drwbg,#mnu,.dhead button{display:revert!important}
+  #mnu{display:block!important}
+  body{padding-left:0!important}
+}
+.dsub{display:none!important}.dsub.open{display:flex!important}
+#drw{box-shadow:none!important}body.dopen #drw{box-shadow:4px 0 24px rgba(0,0,0,.25)!important}
+.dg .dcar{margin-left:auto;font-style:normal;opacity:.6;transition:transform .2s}
+.dg.exp .dcar{transform:rotate(90deg)}
 /*x*/ #tb.tbk h1{font-size:1.1rem}#tb.tbk #mnu{width:36px;height:36px;font-size:1.1rem}
 .chgold{margin:4px 0 0;font:500 .9rem var(--display);color:var(--muted)}.chgold .tag{font:700 .68rem var(--display);color:#fff;background:#dc2626;border-radius:5px;padding:1px 6px;margin-right:6px}.chgold s{color:#dc2626}
 .chgimg{grid-column:1/-1;margin-top:6px}.chgimg summary{cursor:pointer;font:600 .85rem var(--display);color:var(--ink)}.chgimg img{width:100%;margin-top:6px;border-radius:8px;border:1px solid var(--line)}
@@ -2106,6 +2118,19 @@ document.querySelectorAll("#drw [data-g]").forEach(b=>b.onclick=()=>{
 });
 document.querySelectorAll("[data-gp][data-t]").forEach(b=>b.addEventListener("click",()=>{ store("lastsub_"+b.dataset.gp,b.dataset.t); setTimeout(syncG,0); }));
 syncG();
+
+// ===== Chap menyu: ichki bo'limli guruhlarni bosganda faqat ochib-yopish
+(function(){
+  const nav=document.getElementById("drw"); if(!nav) return;
+  nav.querySelectorAll(".dg").forEach(b=>{ const d=b.nextElementSibling; if(d&&d.classList.contains("dsub")&&!b.querySelector(".dcar")) b.insertAdjacentHTML("beforeend",'<i class="dcar" style="background:none;width:auto;height:auto">›</i>'); });
+  const setExp=()=>nav.querySelectorAll(".dg").forEach(b=>{ const d=b.nextElementSibling; b.classList.toggle("exp",!!(d&&d.classList.contains("dsub")&&d.classList.contains("open"))); });
+  nav.addEventListener("click",e=>{ const b=e.target.closest(".dg"); if(!b) return; const d=b.nextElementSibling;
+    if(d&&d.classList.contains("dsub")){ e.stopPropagation(); e.preventDefault(); const was=d.classList.contains("open");
+      nav.querySelectorAll(".dsub").forEach(x=>x.classList.remove("open")); if(!was) d.classList.add("open"); setExp(); } },true);
+  const collapse=()=>{ nav.querySelectorAll(".dsub").forEach(x=>x.classList.remove("open")); setExp(); };
+  document.getElementById("mnu").addEventListener("click",()=>setTimeout(collapse,0));
+  collapse();
+})();
 </script>
 
 
