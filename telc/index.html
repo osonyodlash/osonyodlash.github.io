@@ -111,6 +111,7 @@ h1{font:700 1.5rem/1.2 var(--display);margin:0}
 .wstory{background:#f3edff;border:1px solid #d9c8ff;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
 .wstory h3{margin:0;font:700 .8rem var(--display);color:#7c3aed;text-transform:uppercase;letter-spacing:.06em}
 .wstory p{margin:0;font:400 1.02rem/1.55 var(--word)}
+.wstory .tag{display:inline-block;font:700 .68rem var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:4px}
 
 .opts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .opt{border:1.5px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:10px 14px;font:400 1.05rem var(--word);cursor:pointer;min-height:44px}
@@ -774,6 +775,12 @@ function check(){
   lastOk=ok;
   const ans = mode==="a" ? "" : ` — javob: ${W[cur].n}`;
   render(ok?"To'g'ri! ✓":"Xato"+ans, ok?"ok":"no");
+  if(!ok&&mode!=="a"){ try{ const it=W[cur], st=findStory(it), box=document.createElement("div"); box.className="wstory";
+    box.innerHTML=`<h3>Kalit so'z${st?" · "+esc(st[1]):""}</h3><p><b class="r">${esc(it.w)}</b> → <b>${esc(it.n)}</b></p>${st?`<p>${storyHtml(st[2])}</p>`:""}`;
+    const m=P.querySelector(".msg"); if(m) m.after(box); }catch(e){} }
+  if(!ok&&mode==="a"){ try{ const box=document.createElement("div"); box.className="wstory"; const st=findStory({n:cur,w:""});
+    box.innerHTML=`<h3>Kalit so'zlar · ${esc(cur)}</h3><p>${wordsOf(cur).map(x=>`<b class="${x.red?"r":""}">${esc(x.w)}</b>`).join(", ")}</p>${st?`<p>${storyHtml(st[2])}</p>`:""}`;
+    const m=P.querySelector(".msg"); if(m) m.after(box); }catch(e){} }
   if(ok){ const c=cur, q=queue; autoNext(()=>done&&lastOk&&cur===c&&queue===q&&!document.getElementById("panel").hidden,advance); }
 }
 function advance(){
@@ -2028,13 +2035,13 @@ const KH4=[[1, "1", "6"], [2, "2", "68"], [3, "3", "69"], [4, "4", "69"], [5, "4
 
 // ===== Kahoot: qo'shimcha rejimlar (Hören Teil 3 — raqam, Lesen Teil 3 — 10 ta harf)
 const KHX={
-  H1:{title:"Hören Teil 1",data:KH5,img:"KHIMG5",file:"khimg5.js",key:"kh5",sec:"Kahoot · Hören 1",num:true,
+  H1:{bk:"H1",title:"Hören Teil 1",data:KH5,img:"KHIMG5",file:"khimg5.js",key:"kh5",sec:"Kahoot · Hören 1",num:true,
       norm:s=>String(s||"").replace(/\D/g,""),ph:"Raqamni yozing",
       intro:n=>`${n} ta Hören Teil 1 rasmi aralash tartibda chiqadi. Javob raqamini yozing (masalan: <b>124</b>). To'g'ri bo'lsa keyingisiga o'zi o'tadi, xato bo'lsa to'g'ri javob ko'rsatiladi.`},
-  H3:{title:"Hören Teil 3",data:KH4,img:"KHIMG4",file:"khimg4.js",key:"kh4",sec:"Kahoot · Hören 3",num:true,
+  H3:{bk:"H3",title:"Hören Teil 3",data:KH4,img:"KHIMG4",file:"khimg4.js",key:"kh4",sec:"Kahoot · Hören 3",num:true,
       norm:s=>String(s||"").replace(/\D/g,""),ph:"Raqamni yozing",
       intro:n=>`${n} ta Hören Teil 3 rasmi aralash tartibda chiqadi. Javob raqamini yozing (masalan: <b>670</b>). To'g'ri bo'lsa keyingisiga o'zi o'tadi, xato bo'lsa to'g'ri javob ko'rsatiladi.`},
-  L3:{title:"Lesen Teil 3",data:KH3,img:"KHIMG3",file:"khimg3.js",key:"kh3",sec:"Kahoot · Lesen 3",num:false,
+  L3:{bk:"L3",title:"Lesen Teil 3",data:KH3,img:"KHIMG3",file:"khimg3.js",key:"kh3",sec:"Kahoot · Lesen 3",num:false,
       norm:s=>String(s||"").toUpperCase().replace(/[^A-LX]/g,""),ph:"10 ta harf",
       intro:n=>`${n} ta Lesen Teil 3 rasmi aralash tartibda chiqadi. 11–20 uchun javob harflarini ketma-ket yozing, javobi yo'q joyga <b>X</b> qo'ying (masalan: <b>LIBHXEADFX</b>). To'g'ri bo'lsa keyingisiga o'zi o'tadi, xato bo'lsa qaysi harf xatoligi ko'rsatiladi.`}
 };
@@ -2055,6 +2062,13 @@ function khxStart(m,ids){ KSX[m]={q:shuf(ids||KHX[m].data.map(x=>x[0])),i:0,a:{}
 function khxSlots(u,a){ return `<div class="sbslots">${a.split("").map((c,i)=>{ const x=u[i]||""; const ok=x===c; return `<span class="sbslot ${ok?"good":"bad"}">${x||"·"}${ok?"":`<em>${c}</em>`}</span>`; }).join("")}</div>`; }
 function khxList(C,ids,ans){ const by=n=>C.data.find(x=>x[0]===n); return ids.map(n=>{ const k=by(n), u=ans?ans[n]:undefined, ok=u===k[2];
   return `<details class="khrow ${ans?(ok?"ok":"no"):""}"><summary><span class="khn">${ans?(ok?"✓":"✗"):"#"+n}</span><span class="khk">${esc(k[1])}-variant <small>· rasm ${n}</small></span><span class="khv">${ans&&!ok?`<s>${esc(u||"—")}</s> `:""}<b>${k[2]}</b></span></summary><img loading="lazy" src="${(window[C.img]||{})[n]||""}" alt="rasm ${n}"></details>`; }).join(""); }
+function khxKey(C,v){ const b=(BOOK[C.bk]||[]).find(x=>x.v===v); if(!b) return null;
+  let w=String(b.w||"").split(" — ")[0].trim(), st=null, extra="";
+  if(C.bk[0]==="H"){ try{ st=storyFor(C.bk,b); }catch(e){} }
+  else { const L=(typeof LESEN!=="undefined"?LESEN:[]).find(x=>x.w&&w&&x.w.toLowerCase()===w.toLowerCase()); if(L){ extra=(L.ns?`<p><span class="tag">Raqam</span> ${esc(L.ns)}</p>`:"")+(L.s?`<p><span class="tag">Harflar</span> ${lsent(L.s)}</p>`:""); } }
+  return {w,st,extra}; }
+function khxKeyBox(C,v){ const K=khxKey(C,v); if(!K||!K.w) return "";
+  return `<div class="wstory"><h3>Kalit so'z</h3><p><b class="r">${esc(K.w)}</b></p>${K.st?`<p><span class="tag">Hikoya · ${esc(K.st[1])}</span> ${storyHtml(K.st[2])}</p>`:""}${K.extra}</div>`; }
 function renderKHX(){
   const m=khMode, C=KHX[m], P=document.getElementById("khp"); clearTimeout(_ktx);
   if(!window[C.img]){ P.innerHTML=khTabs()+`<div class="panel">Rasmlar yuklanmoqda…</div>`; khBindTabs(P); return khxLoad(C,()=>{ if(!document.getElementById("khw").hidden&&khMode===m) renderKHX(); }); }
@@ -2079,15 +2093,15 @@ function renderKHX(){
   P.innerHTML=khTabs()+`<div class="panel khq"><div class="khtop"><span>${S.i+1} / ${S.q.length}</span><button class="go alt" id="khxstop" style="padding:6px 10px">To'xtatish</button></div>
   <img class="khimg" src="${window[C.img][n]}" alt="${C.title} rasm">
   <div class="khside"><form id="khxf" class="khform"><input id="khxin" class="${C.num?"":"khxlet "}${done?(ok?"ok":"no"):""}" ${C.num?'inputmode="numeric"':'autocapitalize="characters" style="text-transform:uppercase"'} autocomplete="off" autocorrect="off" spellcheck="false" maxlength="14" placeholder="${C.ph}" value="${done?esc(v):""}" ${done?"disabled":""}><button class="go" ${done?"disabled":""}>Tekshirish</button></form>
-  ${done?(ok?`<p class="msg ok">To'g'ri! ✓ <b>${k[2]}</b> <span style="font-weight:500;color:var(--muted)">· ${esc(k[1])}-variant</span></p>`
-    :`<p class="msg no">Xato ✗ To'g'ri javob: <b style="font-size:1.25em;letter-spacing:.05em">${k[2]}</b> <span style="font-weight:500">· ${esc(k[1])}-variant</span></p>${C.num?"":khxSlots(v,k[2])}`)+`<div class="btns"><button class="go" id="khxnx">Keyingi →</button></div>`:""}</div></div>`;
+  ${done?(ok?`<p class="msg ok">To'g'ri! ✓ <b>${k[2]}</b> <span style="font-weight:500;color:var(--muted)">· ${esc((khxKey(C,k[1])||{}).w||"")} · ${esc(k[1])}-variant</span></p>`
+    :`<p class="msg no">Xato ✗ To'g'ri javob: <b style="font-size:1.25em;letter-spacing:.05em">${k[2]}</b> <span style="font-weight:500">· ${esc(k[1])}-variant</span></p>${C.num?"":khxSlots(v,k[2])}${khxKeyBox(C,k[1])}`)+`<div class="btns"><button class="go" id="khxnx">Keyingi →</button></div>`:""}</div></div>`;
   khBindTabs(P);
   document.getElementById("khxstop").onclick=()=>{ S.q=S.q.slice(0,S.i+(done?1:0)); S.i=S.q.length; S.v=null; saveKSX(m); renderKHX(); };
   const next=()=>{ clearTimeout(_ktx); S.i++; S.v=null; saveKSX(m); renderKHX(); };
   if(done){ const nx=document.getElementById("khxnx"); nx.onclick=next; nx.focus({preventScroll:true}); if(ok) _ktx=setTimeout(()=>{ if(!document.getElementById("khw").hidden&&khMode===m&&KSX[m]===S&&S.q[S.i]===n&&S.v!==null) next(); },1600); }
   else { const I=document.getElementById("khxin"); I.focus({preventScroll:true});
     document.getElementById("khxf").onsubmit=e=>{ e.preventDefault(); const x=C.norm(I.value); if(!x) return; S.v=x; S.a[n]=x; saveKSX(m);
-      try{ xBump(); if(x!==k[2]) xLog(`${C.key}|${n}`,C.sec,`${C.title} · ${k[1]}-variant (rasm ${n})`,k[2]); }catch(_){}
+      try{ xBump(); if(x!==k[2]) xLog(`${C.key}|${n}`,C.sec,`${C.title} · ${k[1]}-variant (rasm ${n})`,k[2],(()=>{ const K=khxKey(C,k[1]); return K&&K.w?("Kalit so'z: {"+K.w+"}"+(K.st?" — "+K.st[2]:"")):""; })()); }catch(_){}
       renderKHX(); }; }
 }
 
