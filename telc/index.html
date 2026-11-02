@@ -323,7 +323,7 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 .ergh{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:8px}
 .ergh>div{display:flex;flex-direction:column;min-width:0}.ergh b{font:700 1.05rem var(--display);color:var(--ink)}.ergh small{font:500 .82rem var(--display);color:var(--muted)}
 .ergh .go{padding:9px 14px;font-size:.92rem;flex:none}
-#kh3in{font-size:1.5rem!important;letter-spacing:.06em!important;padding:12px 10px!important}
+#khxin.khxlet{font-size:1.5rem!important;letter-spacing:.06em!important;padding:12px 10px!important}#khmt button{font-size:.8rem}
 #khmt{margin-bottom:0}
 /* Chap menyu: doim yashirin, faqat ☰ bosilganda ochiladi; ichki bo'limlar faqat bo'lim bosilganda */
 @media (min-width:1100px){
@@ -2023,59 +2023,68 @@ async function xPush(){ if(!XSYNC.ref) return; const s=xSnap(); if(s===XSYNC.las
 })();
 
 const KH3=[[1, "1", "LIBHXEADFX"], [2, "2", "LJAHXCDIEX"], [3, "3", "AXGIKFXHDL"], [4, "3a", "AXDHLGIKXF"], [5, "4", "BLFCXGHXIA"], [6, "5", "XHEAXIFCDB"], [7, "6", "HGAJXEKCXL"], [8, "6a", "CXGAEJKXLH"], [9, "7", "GXDLCIJFAX"], [10, "8", "KEXACHFJBG"], [11, "9", "LCBEXIGDXK"], [12, "10", "DFICKGXXJB"], [13, "11", "XBDKGFLIXJ"], [14, "12", "EJLIABFXHK"], [15, "13", "XCXGFDHEAB"], [16, "14", "DLXBHAICXE"], [17, "14b", "ALXBHDICKE"], [18, "15", "AJEBLXGXDI"], [19, "16", "XDLCEXGKAI"], [20, "17", "DXFCJKXAHL"], [21, "17a", "DXFCJKXAHL"], [22, "18", "LHDBIJXEGX"], [23, "19", "LKXIACFBEX"], [24, "20", "JKAELICXGF"], [25, "21", "ABCGDHIJXX"], [26, "22", "AKDJXEXHFL"], [27, "22a", "AKJXHXFDEL"], [28, "23", "FXAIXDJLEK"], [29, "24", "CXGEAIFXBK"], [30, "25", "ABCXDXEFXK"], [31, "26", "EJABFKDXCH"], [32, "27", "FCEHXAJIXD"], [33, "28", "DXLIHGEACX"], [34, "29", "ABJXFIHGCE"], [35, "29a", "HFGBCXIAJE"], [36, "30", "FAXKBGECXD"], [37, "31", "HBGKALXCFI"], [38, "32", "EDHCBXIKXF"], [39, "33", "FIXADHLKGC"], [40, "34", "DHXJFBEXAC"], [41, "35", "FDXHKXJAIC"], [42, "36", "IJEFXKXDCB"], [43, "37", "BAHFEDGCIJ"], [44, "38", "EJGXHAICLB"], [45, "39", "HIJXKBDXEL"]];
-// ===== Kahoot · Lesen Teil 3 (rasm → 10 ta harf, x bilan)
-let khMode=store("khm")||"H", KS3=null; try{ KS3=JSON.parse(store("kh3")||"null"); }catch(e){}
-const saveKS3=()=>store("kh3",JSON.stringify(KS3));
-const kh3By=n=>KH3.find(x=>x[0]===n);
-const kh3Norm=s=>String(s||"").toUpperCase().replace(/[^A-LX]/g,"");
-function khTabs(){ return `<div class="tabs" id="khmt"><button data-khm="H" class="${khMode==="H"?"on":""}">Hören Teil 2</button><button data-khm="L3" class="${khMode==="L3"?"on":""}">Lesen Teil 3</button></div>`; }
+const KH4=[[1, "1", "6"], [2, "2", "68"], [3, "3", "69"], [4, "4", "69"], [5, "4a", "60"], [6, "5", "60"], [7, "6", "60"], [8, "7", "70"], [9, "8", "89"], [10, "9", "678"], [11, "10", "670"], [12, "11", "690"], [13, "11a", "670"], [14, "12", "6890"], [15, "13", "68"], [16, "14", "789"], [17, "15", "7"], [18, "16", "7"], [19, "17", "69"], [20, "18", "678"], [21, "19", "80"], [22, "20", "690"], [23, "21", "789"], [24, "22", "68"], [25, "23", "6790"], [26, "24", "60"], [27, "25", "7"], [28, "26", "70"], [29, "27", "60"], [30, "28", "0"], [31, "29", "67"], [32, "30", "670"], [33, "31", "60"], [34, "32", "68"], [35, "33", "60"], [36, "34", "680"], [37, "35", "78"], [38, "36", "89"], [39, "37", "690"], [40, "38", "68"]];
+
+// ===== Kahoot: qo'shimcha rejimlar (Hören Teil 3 — raqam, Lesen Teil 3 — 10 ta harf)
+const KHX={
+  H3:{title:"Hören Teil 3",data:KH4,img:"KHIMG4",file:"khimg4.js",key:"kh4",sec:"Kahoot · Hören 3",num:true,
+      norm:s=>String(s||"").replace(/\D/g,""),ph:"Raqamni yozing",
+      intro:n=>`${n} ta Hören Teil 3 rasmi aralash tartibda chiqadi. Javob raqamini yozing (masalan: <b>670</b>). To'g'ri bo'lsa keyingisiga o'zi o'tadi, xato bo'lsa to'g'ri javob ko'rsatiladi.`},
+  L3:{title:"Lesen Teil 3",data:KH3,img:"KHIMG3",file:"khimg3.js",key:"kh3",sec:"Kahoot · Lesen 3",num:false,
+      norm:s=>String(s||"").toUpperCase().replace(/[^A-LX]/g,""),ph:"10 ta harf",
+      intro:n=>`${n} ta Lesen Teil 3 rasmi aralash tartibda chiqadi. 11–20 uchun javob harflarini ketma-ket yozing, javobi yo'q joyga <b>X</b> qo'ying (masalan: <b>LIBHXEADFX</b>). To'g'ri bo'lsa keyingisiga o'zi o'tadi, xato bo'lsa qaysi harf xatoligi ko'rsatiladi.`}
+};
+let khMode=store("khm")||"H"; if(khMode!=="H"&&!KHX[khMode]) khMode="H";
+const KSX={}; Object.keys(KHX).forEach(m=>{ try{ KSX[m]=JSON.parse(store(KHX[m].key)||"null"); }catch(e){ KSX[m]=null; } });
+const saveKSX=m=>store(KHX[m].key,JSON.stringify(KSX[m]));
+function khTabs(){ return `<div class="tabs" id="khmt"><button data-khm="H" class="${khMode==="H"?"on":""}">Hören Teil 2</button><button data-khm="H3" class="${khMode==="H3"?"on":""}">Hören Teil 3</button><button data-khm="L3" class="${khMode==="L3"?"on":""}">Lesen Teil 3</button></div>`; }
 function khBindTabs(P){ P.querySelectorAll("[data-khm]").forEach(b=>b.onclick=()=>{ if(khMode===b.dataset.khm) return; khMode=b.dataset.khm; store("khm",khMode);
   if(khMode==="H"&&window._khfake){ delete window.KHIMG; window._khfake=0; window._khl=0; return _okhH(); } renderKH(); }); }
 const _rkH=renderKH;
-renderKH=function(){ const P=document.getElementById("khp"); if(khMode==="L3"){ clearTimeout(_kt); document.getElementById("h").textContent="Kahoot · Lesen Teil 3"; return renderKH3(); }
+renderKH=function(){ const P=document.getElementById("khp"); if(KHX[khMode]){ clearTimeout(_kt); document.getElementById("h").textContent="Kahoot · "+KHX[khMode].title; return renderKHX(); }
   _rkH(); P.insertAdjacentHTML("afterbegin",khTabs()); khBindTabs(P); document.getElementById("h").textContent="Kahoot · Hören Teil 2"; };
 const _okhH=openKH;
-openKH=function(){ if(khMode==="L3"&&!window.KHIMG){ window.KHIMG={}; window._khfake=1; } return _okhH(); };
-let _kt3=null;
-function kh3Load(cb){ if(window.KHIMG3) return cb(); if(window._kh3l) return; window._kh3l=1; const sc=document.createElement("script"); sc.src="khimg3.js"; sc.onload=()=>{ window._kh3l=0; cb(); }; sc.onerror=()=>{ window._kh3l=0; }; document.head.appendChild(sc); }
-function kh3Start(ids){ KS3={q:shuf(ids||KH3.map(x=>x[0])),i:0,a:{},v:null}; saveKS3(); renderKH3(); }
-function kh3Slots(u,a){ return `<div class="sbslots">${a.split("").map((c,i)=>{ const x=u[i]||""; const ok=x===c; return `<span class="sbslot ${ok?"good":"bad"}">${x||"·"}${ok?"":`<em>${c}</em>`}</span>`; }).join("")}</div>`; }
-function kh3List(ids,ans){ return ids.map(n=>{ const k=kh3By(n), u=ans?ans[n]:undefined, ok=u===k[2];
-  return `<details class="khrow ${ans?(ok?"ok":"no"):""}"><summary><span class="khn">${ans?(ok?"✓":"✗"):"#"+n}</span><span class="khk">${esc(k[1])}-variant <small>· rasm ${n}</small></span><span class="khv">${ans&&!ok?`<s>${esc(u||"—")}</s> `:""}<b>${k[2]}</b></span></summary><img loading="lazy" src="${(window.KHIMG3||{})[n]||""}" alt="rasm ${n}"></details>`; }).join(""); }
-function renderKH3(){
-  const P=document.getElementById("khp"); clearTimeout(_kt3);
-  if(!window.KHIMG3){ P.innerHTML=khTabs()+`<div class="panel">Rasmlar yuklanmoqda…</div>`; khBindTabs(P); return kh3Load(()=>{ if(!document.getElementById("khw").hidden&&khMode==="L3") renderKH3(); }); }
-  if(!KS3){
-    P.innerHTML=khTabs()+`<div class="panel"><p style="margin:0">${KH3.length} ta Lesen Teil 3 rasmi aralash tartibda chiqadi. 11–20 uchun javob harflarini ketma-ket yozing, javobi yo'q joyga <b>X</b> qo'ying (masalan: <b>LIBHXEADFX</b>). To'g'ri bo'lsa keyingisiga o'zi o'tadi, xato bo'lsa qaysi harf xatoligi ko'rsatiladi.</p>
-    <div class="btns"><button class="go" id="kh3go">Boshlash (${KH3.length})</button></div></div>
-    <details class="panel"><summary><b>Barcha rasmlar va javoblar (${KH3.length})</b></summary>${kh3List(KH3.map(x=>x[0]))}</details>`;
-    khBindTabs(P); document.getElementById("kh3go").onclick=()=>kh3Start(); return;
+openKH=function(){ if(KHX[khMode]&&!window.KHIMG){ window.KHIMG={}; window._khfake=1; } return _okhH(); };
+let _ktx=null;
+function khxLoad(C,cb){ if(window[C.img]) return cb(); if(window["_l_"+C.img]) return; window["_l_"+C.img]=1; const sc=document.createElement("script"); sc.src=C.file; sc.onload=()=>{ window["_l_"+C.img]=0; cb(); }; sc.onerror=()=>{ window["_l_"+C.img]=0; }; document.head.appendChild(sc); }
+function khxStart(m,ids){ KSX[m]={q:shuf(ids||KHX[m].data.map(x=>x[0])),i:0,a:{},v:null}; saveKSX(m); renderKHX(); }
+function khxSlots(u,a){ return `<div class="sbslots">${a.split("").map((c,i)=>{ const x=u[i]||""; const ok=x===c; return `<span class="sbslot ${ok?"good":"bad"}">${x||"·"}${ok?"":`<em>${c}</em>`}</span>`; }).join("")}</div>`; }
+function khxList(C,ids,ans){ const by=n=>C.data.find(x=>x[0]===n); return ids.map(n=>{ const k=by(n), u=ans?ans[n]:undefined, ok=u===k[2];
+  return `<details class="khrow ${ans?(ok?"ok":"no"):""}"><summary><span class="khn">${ans?(ok?"✓":"✗"):"#"+n}</span><span class="khk">${esc(k[1])}-variant <small>· rasm ${n}</small></span><span class="khv">${ans&&!ok?`<s>${esc(u||"—")}</s> `:""}<b>${k[2]}</b></span></summary><img loading="lazy" src="${(window[C.img]||{})[n]||""}" alt="rasm ${n}"></details>`; }).join(""); }
+function renderKHX(){
+  const m=khMode, C=KHX[m], P=document.getElementById("khp"); clearTimeout(_ktx);
+  if(!window[C.img]){ P.innerHTML=khTabs()+`<div class="panel">Rasmlar yuklanmoqda…</div>`; khBindTabs(P); return khxLoad(C,()=>{ if(!document.getElementById("khw").hidden&&khMode===m) renderKHX(); }); }
+  const S=KSX[m], by=n=>C.data.find(x=>x[0]===n);
+  if(!S){
+    P.innerHTML=khTabs()+`<div class="panel"><p style="margin:0">${C.intro(C.data.length)}</p><div class="btns"><button class="go" id="khxgo">Boshlash (${C.data.length})</button></div></div>
+    <details class="panel"><summary><b>Barcha rasmlar va javoblar (${C.data.length})</b></summary>${khxList(C,C.data.map(x=>x[0]))}</details>`;
+    khBindTabs(P); document.getElementById("khxgo").onclick=()=>khxStart(m); return;
   }
-  if(KS3.i>=KS3.q.length){
-    const N=KS3.q.length, wr=KS3.q.filter(n=>KS3.a[n]!==kh3By(n)[2]), r=N-wr.length;
+  if(S.i>=S.q.length){
+    const N=S.q.length, wr=S.q.filter(n=>S.a[n]!==by(n)[2]), r=N-wr.length;
     P.innerHTML=khTabs()+`<div class="panel"><div class="q"><small>Natija</small><div class="num">${r}/${N}</div><small>${N?Math.round(r/N*100):0}%</small></div>
-    <div class="btns"><button class="go" id="kh3re">Yangi raund</button>${wr.length?`<button class="go alt" id="kh3wr">Xatolarni qayta (${wr.length})</button>`:""}<button class="go alt" id="kh3home">Bosh sahifa</button></div></div>
-    <div class="panel"><p class="hint" style="margin:0 0 8px">Ustiga bossangiz rasm ochiladi.</p>${kh3List(KS3.q,KS3.a)}</div>`;
+    <div class="btns"><button class="go" id="khxre">Yangi raund</button>${wr.length?`<button class="go alt" id="khxwr">Xatolarni qayta (${wr.length})</button>`:""}<button class="go alt" id="khxhome">Bosh sahifa</button></div></div>
+    <div class="panel"><p class="hint" style="margin:0 0 8px">Ustiga bossangiz rasm ochiladi.</p>${khxList(C,S.q,S.a)}</div>`;
     khBindTabs(P);
-    document.getElementById("kh3re").onclick=()=>kh3Start();
-    const w=document.getElementById("kh3wr"); if(w) w.onclick=()=>kh3Start(wr);
-    document.getElementById("kh3home").onclick=()=>{ KS3=null; store("kh3",""); renderKH3(); };
+    document.getElementById("khxre").onclick=()=>khxStart(m);
+    const w=document.getElementById("khxwr"); if(w) w.onclick=()=>khxStart(m,wr);
+    document.getElementById("khxhome").onclick=()=>{ KSX[m]=null; store(C.key,""); renderKHX(); };
     return;
   }
-  const n=KS3.q[KS3.i], k=kh3By(n), v=KS3.v, done=v!==null, ok=done&&v===k[2];
-  P.innerHTML=khTabs()+`<div class="panel khq"><div class="khtop"><span>${KS3.i+1} / ${KS3.q.length}</span><button class="go alt" id="kh3stop" style="padding:6px 10px">To'xtatish</button></div>
-  <img class="khimg" src="${window.KHIMG3[n]}" alt="Lesen Teil 3 rasm">
-  <div class="khside"><form id="kh3f" class="khform"><input id="kh3in" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="14" placeholder="10 ta harf" value="${done?esc(v):""}" ${done?"disabled":""} class="${done?(ok?"ok":"no"):""}" style="text-transform:uppercase"><button class="go" ${done?"disabled":""}>Tekshirish</button></form>
+  const n=S.q[S.i], k=by(n), v=S.v, done=v!==null, ok=done&&v===k[2];
+  P.innerHTML=khTabs()+`<div class="panel khq"><div class="khtop"><span>${S.i+1} / ${S.q.length}</span><button class="go alt" id="khxstop" style="padding:6px 10px">To'xtatish</button></div>
+  <img class="khimg" src="${window[C.img][n]}" alt="${C.title} rasm">
+  <div class="khside"><form id="khxf" class="khform"><input id="khxin" class="${C.num?"":"khxlet "}${done?(ok?"ok":"no"):""}" ${C.num?'inputmode="numeric"':'autocapitalize="characters" style="text-transform:uppercase"'} autocomplete="off" autocorrect="off" spellcheck="false" maxlength="14" placeholder="${C.ph}" value="${done?esc(v):""}" ${done?"disabled":""}><button class="go" ${done?"disabled":""}>Tekshirish</button></form>
   ${done?(ok?`<p class="msg ok">To'g'ri! ✓ <b>${k[2]}</b> <span style="font-weight:500;color:var(--muted)">· ${esc(k[1])}-variant</span></p>`
-    :`<p class="msg no">Xato ✗ To'g'ri javob: <b style="font-size:1.2em;letter-spacing:.06em">${k[2]}</b> <span style="font-weight:500">· ${esc(k[1])}-variant</span></p>${kh3Slots(v,k[2])}`)+`<div class="btns"><button class="go" id="kh3nx">Keyingi →</button></div>`:""}</div></div>`;
+    :`<p class="msg no">Xato ✗ To'g'ri javob: <b style="font-size:1.25em;letter-spacing:.05em">${k[2]}</b> <span style="font-weight:500">· ${esc(k[1])}-variant</span></p>${C.num?"":khxSlots(v,k[2])}`)+`<div class="btns"><button class="go" id="khxnx">Keyingi →</button></div>`:""}</div></div>`;
   khBindTabs(P);
-  document.getElementById("kh3stop").onclick=()=>{ KS3.q=KS3.q.slice(0,KS3.i+(done?1:0)); KS3.i=KS3.q.length; KS3.v=null; saveKS3(); renderKH3(); };
-  const next=()=>{ clearTimeout(_kt3); KS3.i++; KS3.v=null; saveKS3(); renderKH3(); };
-  if(done){ const nx=document.getElementById("kh3nx"); nx.onclick=next; nx.focus({preventScroll:true}); if(ok) _kt3=setTimeout(()=>{ if(!document.getElementById("khw").hidden&&khMode==="L3"&&KS3&&KS3.q[KS3.i]===n&&KS3.v!==null) next(); },1600); }
-  else { const I=document.getElementById("kh3in"); I.focus({preventScroll:true});
-    document.getElementById("kh3f").onsubmit=e=>{ e.preventDefault(); const x=kh3Norm(I.value); if(!x) return; KS3.v=x; KS3.a[n]=x; saveKS3();
-      try{ xBump(); if(x!==k[2]) xLog(`KH3|${n}`,"Kahoot · Lesen 3",`Lesen 3 · ${k[1]}-variant (rasm ${n})`,k[2]); }catch(_){}
-      renderKH3(); }; }
+  document.getElementById("khxstop").onclick=()=>{ S.q=S.q.slice(0,S.i+(done?1:0)); S.i=S.q.length; S.v=null; saveKSX(m); renderKHX(); };
+  const next=()=>{ clearTimeout(_ktx); S.i++; S.v=null; saveKSX(m); renderKHX(); };
+  if(done){ const nx=document.getElementById("khxnx"); nx.onclick=next; nx.focus({preventScroll:true}); if(ok) _ktx=setTimeout(()=>{ if(!document.getElementById("khw").hidden&&khMode===m&&KSX[m]===S&&S.q[S.i]===n&&S.v!==null) next(); },1600); }
+  else { const I=document.getElementById("khxin"); I.focus({preventScroll:true});
+    document.getElementById("khxf").onsubmit=e=>{ e.preventDefault(); const x=C.norm(I.value); if(!x) return; S.v=x; S.a[n]=x; saveKSX(m);
+      try{ xBump(); if(x!==k[2]) xLog(`${C.key}|${n}`,C.sec,`${C.title} · ${k[1]}-variant (rasm ${n})`,k[2]); }catch(_){}
+      renderKHX(); }; }
 }
 
 const ht0=store("ht");
