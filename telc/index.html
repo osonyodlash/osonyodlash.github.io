@@ -390,9 +390,18 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 /* ===== Kompyuter ekrani: kattaroq harf, rasmlar cheklangan */
 @media (min-width:1100px){
   html{font-size:18px}
-  .wrap img,#xv img{max-width:min(100%,760px)!important;max-height:78vh;width:auto!important;height:auto!important;object-fit:contain;display:block;margin-inline:auto}
+  .wrap img,#xv img{max-width:min(100%,760px)!important;width:auto!important;height:auto!important;display:block;margin-inline:auto}
 }
 @media (min-width:1500px){ html{font-size:19.5px} }
+
+/* ===== Rasmni kattalashtirish (lupa) */
+.wrap img,#xv img{cursor:zoom-in}
+#zbox{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.92);display:none;overflow:hidden;touch-action:none;cursor:grab}
+#zbox.on{display:block}#zbox.drag{cursor:grabbing}
+#zbox img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none!important;max-height:none!important;user-select:none;-webkit-user-drag:none;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#zbar{position:absolute;top:12px;right:12px;display:flex;gap:8px;z-index:2}
+#zbar button{width:46px;height:46px;border-radius:12px;border:0;background:#fff;color:#0f172a;font:700 1.3rem system-ui;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#zhint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);color:#cbd5e1;font:500 .85rem system-ui;background:rgba(0,0,0,.4);padding:6px 12px;border-radius:999px;white-space:nowrap}
 </style>
 
 <div class="wrap">
@@ -2193,6 +2202,35 @@ syncG();
   const collapse=()=>{ nav.querySelectorAll(".dsub").forEach(x=>x.classList.remove("open")); setExp(); };
   document.getElementById("mnu").addEventListener("click",()=>setTimeout(collapse,0));
   collapse();
+})();
+</script>
+
+<script>
+// ===== Rasm lupasi: bosing → to'liq ekran; g'ildirak = kattalashtirish, sudrash = surish, Esc = yopish
+(function(){
+  const Z=document.createElement("div"); Z.id="zbox";
+  Z.innerHTML='<div id="zbar"><button data-z="-" title="Kichraytirish">−</button><button data-z="+" title="Kattalashtirish">+</button><button data-z="0" title="Ekranga sig\'dirish">⤢</button><button data-z="x" title="Yopish">✕</button></div><img alt=""><div id="zhint">G\'ildirak — kattalashtirish · sudrang — surish · Esc — yopish</div>';
+  document.body.appendChild(Z);
+  const I=Z.querySelector("img"); let s=1,x=0,y=0,fit=1;
+  const ap=()=>{ I.style.transform=`translate(${x}px,${y}px) scale(${s})`; };
+  const fitIt=()=>{ const W=innerWidth,H=innerHeight,w=I.naturalWidth||800,h=I.naturalHeight||600; fit=Math.min((W-40)/w,(H-90)/h,3); s=fit; x=(W-w*s)/2; y=(H-h*s)/2+10; ap(); };
+  const zoomAt=(f,cx,cy)=>{ const ns=Math.min(Math.max(s*f,fit*0.5),12); x=cx-(cx-x)*ns/s; y=cy-(cy-y)*ns/s; s=ns; ap(); };
+  const open=src=>{ I.onload=fitIt; I.src=src; Z.classList.add("on"); document.documentElement.style.overflow="hidden"; if(I.complete) fitIt(); };
+  const close=()=>{ Z.classList.remove("on"); document.documentElement.style.overflow=""; I.removeAttribute("src"); };
+  document.addEventListener("click",e=>{ const t=e.target; if(t.tagName!=="IMG"||Z.contains(t)||!t.src||!t.closest(".wrap,#xv")) return; if(t.closest("button,a")) return; e.preventDefault(); e.stopPropagation(); open(t.currentSrc||t.src); },true);
+  Z.addEventListener("wheel",e=>{ e.preventDefault(); zoomAt(e.deltaY<0?1.15:1/1.15,e.clientX,e.clientY); },{passive:false});
+  let d=null; const pts=new Map(); let pd=0;
+  Z.addEventListener("pointerdown",e=>{ if(e.target.closest("#zbar")) return; Z.setPointerCapture(e.pointerId); pts.set(e.pointerId,[e.clientX,e.clientY]); d={x:e.clientX,y:e.clientY,ox:x,oy:y,moved:false,onImg:e.target===I}; if(pts.size===2){ const [a,b]=[...pts.values()]; pd=Math.hypot(a[0]-b[0],a[1]-b[1]); } Z.classList.add("drag"); });
+  Z.addEventListener("pointermove",e=>{ if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(pts.size===2){ const [a,b]=[...pts.values()], nd=Math.hypot(a[0]-b[0],a[1]-b[1]); if(pd) zoomAt(nd/pd,(a[0]+b[0])/2,(a[1]+b[1])/2); pd=nd; if(d) d.moved=true; return; }
+    if(!d) return; const dx=e.clientX-d.x, dy=e.clientY-d.y; if(Math.abs(dx)+Math.abs(dy)>4) d.moved=true; x=d.ox+dx; y=d.oy+dy; ap(); });
+  const up=e=>{ pts.delete(e.pointerId); if(pts.size<2) pd=0; if(pts.size===0){ Z.classList.remove("drag"); if(d&&!d.moved&&!d.onImg&&e.type==="pointerup") close(); d=null; } else { const [p]=[...pts.values()]; d={x:p[0],y:p[1],ox:x,oy:y,moved:true}; } };
+  Z.addEventListener("pointerup",up); Z.addEventListener("pointercancel",up);
+  Z.addEventListener("dblclick",e=>{ if(e.target.closest("#zbar")) return; if(s>fit*1.05) fitIt(); else zoomAt(2.5,e.clientX,e.clientY); });
+  Z.querySelector("#zbar").addEventListener("click",e=>{ const b=e.target.closest("[data-z]"); if(!b) return; e.stopPropagation(); const k=b.dataset.z, cx=innerWidth/2, cy=innerHeight/2;
+    if(k==="+") zoomAt(1.3,cx,cy); else if(k==="-") zoomAt(1/1.3,cx,cy); else if(k==="0") fitIt(); else close(); });
+  document.addEventListener("keydown",e=>{ if(!Z.classList.contains("on")) return; if(e.key==="Escape"){ e.stopPropagation(); close(); } else if(e.key==="+"||e.key==="="){ zoomAt(1.3,innerWidth/2,innerHeight/2); } else if(e.key==="-"){ zoomAt(1/1.3,innerWidth/2,innerHeight/2); } },true);
+  addEventListener("resize",()=>{ if(Z.classList.contains("on")) fitIt(); });
 })();
 </script>
 
