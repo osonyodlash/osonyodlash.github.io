@@ -385,6 +385,7 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 }
 @media (min-width:1500px){.wrap{max-width:1240px}.wrap.exw{max-width:1240px}}
 
+.st-n.chw{font:700 1.3rem var(--display);color:var(--fg)}
 .sblt{flex-wrap:wrap}.sblt button{flex:1 1 auto;min-width:64px}
 .sbtl{display:grid;grid-template-columns:92px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font:500 .95rem var(--display)}.sbtl:first-of-type{border-top:0}.sbtv{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:8px}
 
@@ -1551,17 +1552,17 @@ function startCQ(items){ CQ={list:shuf(items||cqItems()),i:0,right:0,wrong:[],pi
 // ===== O'zgargan · Hören (yangi qo'shilganlar)
 // [teil, so'z, raqam, sarlavha, hikoya, bog'liq eski hikoya, diqqat]
 const CHH=[
- ["2","Marie Käfer","689","68 - 9","Marie Käfer ({Marie Käfer}, Käfer = qo'ng'iz) Markus bilan tengdosh — 68 yoshda. Bog'ida 9 ta qo'ng'iz yig'gan.","Markus 68124 · Weber ist heute 6803 — 68 bilan boshlanadi, oxirida 9","Avval 68 deb yozilgan edi — to'g'risi 689"],
- ["2","Der Vater · Stand auf einem Markt","67834","678 - 34","Otasining ({Der Vater}) bozordagi rastasi ({Stand auf einem Markt}) David Steinerning xonasi kabi 678-raqamda. Savdo Düsseldorfga yo'l kabi 3–4 soat davom etadi.","David Steiner 678034 · Düsseldorf 69034",""],
- ["2","Dorothea Eichhorn","78014","780 - 14","Dorothea Eichhorn ({Dorothea Eichhorn}, Eichhorn = olmaxon) Schenk tarqatgan 780 ta sovg'adan 14 tasini olmaxondek yashirib qo'ydi.","Schenk 78045 · Zu Studienbeginn 14",""],
- ["2","Frau Eichhorn","79245","79 - 245","Frau Eichhorn ({Frau Eichhorn}) Lisa bilan egizakdek: u ham 1979-yilda, soat 2:45 da tug'ilgan.","Lisa 79245 — raqami aynan bir xil",""],
- ["2","Matthias arbeitet","015","0 - 15","Matthias ishlaydi ({Matthias arbeitet}): ishni 0 dan boshlab 15 soat daraxt kesadi.","Sendung 025 — u ham 0 bilan boshlanadi","Mathias — 89124"],
- ["2","Lukas war","8025","80 - 25","Lukas edi ({Lukas war}) 80 yoshda, Sendung (025) kabi 25 daqiqa gapirdi.","Schumacher 8024 dan bitta ortiq: 8024 → 8025",""],
- ["2","Bio-Obst und Bio-Gemüse","78135","7813 + 5","Gipfel'dagi 78 alpinist 13 kunda cho'qqiga chiqdi va yo'lda 5 kilo bio meva-sabzavot ({Bio-Obst und Bio-Gemüse}) yeb tugatdi.","Gipfel 7813 + 5",""],
- ["2","Lisa Eisenberg","78913","789 - 13","Lisa Eisenberg ({Lisa Eisenberg}, Eisenberg = temir tog') bosh sovrindagidek 7, 8, 9 ni ketma-ket bosib, 13 kunda temir tog'ga chiqdi.","Hauptpreis 789045 · Gipfel 7813","Lisa — 79245"],
- ["3","Autobahn A4","680","680","Bugun (Heute) soat 6 da A4 avtobaniga ({Autobahn A4}) chiqib, 80 km yurasiz.","Heute 680 — raqami bir xil",""],
- ["3","Konzert am 29. Mai","89","89","29-maydagi konsert ({Konzert am 29. Mai}) Avgust kechasidagidek soat 8 da boshlanib, 9 da tugaydi.","August · nächtlichen 89",""],
- ["3","Geschäftsreisende","68","68","Ish safaridagilar ({Geschäftsreisende}) payshanbadagi festivalga (Musikfestival, 68) kelib, 68 ta konsertni tinglashdi.","Musikfestival · Konzert 68","Geschäftsreisende — 60 (1-list)"],
+ ["2", "Marie Käfer", "689", "68 - 9", "Marie Käfer ({Marie Käfer}, Käfer = qo'ng'iz) 68 yoshda. Bog'ida 9 ta qo'ng'iz yig'gan.", "", ""],
+ ["2", "Der Vater · Stand auf einem Markt", "67834", "678 - 34", "Otasining ({Der Vater}) bozordagi rastasi ({Stand auf einem Markt}) 678-raqamda. U yerda 34 xil meva sotadi.", "", ""],
+ ["2", "Dorothea Eichhorn", "78014", "780 - 14", "Dorothea Eichhorn ({Dorothea Eichhorn}, Eichhorn = olmaxon) 780 ta yong'oq yig'ib, 14 tasini olmaxondek yashirib qo'ydi.", "", ""],
+ ["2", "Frau Eichhorn", "79245", "79 - 245", "Frau Eichhorn ({Frau Eichhorn}) 1979-yilda, soat 2:45 da tug'ilgan.", "", ""],
+ ["2", "Matthias arbeitet", "015", "0 - 15", "Matthias ishlaydi ({Matthias arbeitet}): ishni 0 dan boshlab 15 soat daraxt kesadi.", "", ""],
+ ["2", "Lukas war", "8025", "80 - 25", "Lukas edi ({Lukas war}) 80 yoshda, nabirasiga 25 daqiqa ertak aytib berdi.", "", ""],
+ ["2", "Bio-Obst und Bio-Gemüse", "78135", "7813 + 5", "78 yoshli bobom 13 kunda 5 kilo bio meva-sabzavot ({Bio-Obst und Bio-Gemüse}) yeb tugatdi.", "", ""],
+ ["2", "Lisa Eisenberg", "78913", "789 - 13", "Lisa Eisenberg ({Lisa Eisenberg}, Eisenberg = temir tog') 7, 8, 9 ni ketma-ket bosib, 13 kunda temir tog'ga chiqdi.", "", ""],
+ ["3", "Autobahn A4", "680", "680", "Soat 6 da A4 avtobaniga ({Autobahn A4}) chiqib, 80 km yurasiz.", "", ""],
+ ["3", "Konzert am 29. Mai", "89", "89", "29-maydagi konsert ({Konzert am 29. Mai}) soat 8 da boshlanib, 9 da tugaydi.", "", ""],
+ ["3", "Geschäftsreisende", "68", "68", "Ish safaridagilar ({Geschäftsreisende}) 6 kun yo'lda yurib, 8 ta shaharni ko'rishdi.", "", ""],
 ];
 let HQ=null; try{ HQ=JSON.parse(store("chhq")||"null"); }catch(e){}
 const saveHQ=()=>store("chhq",JSON.stringify(HQ));
@@ -1572,7 +1573,7 @@ function renderCH(P){
   if(mode==="list"){
     h+=`<p class="lhint">Teil 1 da yangi qo'shilgan yo'q.</p>`;
     ["2","3"].forEach(t=>{ const its=CHH.filter(x=>x[0]===t);
-      h+=`<div class="panel"><div class="l1x-h"><span>Hören Teil ${t} · yangi (${its.length})</span></div><div class="stories">${its.map(x=>`<div class="st"><div class="st-h"><span class="st-n">${esc(x[2])}</span><span class="st-t">${esc(x[1])}</span></div><p>${storyHtml(x[4])}</p>${x[5]?`<div class="st-w">🔗 ${esc(x[5])}</div>`:""}</div>`).join("")}</div></div>`; });
+      h+=`<div class="panel"><div class="l1x-h"><span>Hören Teil ${t} · yangi (${its.length})</span></div><div class="stories">${its.map(x=>`<div class="st"><div class="st-h"><span class="st-n chw">${esc(x[1])}</span><span class="st-n">— ${esc(x[2])}</span></div><p>${storyHtml(x[4])}</p><div class="st-w">${esc(x[1])} — ${esc(x[2])}</div></div>`).join("")}</div></div>`; });
     P.innerHTML=h;
   } else {
     if(!HQ||HQ.kind!==mode) chhStart(mode);
