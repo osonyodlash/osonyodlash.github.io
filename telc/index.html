@@ -335,6 +335,8 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
   body{padding-left:0!important}
 }
 .dsub{display:none!important}.dsub.open{display:flex!important}
+/* Sprachbausteine Teil 1 vaqtincha yashirilgan (kod saqlangan). Qaytarish: shu qatorni o'chiring */
+[data-t=S1]{display:none!important}
 #drw{box-shadow:none!important}body.dopen #drw{box-shadow:4px 0 24px rgba(0,0,0,.25)!important}
 .dg .dcar{margin-left:auto;font-style:normal;opacity:.6;transition:transform .2s}
 .dg.exp .dcar{transform:rotate(90deg)}
@@ -1788,7 +1790,7 @@ function renderD(){
   const add=(t,done,all,g)=>prog.push({t,done:Math.min(done,all),all,g});
   try{ BKSEC.forEach(([s,t])=>add("Kitob · "+t,bDone(s).size,BOOK[s].length,"K")); }catch(e){}
   try{ add("Lesen Teil 1 (variantlar)",eDone().size,L1X.length,"E"); }catch(e){}
-  add("Sprachbausteine Teil 1 kalitlari",sbDone().size,SB1.length,"S1");
+  /* S1 yashirin: add("Sprachbausteine Teil 1 kalitlari",sbDone().size,SB1.length,"S1"); */
   try{ add("Mündlich Teil 2 mavzulari",mDone().size,MUND.length,"M"); }catch(e){}
   const H=(()=>{ try{ return exHist(); }catch(e){ return []; } })(), avg=H.length?Math.round(H.reduce((a,h)=>a+h.r/h.n*100,0)/H.length):null;
   const open=xOpen().length;
@@ -2105,8 +2107,8 @@ function renderKHX(){
       renderKHX(); }; }
 }
 
-const ht0=store("ht");
-try{ if(XVIEWS[ht0]){ setTeil("1"); openXV(ht0); } else if(ht0==="KH"){ setTeil("1"); openKH(); } else if(ht0==="M"){ setTeil("1"); openM(); } else if(ht0==="X"){ setTeil("1"); document.querySelector(".wrap").classList.add("exw"); openX(); } else if(ht0==="C"){ setTeil("1"); openC(); } else if(ht0==="Q"){ setTeil("1"); openQ(); } else if(ht0==="E"){ setTeil("1"); openE(); } else if(ht0==="K"){ setTeil("1"); openL1(); } else if(ht0==="L"){ setTeil("1"); openLesen(); } else if(ht0==="S"){ setTeil("1"); openSprach(); } else { setTeil(ht0||"1"); start(store("hm")||"a"); } }catch(e){ console.error(e); try{ setTeil("1"); start("a"); }catch(_){} }
+let ht0=store("ht");
+try{ if(ht0==="S1") ht0="D"; if(XVIEWS[ht0]){ setTeil("1"); openXV(ht0); } else if(ht0==="KH"){ setTeil("1"); openKH(); } else if(ht0==="M"){ setTeil("1"); openM(); } else if(ht0==="X"){ setTeil("1"); document.querySelector(".wrap").classList.add("exw"); openX(); } else if(ht0==="C"){ setTeil("1"); openC(); } else if(ht0==="Q"){ setTeil("1"); openQ(); } else if(ht0==="E"){ setTeil("1"); openE(); } else if(ht0==="K"){ setTeil("1"); openL1(); } else if(ht0==="L"){ setTeil("1"); openLesen(); } else if(ht0==="S"){ setTeil("1"); openSprach(); } else { setTeil(ht0||"1"); start(store("hm")||"a"); } }catch(e){ console.error(e); try{ setTeil("1"); start("a"); }catch(_){} }
 
 // ===== Guruhlangan tablar → chap menyu (drawer)
 const GINFO={D:["🏠","Bosh sahifa"],ER:["🔁","Xatolarim"],H:["🎧","Hören"],LG:["📖","Lesen"],S:["🧩","Sprachbausteine"],C:["🔄","O'zgargan"],K:["📚","Kitob"],X:["📝","Imtihon"],M:["🗣️","Mündlich"],KH:["🎯","Kahoot"]};
