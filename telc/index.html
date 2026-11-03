@@ -390,12 +390,12 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 /* ===== Kompyuter ekrani: kattaroq harf, rasmlar cheklangan */
 @media (min-width:1100px){
   html{font-size:18px}
-  .wrap img,#xv img{max-width:min(100%,760px)!important;width:auto!important;height:auto!important;display:block;margin-inline:auto}
+  .khimg,.khrow img,.chgimg img{max-width:min(100%,760px);display:block;margin-inline:auto}
 }
 @media (min-width:1500px){ html{font-size:19.5px} }
 
 /* ===== Rasmni kattalashtirish (lupa) */
-.wrap img,#xv img{cursor:zoom-in}
+.khimg,.khrow img,.chgimg img,.expages img,.mimg img{cursor:zoom-in}
 #zbox{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.92);display:none;overflow:hidden;touch-action:none;cursor:grab}
 #zbox.on{display:block}#zbox.drag{cursor:grabbing}
 #zbox img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none!important;max-height:none!important;user-select:none;-webkit-user-drag:none;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.5)}
