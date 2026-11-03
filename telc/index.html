@@ -1739,6 +1739,9 @@ function xLog(key, s, q, a, h){
   XS[key]=e; saveXS();
 }
 const xOpen = () => Object.entries(XS).filter(([,e])=>!e.m);
+// Lesen Teil 2 xatolari: variantlarni (a/b/c — 3 ta) va to'g'ri javobni hozirgi kalitdan qayta tiklash
+try{ let ch=false; Object.entries(XS).forEach(([k,e])=>{ const m=k.match(/^Lesen Teil 2\|(.+)\|(\d+)$/); if(!m) return; const x=L2Q.find(y=>y.v===m[1]); if(!x) return; const i=+m[2]-6, q=x.q[i]; if(!q) return;
+  const o=[q[1],q[2],q[3]], a=o["abc".indexOf(x.a[i])]; if(!a) return; if(JSON.stringify(e.o)!==JSON.stringify(o)||e.a!==a){ e.o=o; e.a=a; ch=true; } }); if(ch) saveXS(); }catch(e){}
 
 // ---- Faollik hisoblagichi (har bir "To'g'ri"/"Xato" javobi)
 const xAct = () => { try{ return JSON.parse(store("xact")||"{}")||{}; }catch(e){ return {}; } };
