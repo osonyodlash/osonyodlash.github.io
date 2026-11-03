@@ -335,8 +335,6 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
   body{padding-left:0!important}
 }
 .dsub{display:none!important}.dsub.open{display:flex!important}
-/* Sprachbausteine Teil 1 vaqtincha yashirilgan (kod saqlangan). Qaytarish: shu qatorni o'chiring */
-[data-t=S1]{display:none!important}
 #drw{box-shadow:none!important}body.dopen #drw{box-shadow:4px 0 24px rgba(0,0,0,.25)!important}
 .dg .dcar{margin-left:auto;font-style:normal;opacity:.6;transition:transform .2s}
 .dg.exp .dcar{transform:rotate(90deg)}
@@ -385,6 +383,7 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 }
 @media (min-width:1500px){.wrap{max-width:1240px}.wrap.exw{max-width:1240px}}
 
+.sblt{flex-wrap:wrap}.sblt button{flex:1 1 auto;min-width:64px}
 .sbtl{display:grid;grid-template-columns:92px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font:500 .95rem var(--display)}.sbtl:first-of-type{border-top:0}.sbtv{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:8px}
 
 /* ===== Kompyuter ekrani: kattaroq harf, rasmlar cheklangan */
@@ -1770,6 +1769,10 @@ try{
 const SB1_RAW="1 ABCBBCCACB, 1a ABBBBCCABB, 2 BAAACBBBBB, 3 BBCBAABAAA, 4 BBCBACAAAA, 5 ACCAACBBCC, 5a ACCCACBCCC, 6 AACCCBBCBC, 7 CCCBCBBABC, 8 BCBCBAABAB, 8a BCBCABACAB, 9 ACBBCBCACB, 9a ACBBCACACB, 10/10a CBACCCACBC, 11 CBABBABCCA, 11a CBCBBABCAB, 12 CACAAABCAB, 13 BBABAABAAC, 13a BBABAABAAB, 14 CCAABBBBBA, 15 CBACBBCABB, 16 CAACBBBBCB, 17 CACBBCACCA, 18/18a ABCCAACABC, 19 CBAACCCAAC, 20 AACCCCBBCB, 20a ABCCCBBBCB, 21 BBABCABCBA, 22/22a BABBCCBBBC, 23 BAABCAACCA, 24 CAABCCBABA, 25/25a CCCAAABBAA, 26/26a BBACBACACA, 27 AABAABAAAC, 28 BACABAABBC, 29 BCCABAABAB, 30 BBAACABBBB, 31 BCBBCCABBC, 32 ABBCBABACA, 33 AACABCBAAB, 34 BBCAACABBC, 35 BBCACCCBAB, 36 BBCBBABABB, 37 BBAABBCACC, 38 BACBBBCBBA, 39 CCBBCCBCAB, 40 BBBCAAABCB, 41 ABACCACCAB, 42 ABACCABCCB, 43 ABAABACBCB";
 const SB1=SB1_RAW.split(", ").map(s=>{ const [v,k]=s.split(" "); return {v,k}; });
 const SB1_GUESS="BBCBCABABB";
+// 10 tadan listlar
+const SBL=[]; for(let i=0;i<SB1.length;i+=10) SBL.push(SB1.slice(i,i+10).map(x=>x.v));
+const sbLName=i=>`${i+1}-list`, sbLRange=i=>`${SBL[i][0]} – ${SBL[i][SBL[i].length-1]}`;
+let sbLF=store("sblf")||"all";
 const sbBase=v=>v.endsWith("a")&&!v.includes("/")?SB1.find(x=>x.v===v.slice(0,-1)):null;
 const sbDone=()=>new Set((store("sb1d")||"").split(",").filter(Boolean));
 const sbChunk=(k,diff)=>[[0,3],[3,6],[6,8],[8,10]].map(([a,b])=>`<span class="sbch">${k.slice(a,b).split("").map((L,i)=>`<i class="sbL ${L}${diff&&diff[a+i]?" df":""}">${L}</i>`).join("")}</span>`).join(`<span class="sbdot">·</span>`);
@@ -1832,7 +1835,7 @@ function renderD(){
   const add=(t,done,all,g)=>prog.push({t,done:Math.min(done,all),all,g});
   try{ BKSEC.forEach(([s,t])=>add("Kitob · "+t,bDone(s).size,BOOK[s].length,"K")); }catch(e){}
   try{ add("Lesen Teil 1 (variantlar)",eDone().size,L1X.length,"E"); }catch(e){}
-  /* S1 yashirin: add("Sprachbausteine Teil 1 kalitlari",sbDone().size,SB1.length,"S1"); */
+  add("Sprachbausteine Teil 1 kalitlari",sbDone().size,SB1.length,"S1");
   try{ add("Mündlich Teil 2 mavzulari",mDone().size,MUND.length,"M"); }catch(e){}
   const H=(()=>{ try{ return exHist(); }catch(e){ return []; } })(), avg=H.length?Math.round(H.reduce((a,h)=>a+h.r/h.n*100,0)/H.length):null;
   const open=xOpen().length;
@@ -1943,11 +1946,14 @@ function erAdv(rev){
 // ===== SPRACHBAUSTEINE TEIL 1
 function renderSB(){
   const d=sbDone();
-  let h=`<div class="tabs"><button data-sbm="list" class="${sbMode==="list"?"on":""}">Kalitlar</button><button data-sbm="quiz" class="${sbMode==="quiz"?"on":""}">Yodlash</button><button data-sbm="guess" class="${sbMode==="guess"?"on":""}">Taxmin rejasi</button><button data-sbm="tab" class="${sbMode==="tab"?"on":""}">Jadval</button></div>`;
+  let h=`<div class="tabs"><button data-sbm="list" class="${sbMode==="list"?"on":""}">Kalitlar</button><button data-sbm="quiz" class="${sbMode==="quiz"?"on":""}">Harf yozish</button><button data-sbm="guess" class="${sbMode==="guess"?"on":""}">Taxmin rejasi</button><button data-sbm="tab" class="${sbMode==="tab"?"on":""}">Jadval</button></div>`;
   if(sbMode==="tab"){ h+=sbTable(); XP().innerHTML=h; XP().querySelectorAll("[data-sbm]").forEach(b=>b.onclick=()=>{ sbMode=b.dataset.sbm; store("sbm",sbMode); renderSB(); }); const tq=document.getElementById("sbtq"); if(tq){ tq.oninput=()=>{ sbTQ=tq.value; const r=document.getElementById("sbtr"); if(r) r.innerHTML=sbTRes(); }; } return; }
   if(sbMode==="list"){
     const q=sbQ.trim().toLowerCase();
-    const rows=SB1.filter(x=>!q||x.v.toLowerCase().split("/").some(v=>v===q||v.startsWith(q)));
+    const inL=sbLF==="all"?null:new Set(SBL[+sbLF]||[]);
+    const rows=SB1.filter(x=>(!inL||inL.has(x.v))&&(!q||x.v.toLowerCase().split("/").some(v=>v===q||v.startsWith(q))));
+    h+=`<div class="tabs sblt"><button data-sblf="all" class="${sbLF==="all"?"on":""}">Hammasi</button>${SBL.map((_,i)=>`<button data-sblf="${i}" class="${sbLF===String(i)?"on":""}" title="${esc(sbLRange(i))}">${sbLName(i)}</button>`).join("")}</div>`;
+    if(inL) h+=`<p class="hint" style="margin:0 0 6px">${sbLName(+sbLF)}: ${esc(sbLRange(+sbLF))} variantlar (10 ta)</p>`;
     h+=`<div class="panel"><input id="sbq" class="msearch" placeholder="Variant raqami (masalan 13a)" value="${esc(sbQ)}" inputmode="text" autocomplete="off">
       <p class="hint" style="margin:0">21–30-bo'shliqlar. Kalit 3·3·2·2 bo'laklarga ajratilgan. a-variantlarda asosiy variantdan farq qiladigan harflar belgilangan. Bajarilganlar: <b>${d.size}/${SB1.length}</b></p>
       <div class="sbgap"><span></span>${[...Array(10)].map((_,i)=>`<i>${21+i}</i>`).join("")}</div>
@@ -1963,7 +1969,7 @@ function renderSB(){
   } else {
     if(!SBQ) sbStart(store("sbs")||"all");
     const L=SBQ.q;
-    const scope=`<div class="tabs"><button data-sbs="all" class="${SBQ.scope==="all"?"on":""}">Hammasi</button><button data-sbs="left" class="${SBQ.scope==="left"?"on":""}">Bajarilmagan</button><button data-sbs="seq" class="${SBQ.scope==="seq"?"on":""}">Tartib bilan</button></div>`;
+    const scope=`<div class="tabs sblt"><button data-sbs="all" class="${SBQ.scope==="all"?"on":""}">Hammasi</button>${SBL.map((_,i)=>`<button data-sbs="l${i}" class="${SBQ.scope==="l"+i?"on":""}" title="${esc(sbLRange(i))}">${sbLName(i)}</button>`).join("")}</div><div class="tabs"><button data-sbs="left" class="${SBQ.scope==="left"?"on":""}">Bajarilmagan</button><button data-sbs="seq" class="${SBQ.scope==="seq"?"on":""}">Tartib bilan</button></div>`+(/^l\d$/.test(SBQ.scope)?`<p class="hint" style="margin:0 0 6px">${sbLName(+SBQ.scope.slice(1))}: ${esc(sbLRange(+SBQ.scope.slice(1)))} variantlar</p>`:"");
     if(SBQ.i>=L.length){
       h+=scope+`<div class="panel"><div class="q"><small>Raund tugadi</small><div class="num">${SBQ.first}/${SBQ.total}</div><small>birinchi urinishda to'g'ri</small></div>
       ${SBQ.errs.length?`<div class="errs"><h3>Xatolar (${SBQ.errs.length})</h3>${SBQ.errs.map(v=>{ const x=SB1.find(y=>y.v===v); return `<div class="erow"><span class="ew">${esc(v)}</span><span class="en">${x?x.k:""}</span></div>`; }).join("")}</div>`:`<p class="msg ok">Bitta ham xato yo'q! 🎉</p>`}
@@ -1982,6 +1988,7 @@ function renderSB(){
   XP().querySelectorAll("[data-sbm]").forEach(b=>b.onclick=()=>{ sbMode=b.dataset.sbm; store("sbm",sbMode); renderSB(); });
   const sq=document.getElementById("sbq"); if(sq) sq.oninput=()=>{ sbQ=sq.value; const p=sq.selectionStart; renderSB(); const n=document.getElementById("sbq"); n.focus(); n.setSelectionRange(p,p); };
   const gq=document.getElementById("sbgq"); if(gq) gq.onclick=()=>{ SBQ={scope:"guess",q:["?","?","?"],i:0,right:0,first:0,total:3,errs:[],missed:new Set(),val:"",done:false}; sbMode="quiz"; renderSB(); };
+  XP().querySelectorAll("[data-sblf]").forEach(b=>b.onclick=()=>{ sbLF=b.dataset.sblf; store("sblf",sbLF); renderSB(); });
   XP().querySelectorAll("[data-sbs]").forEach(b=>b.onclick=()=>{ store("sbs",b.dataset.sbs); sbStart(b.dataset.sbs); renderSB(); });
   XP().querySelectorAll("[data-sbk]").forEach(b=>b.onclick=()=>sbKey(b.dataset.sbk));
   const ag=document.getElementById("sbagain"); if(ag) ag.onclick=()=>{ sbStart(SBQ.scope==="guess"?"all":SBQ.scope); renderSB(); };
@@ -1992,6 +1999,7 @@ function renderSB(){
 function sbStart(scope){
   const d=sbDone(); let q=SB1.map(x=>x.v);
   if(scope==="left"){ q=q.filter(v=>!d.has(v)); if(!q.length) q=SB1.map(x=>x.v); }
+  if(/^l\d$/.test(scope)&&SBL[+scope.slice(1)]) q=SBL[+scope.slice(1)].slice();
   if(scope!=="seq") q=shuf(q);
   SBQ={scope,q,i:0,right:0,first:0,total:q.length,errs:[],missed:new Set(),val:"",done:false};
 }
@@ -2151,7 +2159,7 @@ function renderKHX(){
 }
 
 let ht0=store("ht");
-try{ if(ht0==="S1") ht0="D"; if(XVIEWS[ht0]){ setTeil("1"); openXV(ht0); } else if(ht0==="KH"){ setTeil("1"); openKH(); } else if(ht0==="M"){ setTeil("1"); openM(); } else if(ht0==="X"){ setTeil("1"); document.querySelector(".wrap").classList.add("exw"); openX(); } else if(ht0==="C"){ setTeil("1"); openC(); } else if(ht0==="Q"){ setTeil("1"); openQ(); } else if(ht0==="E"){ setTeil("1"); openE(); } else if(ht0==="K"){ setTeil("1"); openL1(); } else if(ht0==="L"){ setTeil("1"); openLesen(); } else if(ht0==="S"){ setTeil("1"); openSprach(); } else { setTeil(ht0||"1"); start(store("hm")||"a"); } }catch(e){ console.error(e); try{ setTeil("1"); start("a"); }catch(_){} }
+try{ if(XVIEWS[ht0]){ setTeil("1"); openXV(ht0); } else if(ht0==="KH"){ setTeil("1"); openKH(); } else if(ht0==="M"){ setTeil("1"); openM(); } else if(ht0==="X"){ setTeil("1"); document.querySelector(".wrap").classList.add("exw"); openX(); } else if(ht0==="C"){ setTeil("1"); openC(); } else if(ht0==="Q"){ setTeil("1"); openQ(); } else if(ht0==="E"){ setTeil("1"); openE(); } else if(ht0==="K"){ setTeil("1"); openL1(); } else if(ht0==="L"){ setTeil("1"); openLesen(); } else if(ht0==="S"){ setTeil("1"); openSprach(); } else { setTeil(ht0||"1"); start(store("hm")||"a"); } }catch(e){ console.error(e); try{ setTeil("1"); start("a"); }catch(_){} }
 
 // ===== Guruhlangan tablar → chap menyu (drawer)
 const GINFO={D:["🏠","Bosh sahifa"],ER:["🔁","Xatolarim"],H:["🎧","Hören"],LG:["📖","Lesen"],S:["🧩","Sprachbausteine"],C:["🔄","O'zgargan"],K:["📚","Kitob"],X:["📝","Imtihon"],M:["🗣️","Mündlich"],KH:["🎯","Kahoot"]};
