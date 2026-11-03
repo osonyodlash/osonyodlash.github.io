@@ -494,6 +494,8 @@ const T2_FLAT = [
  ["Befürchten","8024",3],["Amerikanische","6789",3],["Maria","90145",3],["Mathias","89124",3],["Tarek Hesse","79013",3],
  ["Nora","67923",3],["Leo Berger","7845",3],["David Steiner","678034",3],["Zu Studienbeginn","14",3],["Laura","8034",3],
  ["Frau Dr. Lenz","678012",3],["Weber ist heute","6803",3],["Jonas findet","679134",3],["Mallorca ist als","68124",3],["Frau Seidel","6890234",3],
+ ["Marie Käfer","689",3],["Der Vater","67834",3],["Dorothea Eichhorn","78014",3],["Frau Eichhorn","79245",3],["Matthias arbeitet","015",3],
+ ["Lukas war","8025",3],["Bio-Obst und Bio-Gemüse","78135",3],["Lisa Eisenberg","78913",3],
 ];
 const T2 = []; // raqam bo'yicha guruhlash (bir xil raqamli so'zlar birga)
 T2_FLAT.forEach(([w,n,l])=>{ const g=T2.find(x=>x[0]===n&&x[2]===l); g?g[1].push(w):T2.push([n,[w],l]); });
@@ -512,12 +514,14 @@ const T3 = [
  ["89",["!August","nachtlichen"],2],
  ["670",["!Mussen nicht","Bäckerstraße","Treffen Donnerstag"],3],
  ["678",["Wochenanfang","Hannover"],3],
- ["680",["!Heute"],3],
+ ["680",["!Heute","Autobahn A4"],3],
  ["690",["Sollen","Telecom","Buchpresentation"],3],
  ["789",["!14Uhr","Parade"],3],
  ["6790",["Christkindlesmarkt"],3],
  ["6890",["!Tochter"],3],
  ["0",["Literatur musse"],3],
+ ["89",["Konzert am 29. Mai"],3],
+ ["68",["Geschäftsreisende"],3],
 ];
 // ===== Hikoyalar: {So'z} = nemischa so'z, {!So'z} = qizil so'z
 // [sarlavha (raqam), qisqa nom, hikoya]
@@ -1524,8 +1528,8 @@ function startCQ(items){ CQ={list:shuf(items||cqItems()),i:0,right:0,wrong:[],pi
 // ===== O'zgargan · Hören (yangi qo'shilganlar)
 // [teil, so'z, raqam, sarlavha, hikoya, bog'liq eski hikoya, diqqat]
 const CHH=[
- ["2","Marie Käfer","68","68","Marie Käfer ({Marie Käfer}, Käfer = qo'ng'iz) Markus bilan tengdosh — 68 yoshda. Bog'ida rosa 68 ta qo'ng'iz yig'gan.","Markus 68124 · Weber ist heute 6803 — hammasi 68 bilan boshlanadi",""],
- ["2","Stand auf einem Markt","67834","678 - 34","Bozordagi rastasi ({Stand auf einem Markt}) David Steinerning xonasi kabi 678-raqamda. Savdo Düsseldorfga yo'l kabi 3–4 soat davom etadi.","David Steiner 678034 · Düsseldorf 69034",""],
+ ["2","Marie Käfer","689","68 - 9","Marie Käfer ({Marie Käfer}, Käfer = qo'ng'iz) Markus bilan tengdosh — 68 yoshda. Bog'ida 9 ta qo'ng'iz yig'gan.","Markus 68124 · Weber ist heute 6803 — 68 bilan boshlanadi, oxirida 9","Avval 68 deb yozilgan edi — to'g'risi 689"],
+ ["2","Der Vater · Stand auf einem Markt","67834","678 - 34","Otasining ({Der Vater}) bozordagi rastasi ({Stand auf einem Markt}) David Steinerning xonasi kabi 678-raqamda. Savdo Düsseldorfga yo'l kabi 3–4 soat davom etadi.","David Steiner 678034 · Düsseldorf 69034",""],
  ["2","Dorothea Eichhorn","78014","780 - 14","Dorothea Eichhorn ({Dorothea Eichhorn}, Eichhorn = olmaxon) Schenk tarqatgan 780 ta sovg'adan 14 tasini olmaxondek yashirib qo'ydi.","Schenk 78045 · Zu Studienbeginn 14",""],
  ["2","Frau Eichhorn","79245","79 - 245","Frau Eichhorn ({Frau Eichhorn}) Lisa bilan egizakdek: u ham 1979-yilda, soat 2:45 da tug'ilgan.","Lisa 79245 — raqami aynan bir xil",""],
  ["2","Matthias arbeitet","015","0 - 15","Matthias ishlaydi ({Matthias arbeitet}): ishni 0 dan boshlab 15 soat daraxt kesadi.","Sendung 025 — u ham 0 bilan boshlanadi","Mathias — 89124"],
