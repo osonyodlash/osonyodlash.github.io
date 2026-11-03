@@ -494,6 +494,8 @@ const T1 = [
  ["134",["Sprecherin","!hochsten"],3],
  ["145",["Statischem"],3],
  ["1245",["Innenstadte","!Erdbeeren","!Gewerkschaft"],3],
+ ["24",["Schienenwege"],3],
+ ["125",["Manche Deutsche"],3],
 ];
 // ===== Teil 2: [so'z, raqam, list]
 const T2_FLAT = [
@@ -1552,6 +1554,8 @@ function startCQ(items){ CQ={list:shuf(items||cqItems()),i:0,right:0,wrong:[],pi
 // ===== O'zgargan · Hören (yangi qo'shilganlar)
 // [teil, so'z, raqam, sarlavha, hikoya, bog'liq eski hikoya, diqqat]
 const CHH=[
+ ["1", "Schienenwege", "24", "24", "Temir yo'llar ({Schienenwege}) bo'ylab poyezd to'xtamasdan 24 soat yuradi.", "", ""],
+ ["1", "Manche Deutsche", "125", "1 - 2 - 5", "Ba'zi nemislar ({Manche Deutsche}) 1 haftada 2 marta 5 km yuguradi.", "", ""],
  ["2", "Marie Käfer", "689", "68 - 9", "Marie Käfer ({Marie Käfer}, Käfer = qo'ng'iz) 68 yoshda. Bog'ida 9 ta qo'ng'iz yig'gan.", "", ""],
  ["2", "Der Vater · Stand auf einem Markt", "67834", "678 - 34", "Otasining ({Der Vater}) bozordagi rastasi ({Stand auf einem Markt}) 678-raqamda. U yerda 34 xil meva sotadi.", "", ""],
  ["2", "Dorothea Eichhorn", "78014", "780 - 14", "Dorothea Eichhorn ({Dorothea Eichhorn}, Eichhorn = olmaxon) 780 ta yong'oq yig'ib, 14 tasini olmaxondek yashirib qo'ydi.", "", ""],
@@ -1576,8 +1580,7 @@ function renderCH(P){
   const mode=store("chhm")||"list";
   let h=`<div class="tabs"><button data-hm="list" class="${mode==="list"?"on":""}">Ro'yxat · hikoyalar</button><button data-hm="num" class="${mode==="num"?"on":""}">So'z → raqam</button><button data-hm="word" class="${mode==="word"?"on":""}">Raqam → so'z</button></div>`;
   if(mode==="list"){
-    h+=`<p class="lhint">Teil 1 da yangi qo'shilgan yo'q.</p>`;
-    ["2","3"].forEach(t=>{ const its=CHH.filter(x=>x[0]===t);
+    ["1","2","3"].forEach(t=>{ const its=CHH.filter(x=>x[0]===t); if(!its.length) return;
       h+=`<div class="panel"><div class="l1x-h"><span>Hören Teil ${t} · yangi (${its.length})</span></div><div class="stories">${its.map(x=>`<div class="st"><div class="st-h"><span class="st-n chw">${esc(x[1])}</span><span class="st-n">— ${esc(x[2])}</span></div><p>${storyHtml(x[4])}</p><div class="st-w">${esc(x[1])} — ${esc(x[2])}</div></div>`).join("")}</div></div>`; });
     P.innerHTML=h;
   } else {
