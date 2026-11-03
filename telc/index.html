@@ -385,6 +385,7 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 }
 @media (min-width:1500px){.wrap{max-width:1240px}.wrap.exw{max-width:1240px}}
 
+.sbtl{display:grid;grid-template-columns:92px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font:500 .95rem var(--display)}.sbtl:first-of-type{border-top:0}.sbtv{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:8px}
 </style>
 
 <div class="wrap">
@@ -1752,6 +1753,27 @@ const SB1_GUESS="BBCBCABABB";
 const sbBase=v=>v.endsWith("a")&&!v.includes("/")?SB1.find(x=>x.v===v.slice(0,-1)):null;
 const sbDone=()=>new Set((store("sb1d")||"").split(",").filter(Boolean));
 const sbChunk=(k,diff)=>[[0,3],[3,6],[6,8],[8,10]].map(([a,b])=>`<span class="sbch">${k.slice(a,b).split("").map((L,i)=>`<i class="sbL ${L}${diff&&diff[a+i]?" df":""}">${L}</i>`).join("")}</span>`).join(`<span class="sbdot">·</span>`);
+
+// ---- Sprachbausteine Teil 1: eslatma jadvali (3·3·2·2 bo'laklar)
+const SB_MN3=[["BBA", "🎓", "BBA, biznes diplomi"], ["BBC", "📺", "BBC xabarlari"], ["CBA", "🔙", "teskari alifbo (ABC → CBA)"], ["ABA", "👨", "Aba (ota)"], ["BAA", "🐑", "qo'y: «baa»"], ["AAC", "❄️", "katta konditsioner (AA + AC)"], ["BCB", "🥪", "sendvich: non–pishloq–non"], ["BCC", "📧", "email'dagi yashirin nusxa (BCC)"], ["ABC", "🔤", "alifbo"], ["ABB", "🎤", "ABBA guruhi (oxirgi A yo'q)"], ["ACC", "🔋", "akkumulyator"], ["CCC", "😂", "«si-si-si», ha-ha-ha"], ["CAA", "🐍", "Kaa, Mowgli'dagi ilon"], ["ACB", "❄️", "konditsioner buzildi (AC + B)"], ["BAC", "🎹", "Bax, kompozitor"], ["CAC", "🌵", "kaktus"], ["CCB", "🥤", "Coca-Cola butilkasi"], ["BCA", "👦", "bacha (bola)"], ["CCA", "🥤", "Koka"], ["AAA", "🔋", "AAA batareyka"], ["CBB", "❓", "sabab (s-b-b)"], ["AAB", "💧", "«ab-ab», chaqaloq suv so'rayapti"], ["BBB", "🚗", "bip-bip-bip, signal"], ["CAB", "🚕", "taksi (cab)"], ["CBC", "🥪", "sendvich C–B–C"], ["BAB", "👴", "bobo"], ["ACA", "🏛", "akademiya"]], SB_MN2=[["BC", "⏳", "eramizdan avval (BC)"], ["AB", "🩸", "AB qon guruhi"], ["CA", "🌴", "Kaliforniya (CA)"], ["BB", "👶", "bebi"], ["CB", "📻", "ratsiya (CB radio)"], ["BA", "🎓", "bakalavr (BA)"], ["AC", "❄️", "konditsioner"], ["AA", "🔋", "AA batareyka"], ["CC", "📧", "nusxa (CC)"]];
+const sbMn=c=>(c.length===3?SB_MN3:SB_MN2).find(x=>x[0]===c);
+let sbTQ="";
+const sbCnt=c=>{ let n=0; SB1.forEach(x=>{ const k=x.k, parts=c.length===3?[k.slice(0,3),k.slice(3,6)]:[k.slice(6,8),k.slice(8)]; parts.forEach(p=>{ if(p===c) n++; }); }); return n; };
+function sbTRes(){
+  const q=sbTQ.trim().toLowerCase(); if(!q) return `<p class="hint" style="margin:0">Variant raqamini yozing — kaliti bo'laklarga ajratilib, har birining eslatmasi chiqadi.</p>`;
+  const rows=SB1.filter(x=>x.v.toLowerCase().split("/").some(v=>v===q||v.startsWith(q))).slice(0,6);
+  if(!rows.length) return `<p class="empty">Bunday variant yo'q.</p>`;
+  return rows.map(x=>{ const ps=[x.k.slice(0,3),x.k.slice(3,6),x.k.slice(6,8),x.k.slice(8)];
+    return `<div class="sbtv"><div class="sbrow" style="border:0"><b class="sbv">${esc(x.v)}</b><span class="sbkey">${sbChunk(x.k)}</span></div>${ps.map(c=>{ const m=sbMn(c); return `<div class="sbtl"><b class="sbtc">${sbChunk3(c)}</b><span>${m?m[1]+" "+esc(m[2]):""}</span></div>`; }).join("")}</div>`; }).join("");
+}
+const sbChunk3=c=>`<span class="sbch">${c.split("").map(L=>`<i class="sbL ${L}">${L}</i>`).join("")}</span>`;
+function sbTable(){
+  const tb=(arr,t)=>`<div class="panel"><div class="l1x-h"><span>${t}</span><small class="dsm">marta</small></div>${arr.map(([c,e,d])=>`<div class="sbtl"><b class="sbtc">${sbChunk3(c)}</b><span>${e} ${esc(d)}</span><small class="dpn">${sbCnt(c)}</small></div>`).join("")}</div>`;
+  return `<div class="panel"><p style="margin:0">Har bir kalit <b>3·3·2·2</b> bo'laklarga bo'linadi. Har bo'lakning o'z «rasmi» bor — 4 ta rasmni bitta hikoyaga ulang.</p>
+    <p class="hint" style="margin:0">Misol: 3-variant <b>BBC·BAA·BA·AA</b> → «BBC xabarlarida qo'y ko'rsatishdi, bakalavr uni batareyka bilan o'ynatdi».</p>
+    <input id="sbtq" class="msearch" placeholder="Variant raqami (masalan 13a)" value="${esc(sbTQ)}" autocomplete="off"><div id="sbtr">${sbTRes()}</div></div>`
+   +tb(SB_MN3,"3 harfli bo'laklar (1–3 va 4–6)")+tb(SB_MN2,"2 harfli bo'laklar (7–8 va 9–10)");
+}
 let SBQ=null, sbMode=store("sbm")||"list", sbQ="";
 
 // ---- Mündlich Teil 1 (taqdimot) taymeri
@@ -1901,7 +1923,8 @@ function erAdv(rev){
 // ===== SPRACHBAUSTEINE TEIL 1
 function renderSB(){
   const d=sbDone();
-  let h=`<div class="tabs"><button data-sbm="list" class="${sbMode==="list"?"on":""}">Kalitlar</button><button data-sbm="quiz" class="${sbMode==="quiz"?"on":""}">Yodlash</button><button data-sbm="guess" class="${sbMode==="guess"?"on":""}">Taxmin rejasi</button></div>`;
+  let h=`<div class="tabs"><button data-sbm="list" class="${sbMode==="list"?"on":""}">Kalitlar</button><button data-sbm="quiz" class="${sbMode==="quiz"?"on":""}">Yodlash</button><button data-sbm="guess" class="${sbMode==="guess"?"on":""}">Taxmin rejasi</button><button data-sbm="tab" class="${sbMode==="tab"?"on":""}">Jadval</button></div>`;
+  if(sbMode==="tab"){ h+=sbTable(); XP().innerHTML=h; XP().querySelectorAll("[data-sbm]").forEach(b=>b.onclick=()=>{ sbMode=b.dataset.sbm; store("sbm",sbMode); renderSB(); }); const tq=document.getElementById("sbtq"); if(tq){ tq.oninput=()=>{ sbTQ=tq.value; const r=document.getElementById("sbtr"); if(r) r.innerHTML=sbTRes(); }; } return; }
   if(sbMode==="list"){
     const q=sbQ.trim().toLowerCase();
     const rows=SB1.filter(x=>!q||x.v.toLowerCase().split("/").some(v=>v===q||v.startsWith(q)));
@@ -2161,7 +2184,5 @@ syncG();
   collapse();
 })();
 </script>
-
-
 
 </body></html>
