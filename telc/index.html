@@ -966,7 +966,7 @@ function startLesen(m){
   nextLesen();
 }
 function renderLesenList(){
-  const base=Math.max(0,LDATA().indexOf(lItems()[0]));
+  const base=Math.max(0,(LSRC==="S"?SP_SORT:LDATA()).indexOf(lItems()[0]));
   if(!lItems().length){ P.innerHTML=`<p class="empty">Bu ro'yxat hali tayyor emas.</p>`; return; }
   P.innerHTML=`<p class="lhint">${lItems().length} ta so'z · <b style="color:var(--red)">S</b> harfi gapda <b>C</b> o'rnida</p>`+lItems().map((x,i)=>`<div class="lcard">
     <div class="lhead"><span class="lw">${base+i+1}. ${esc(x.w)}</span>${x.n?`<span class="ln">${esc(x.n)}</span>`:""}</div>${x.v?`<div class="kv">Kitob: ${esc(x.v)}-variant</div>`:""}
