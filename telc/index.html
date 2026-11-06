@@ -411,6 +411,7 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 .bkcnt{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:#dc2626;color:#fff;font-size:.72rem;margin-left:2px}.bkerrbtn.on .bkcnt{background:#fff;color:#dc2626}
 .bkerow{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line)}.bkerow:first-of-type{border-top:0}
 .bketop{display:flex;justify-content:space-between;align-items:center}.bkev{font:700 .95rem var(--mono);color:var(--ink)}.bken{font:700 .85rem var(--mono);color:var(--red)}
+.bkok{color:var(--ok)}
 .bkeab{display:flex;gap:16px;font:600 .95rem var(--display)}.bkeab s{color:var(--red)}.bkeab b{color:var(--ok);font-size:1.1rem}
 .bkerow .btns .go{padding:9px 12px}
 </style>
@@ -1090,8 +1091,8 @@ function bErrLog(sec,i,x,sel){
   if(sec!=="L1"&&sec!=="L2") return;
   const E=bErr();
   [...x.a].forEach((ans,r)=>{ const key=sec+"|"+x.v+"|"+r;
-    if(sel[r]===ans){ if(E[key]) delete E[key]; }
-    else { const e=E[key]||{sec,v:x.v,r,n:0}; e.i=i; e.ans=ans; e.pick=sel[r]; e.n++; e.t=Date.now(); E[key]=e; } });
+    if(sel[r]===ans){ if(E[key]){ E[key].ok=(E[key].ok||0)+1; E[key].t=Date.now(); if(E[key].ok>=5) delete E[key]; } }
+    else { const e=E[key]||{sec,v:x.v,r,n:0}; e.i=i; e.ans=ans; e.pick=sel[r]; e.n++; e.ok=0; e.t=Date.now(); E[key]=e; } });
   bErrSave(E);
 }
 function bErrShow(on){
@@ -1106,10 +1107,10 @@ function renderBkErr(){
     return `<div class="panel"><div class="l1x-h"><span>${t}</span><small class="dsm">${L.length} ta</small></div>${L.map(([key,e])=>{
       const x=(BOOK[k]||[])[e.i]&&BOOK[k][e.i].v===e.v?BOOK[k][e.i]:(BOOK[k]||[]).find(y=>y.v===e.v), qn=k==="L2"?e.r+6:e.r+1;
       const kw=!x?"":k==="L1"?(x.k&&x.k[e.r]?`<div class="l1key">${esc(x.k[e.r][0])} → <b>${e.ans.toUpperCase()}) ${esc(x.k[e.r][1])}</b></div>`:""):(x.k&&x.k[e.r]?`<div class="l1key">Kalit: <b>${esc(x.k[e.r])}</b></div>`:"");
-      return `<div class="bkerow"><div class="bketop"><b class="bkev">${k==="L1"?"1."+esc(e.v):esc(e.v)}-variant · ${qn}-savol</b><span class="bken">${e.n}×</span></div>
+      return `<div class="bkerow"><div class="bketop"><b class="bkev">${k==="L1"?"1."+esc(e.v):esc(e.v)}-variant · ${qn}-savol</b><span class="bken">${e.n}× xato · <span class="bkok">✓ ${e.ok||0}/5</span></span></div>
         <div class="bkeab"><span>Siz: <s>${esc((e.pick||"—").toUpperCase())}</s></span><span>To'g'ri: <b>${esc(e.ans.toUpperCase())}</b></span></div>${kw}
         <div class="btns"><button class="go alt" data-beo="${esc(key)}">Variantni ochish</button><button class="go" data-bed="${esc(key)}">✓ O'rgandim</button></div></div>`; }).join("")}</div>`; };
-  el.innerHTML=rows.length?sec("L1","Lesen 1")+sec("L2","Lesen 2")+`<p class="hint" style="text-align:center">Variantni qayta ishlab, shu savolga to'g'ri javob bersangiz, xato ro'yxatdan o'zi o'chadi.</p>`
+  el.innerHTML=rows.length?sec("L1","Lesen 1")+sec("L2","Lesen 2")+`<p class="hint" style="text-align:center">Variantni qayta ishlang: shu savolga <b>5 marta</b> to'g'ri javob bersangiz, xato ro'yxatdan o'zi o'chadi. Yana xato qilsangiz, hisob 0 dan boshlanadi.</p>`
     :`<div class="panel"><p class="empty">Hozircha xato yo'q. Kitobdagi Lesen 1 yoki Lesen 2 ni ishlaganingizda noto'g'ri javoblar shu yerga tushadi.</p></div>`;
   el.querySelectorAll("[data-beo]").forEach(b=>b.onclick=()=>{ const e=bErr()[b.dataset.beo]; if(!e) return; bErrShow(false); bsec=e.sec; store("bks",bsec); const i=BOOK[bsec].findIndex(y=>y.v===e.v); openBkVar(i<0?0:i); renderBkSec(); });
   el.querySelectorAll("[data-bed]").forEach(b=>b.onclick=()=>{ const E2=bErr(); delete E2[b.dataset.bed]; bErrSave(E2); renderBkErr(); renderBkSec(); });
