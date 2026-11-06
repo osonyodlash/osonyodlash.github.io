@@ -406,6 +406,13 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
 #zhint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);color:#cbd5e1;font:500 .85rem system-ui;background:rgba(0,0,0,.4);padding:6px 12px;border-radius:999px;white-space:nowrap}
 .t3tag{display:inline-block;align-self:flex-start;font:700 .68rem var(--display);text-transform:uppercase;letter-spacing:.04em;color:#fff;border-radius:5px;padding:1px 7px;margin-bottom:2px;background:#64748b}.t3-was{background:#2563eb}.t3-wann{background:#0891b2}.t3-wo{background:#059669}.t3-wer{background:#7c3aed}.t3-prog{background:#4f46e5}.t3-mat{background:#d97706}.t3-kost{background:#b45309}.t3-werb{background:#db2777}.t3-auf{background:#0f766e}.t3-geg{background:#dc2626}.t3-ein{background:#334155}
 .mwife{margin-top:4px;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,#db2777 8%,var(--card));border:1px dashed #f0abcf}.mwl{font:700 .7rem var(--display);color:#be185d;text-transform:uppercase;letter-spacing:.04em}
+.bkerr{grid-column:1/-1;overflow:auto;min-height:0;display:flex;flex-direction:column;gap:10px}
+.bksec .bkerrbtn{border-color:#fca5a5;color:#b91c1c}.bksec .bkerrbtn.on{background:#dc2626;border-color:#dc2626;color:#fff}
+.bkcnt{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:#dc2626;color:#fff;font-size:.72rem;margin-left:2px}.bkerrbtn.on .bkcnt{background:#fff;color:#dc2626}
+.bkerow{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line)}.bkerow:first-of-type{border-top:0}
+.bketop{display:flex;justify-content:space-between;align-items:center}.bkev{font:700 .95rem var(--mono);color:var(--ink)}.bken{font:700 .85rem var(--mono);color:var(--red)}
+.bkeab{display:flex;gap:16px;font:600 .95rem var(--display)}.bkeab s{color:var(--red)}.bkeab b{color:var(--ok);font-size:1.1rem}
+.bkerow .btns .go{padding:9px 12px}
 </style>
 
 <div class="wrap">
@@ -462,6 +469,7 @@ body[data-grp=D]{--ink:#334155}body[data-grp=ER]{--ink:#be123c}
     <div class="bkvars" id="bkvars"></div>
     <div class="bkpages" id="bkpages"></div>
     <div class="bkans" id="bkans"></div>
+    <div class="bkerr" id="bkerr" hidden></div>
   </div>
   <div id="l1x" hidden><div class="bkvars" id="l1xv"></div><div class="panel" id="l1xp"></div></div>
   <div id="l2q" hidden><div class="tabs" id="qzm"><button data-qm="all">Hammasi aralash</button><button data-qm="var">Variant bo'yicha</button></div><div class="bkvars" id="qzv" hidden></div><div class="panel" id="qzp"></div></div>
@@ -1070,8 +1078,41 @@ function fitBook(){
 }
 window.addEventListener("resize",fitBook);
 function renderBkSec(){
-  document.getElementById("bksec").innerHTML=BKSEC.map(([k,t])=>`<button data-bs="${k}" class="${k===bsec?"on":""}">${t}</button>`).join("");
-  document.querySelectorAll("[data-bs]").forEach(b=>b.onclick=()=>{ bsec=b.dataset.bs; store("bks",bsec); openBkVar(+(store("bkv_"+bsec)||0)); renderBkSec(); });
+  const ne=Object.keys(bErr()).length;
+  document.getElementById("bksec").innerHTML=BKSEC.map(([k,t])=>`<button data-bs="${k}" class="${k===bsec&&!bErrMode?"on":""}">${t}</button>`).join("")+`<button data-bs="ERR" class="bkerrbtn${bErrMode?" on":""}">❌ Xatolar${ne?` <span class="bkcnt">${ne}</span>`:""}</button>`;
+  document.querySelectorAll("[data-bs]").forEach(b=>b.onclick=()=>{ if(b.dataset.bs==="ERR"){ bErrShow(true); renderBkSec(); renderBkErr(); return; } bErrShow(false); bsec=b.dataset.bs; store("bks",bsec); openBkVar(+(store("bkv_"+bsec)||0)); renderBkSec(); });
+}
+// ---- Kitob · Lesen 1/2 xatolari
+let bErrMode=false;
+const bErr=()=>{ try{ return JSON.parse(store("bkerr")||"{}")||{}; }catch(e){ return {}; } };
+const bErrSave=o=>store("bkerr",JSON.stringify(o));
+function bErrLog(sec,i,x,sel){
+  if(sec!=="L1"&&sec!=="L2") return;
+  const E=bErr();
+  [...x.a].forEach((ans,r)=>{ const key=sec+"|"+x.v+"|"+r;
+    if(sel[r]===ans){ if(E[key]) delete E[key]; }
+    else { const e=E[key]||{sec,v:x.v,r,n:0}; e.i=i; e.ans=ans; e.pick=sel[r]; e.n++; e.t=Date.now(); E[key]=e; } });
+  bErrSave(E);
+}
+function bErrShow(on){
+  bErrMode=on;
+  ["bkvars","bkpages","bkans"].forEach(id=>document.getElementById(id).hidden=on);
+  document.getElementById("bkerr").hidden=!on;
+}
+function renderBkErr(){
+  const E=bErr(), el=document.getElementById("bkerr");
+  const rows=Object.entries(E).sort((a,b)=>b[1].n-a[1].n||b[1].t-a[1].t);
+  const sec=(k,t)=>{ const L=rows.filter(([,e])=>e.sec===k); if(!L.length) return "";
+    return `<div class="panel"><div class="l1x-h"><span>${t}</span><small class="dsm">${L.length} ta</small></div>${L.map(([key,e])=>{
+      const x=(BOOK[k]||[])[e.i]&&BOOK[k][e.i].v===e.v?BOOK[k][e.i]:(BOOK[k]||[]).find(y=>y.v===e.v), qn=k==="L2"?e.r+6:e.r+1;
+      const kw=!x?"":k==="L1"?(x.k&&x.k[e.r]?`<div class="l1key">${esc(x.k[e.r][0])} → <b>${e.ans.toUpperCase()}) ${esc(x.k[e.r][1])}</b></div>`:""):(x.k&&x.k[e.r]?`<div class="l1key">Kalit: <b>${esc(x.k[e.r])}</b></div>`:"");
+      return `<div class="bkerow"><div class="bketop"><b class="bkev">${k==="L1"?"1."+esc(e.v):esc(e.v)}-variant · ${qn}-savol</b><span class="bken">${e.n}×</span></div>
+        <div class="bkeab"><span>Siz: <s>${esc((e.pick||"—").toUpperCase())}</s></span><span>To'g'ri: <b>${esc(e.ans.toUpperCase())}</b></span></div>${kw}
+        <div class="btns"><button class="go alt" data-beo="${esc(key)}">Variantni ochish</button><button class="go" data-bed="${esc(key)}">✓ O'rgandim</button></div></div>`; }).join("")}</div>`; };
+  el.innerHTML=rows.length?sec("L1","Lesen 1")+sec("L2","Lesen 2")+`<p class="hint" style="text-align:center">Variantni qayta ishlab, shu savolga to'g'ri javob bersangiz, xato ro'yxatdan o'zi o'chadi.</p>`
+    :`<div class="panel"><p class="empty">Hozircha xato yo'q. Kitobdagi Lesen 1 yoki Lesen 2 ni ishlaganingizda noto'g'ri javoblar shu yerga tushadi.</p></div>`;
+  el.querySelectorAll("[data-beo]").forEach(b=>b.onclick=()=>{ const e=bErr()[b.dataset.beo]; if(!e) return; bErrShow(false); bsec=e.sec; store("bks",bsec); const i=BOOK[bsec].findIndex(y=>y.v===e.v); openBkVar(i<0?0:i); renderBkSec(); });
+  el.querySelectorAll("[data-bed]").forEach(b=>b.onclick=()=>{ const E2=bErr(); delete E2[b.dataset.bed]; bErrSave(E2); renderBkErr(); renderBkSec(); });
 }
 function renderBkVars(){
   const d=bDone(bsec), pre=bsec==="L1"?"1.":"";
@@ -1113,7 +1154,7 @@ function renderBkAns(){
       const N=x.a.length; foot=`<p class="msg ${right===N?"ok":"no"}">${right}/${N} to'g'ri</p>${three&&x.w?`<div class="kv">${esc(x.w)}</div>`:""}<div class="btns">${right<N?`<button class="go alt" id="bkretry">Qayta</button>`:""}${nextB}</div>`; }
     A.innerHTML=head+(x.note?`<div class="bknote">${esc(x.note)}</div>`:"")+rows+foot;
     A.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ if(bdone) return; bsel[+b.dataset.r]=b.dataset.k; renderBkAns(); });
-    const c=document.getElementById("bkcheck"); if(c) c.onclick=()=>{ bdone=true; if(x.a.split("").every((L,r)=>bsel[r]===L)){ bMark(bsec,x.v); renderBkVars(); } renderBkAns(); };
+    const c=document.getElementById("bkcheck"); if(c) c.onclick=()=>{ bdone=true; bErrLog(bsec,bcur,x,bsel); if(x.a.split("").every((L,r)=>bsel[r]===L)){ bMark(bsec,x.v); renderBkVars(); } renderBkAns(); renderBkSec(); };
   } else {
     let after="";
     if(bdone){
@@ -1137,7 +1178,7 @@ function renderBkAns(){
 function openL1(){
   store("ht","K"); showBook(true);
   document.querySelectorAll("[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t==="K"));
-  renderBkSec(); openBkVar(+(store("bkv_"+bsec)||0)); fitBook();
+  bErrShow(false); renderBkSec(); openBkVar(+(store("bkv_"+bsec)||0)); fitBook();
 }
 // ===== MÜNDLICH (Teil 2 Diskussion)
 // {de} ichidagi so'zlar — kalit so'zlar (rangli)
