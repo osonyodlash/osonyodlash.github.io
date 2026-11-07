@@ -1664,10 +1664,35 @@ function renderCH(P){
   }
   P.querySelectorAll("[data-hm]").forEach(b=>b.onclick=()=>{ store("chhm",b.dataset.hm); renderC(); });
 }
+
+// ===== O'zgargan · Lesen 2 (yangi matnlar)
+const L2N=[{"v": "1", "t": "Nachtzug", "u": "Mara Himmelsfeld · Jonas Falk", "img": "l2n_1", "a": "bcbba", "k": ["Mitreisenden", "Gründen", "jüngsten Sohn", "Flugzeug", "Fliegen schneller"]}, {"v": "2", "t": "Kreuzfahrten", "u": "Küstenstädte · Einheimische", "img": "l2n_2", "a": "bccba", "k": ["Reiseprogramms", "Beeinträchtigungen", "Einheimische", "Luft verschmutzen", "Infrastruktur"]}, {"v": "3", "t": "Lebenslanges Lernen", "u": "Dr. Franz Schmidt · Super-Ager", "img": "l2n_3", "a": "caacb", "k": ["Bildung", "vielen alltäglichen", "ermöglicht es", "sind Neuem", "Lernen selbst"]}, {"v": "4", "t": "Dialekte", "u": "Bairisch · Sara Thiel · Hamburg", "img": "l2n_4", "a": "cabbb", "k": ["Berlinerisch", "Dialektsprechen", "Dialekte geben", "Seit 2010", "Sprachen Vorteile"]}, {"v": "5", "t": "Koffein", "u": "Konzentration · Ernährung", "img": "l2n_5", "a": "babca", "k": ["Herz", "Körper", "körperliche", "Flüssigkeitsgehalt im Körper", "Eine ausgewogene"]}, {"v": "6", "t": "Schule Futurum", "u": "Hans-Günther Rolff · Logbuch", "img": "l2n_6", "a": "ccaca", "k": ["Bei einem", "gemeinsam lernen", "gute Ausstattung", "Sie tragen", "Abschlusstest"]}, {"v": "7", "t": "Arved Fuchs", "u": "Nordpolexpedition 1989", "img": "l2n_7", "a": "abcbb", "k": ["Menschen dazu", "Natur", "Kulturen gemeinsam", "Natur", "Andere Jugendliche"]}];
+let l2c=+(store("l2nc")||0), l2sel=[null,null,null,null,null], l2done=false;
+function renderCL2(P){
+  if(l2c>=L2N.length) l2c=0;
+  const x=L2N[l2c], D=new Set((store("l2nd")||"").split(",").filter(Boolean)), im=chgImg(x.img);
+  let h=`<div class="bkvars cqvsel">${L2N.map((y,i)=>`<button data-l2v="${i}" class="${i===l2c?"on":""}${D.has(y.v)?" done":""}" style="${D.has(y.v)&&i!==l2c?"border-color:var(--ok);color:var(--ok)":""}">${esc(y.t)}</button>`).join("")}</div>
+  <div class="l1x-h"><span>${esc(x.t)}</span><small class="dsm">${esc(x.u)}</small></div>
+  ${im?`<a href="${im}" target="_blank" rel="noopener"><img class="khimg" src="${im}" alt="${esc(x.t)}"></a>`:`<p class="hint">Rasm yuklanmoqda…</p>`}
+  <div class="bkans" style="max-height:none">`;
+  h+=[...x.a].map((ans,r)=>{ const btns="abc".split("").map(L=>{ let c=""; if(l2done){ if(L===ans) c=l2sel[r]===L?"good":"miss"; else if(l2sel[r]===L) c="bad"; } else if(l2sel[r]===L) c="sel"; return `<button class="${c}" data-l2r="${r}" data-l2k="${L}">${L}</button>`; }).join("");
+    const key=l2done&&l2sel[r]!==ans?`<div class="l1key">To'g'ri: <b>${ans.toUpperCase()}</b> — kalit: <b>${esc(x.k[r])}</b></div>`:(l2done?`<div class="l1key">Kalit: <b>${esc(x.k[r])}</b></div>`:"");
+    return `<div class="l1row"><span class="l1n">${r+6}</span><div class="l1letters abc">${btns}</div>${key}</div>`; }).join("");
+  if(!l2done) h+=`<button class="go" id="l2chk" ${l2sel.some(v=>!v)?"disabled":""}>Tekshirish</button>`;
+  else { const right=[...x.a].filter((L,r)=>l2sel[r]===L).length; h+=`<p class="msg ${right===5?"ok":"no"}">${right}/5 to'g'ri</p><div class="btns">${right<5?`<button class="go alt" id="l2re">Qayta</button>`:""}<button class="go" id="l2nx">Keyingi matn</button></div>`; }
+  h+=`</div>`;
+  P.insertAdjacentHTML("beforeend",h);
+  P.querySelectorAll("[data-l2v]").forEach(b=>b.onclick=()=>{ l2c=+b.dataset.l2v; store("l2nc",String(l2c)); l2sel=[null,null,null,null,null]; l2done=false; renderC(); });
+  P.querySelectorAll("[data-l2k]").forEach(b=>b.onclick=()=>{ if(l2done) return; l2sel[+b.dataset.l2r]=b.dataset.l2k; renderC(); });
+  const c=document.getElementById("l2chk"); if(c) c.onclick=()=>{ l2done=true; if([...x.a].every((L,r)=>l2sel[r]===L)){ D.add(x.v); store("l2nd",[...D].join(",")); } renderC(); };
+  const re=document.getElementById("l2re"); if(re) re.onclick=()=>{ l2sel=[null,null,null,null,null]; l2done=false; renderC(); };
+  const nx=document.getElementById("l2nx"); if(nx) nx.onclick=()=>{ l2c=(l2c+1)%L2N.length; store("l2nc",String(l2c)); l2sel=[null,null,null,null,null]; l2done=false; renderC(); window.scrollTo(0,0); };
+}
 function renderC(){
   chgLoadImgs();
   const P=document.getElementById("chgp"); let mode=store("cqm")||"list"; const cs=store("chgs")||"L1";
-  const top=`<div class="tabs chgsec"><button data-cs="L1" class="${cs==="L1"?"on":""}">Lesen 1</button><button data-cs="H" class="${cs==="H"?"on":""}">Hören (yangi) <span class="tag" style="background:#ea580c;color:#fff;border-radius:5px;padding:0 5px;font-size:.7rem">${CHH.length}</span></button></div>`;
+  const top=`<div class="tabs chgsec"><button data-cs="L1" class="${cs==="L1"?"on":""}">Lesen 1</button><button data-cs="L2N" class="${cs==="L2N"?"on":""}">Lesen 2 <span class="tag" style="background:#ea580c;color:#fff;border-radius:5px;padding:0 5px;font-size:.7rem">${L2N.length}</span></button><button data-cs="H" class="${cs==="H"?"on":""}">Hören (yangi) <span class="tag" style="background:#ea580c;color:#fff;border-radius:5px;padding:0 5px;font-size:.7rem">${CHH.length}</span></button></div>`;
+  if(cs==="L2N"){ P.innerHTML=top; renderCL2(P); P.querySelectorAll("[data-cs]").forEach(b=>b.onclick=()=>{ store("chgs",b.dataset.cs); renderC(); }); return; }
   if(cs==="H"){ renderCH(P); P.insertAdjacentHTML("afterbegin",top); P.querySelectorAll("[data-cs]").forEach(b=>b.onclick=()=>{ store("chgs",b.dataset.cs); renderC(); }); return; }
   let h=top+`<div class="tabs"><button data-cm="list" class="${mode==="list"?"on":""}">Ro'yxat</button><button data-cm="quiz" class="${mode==="quiz"?"on":""}">Quiz</button></div>`;
   if(mode==="list"){
