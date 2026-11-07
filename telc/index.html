@@ -1594,7 +1594,7 @@ let _chgl=0;
 const chgImg=k=>(window.CHGIMG||{})[k]||"";
 function chgLoadImgs(){ if(window.CHGIMG||_chgl) return; _chgl=1; const sc=document.createElement("script"); sc.src="chgimg.js"; sc.onload=()=>{ if(!document.getElementById("chg").hidden) renderC(); }; document.head.appendChild(sc); }
 const chgImgBtn=(key,id)=>`<details class="chgimg"><summary>🖼 Rasmni ko'rsatish</summary>${chgImg(key)?`<img src="${chgImg(key)}" alt="matn">`:`<p class="hint">Yuklanmoqda…</p>`}</details>`;
-function cqItems(v){ v=v===undefined?(store("cqv")||""):v; const it=[]; CHG.filter(c=>!v||c.v===v).forEach(c=>{ const W=c.k.map(p=>p[1]); c.k.forEach((p,i)=>{ const ord=W.length>5?shuf([i,...shuf(W.map((_,j)=>j).filter(j=>j!==i&&W[j]!==W[i])).slice(0,4)]):shuf(W.map((_,j)=>j)); it.push({sec:c.sec,v:c.v,n:i+1,s:p[0],o:ord.map(j=>W[j]),k:ord.indexOf(i),nw:!!p[2],img:c.img?c.img[i]:null}); }); }); return it; }
+function cqItems(v){ v=v===undefined?(store("cqv")||""):v; const it=[]; CHG.filter(c=>!v||c.v===v).forEach(c=>{ const W=c.k.map(p=>p[1]); c.k.forEach((p,i)=>{ const sb=t=>t.replace(/^\d+\)\s*/,"").trim().toLowerCase(); const ord=W.length>5?shuf([i,...shuf(W.map((_,j)=>j).filter(j=>j!==i&&W[j]!==W[i]&&sb(c.k[j][0])!==sb(p[0]))).slice(0,4)]):shuf(W.map((_,j)=>j)); it.push({sec:c.sec,v:c.v,n:i+1,s:p[0],o:ord.map(j=>W[j]),k:ord.indexOf(i),nw:!!p[2],img:c.img?c.img[i]:null}); }); }); return it; }
 function startCQ(items){ CQ={list:shuf(items||cqItems()),i:0,right:0,wrong:[],pick:null,cv:store("cqv")||""}; saveCQ(); renderC(); }
 // ===== O'zgargan · Hören (yangi qo'shilganlar)
 // [teil, so'z, raqam, sarlavha, hikoya, bog'liq eski hikoya, diqqat]
