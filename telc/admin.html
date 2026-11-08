@@ -25,6 +25,8 @@ h2{font-size:14px;margin:18px 0 8px;color:var(--mu)}.msg{padding:40px 16px;text-
 .rk{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:11px 13px;margin-bottom:8px}.rk .t{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .rk .m{font-size:20px;width:34px;text-align:center;flex:none}.rk .nm{flex:1;font-weight:600}.rk .tx{font-size:13px;margin-top:6px;line-height:1.45}.rk .sc{font-size:12px;color:var(--mu);margin-top:4px}
 .mv{font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}.mv.up{background:#e3f6ea;color:var(--ok)}.mv.dn{background:#fbe5e5;color:var(--bad)}.mv.eq{background:var(--bg);color:var(--mu)}.mv.nw{background:#e6edff;color:var(--ac)}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.tc{background:var(--bg);border-radius:9px;padding:6px 4px;text-align:center}.tc small{display:block;font-size:11px;color:var(--mu)}.tc b{font-size:13px;white-space:nowrap}.tc.z b{color:#c3c9d6;font-weight:400}
+.ea{border-top:1px dashed var(--ln);margin-top:10px;padding-top:8px}.eah{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
 .rk.g1{border-color:#f5c542;background:#fffbea}.rk.g2{border-color:#c9ced8}.rk.g3{border-color:#e0a46b}
 </style></head><body>
 <header><h1>📊 telc B2 — admin</h1><div class="tabs"><button id="t1" class="on">👥 Foydalanuvchilar</button><button id="t3">🏆 Kunlik reyting</button><button id="t2">📅 Haftalik</button></div><div class="stats" id="stats"></div>
@@ -81,7 +83,7 @@ document.getElementById("q").oninput=render;document.getElementById("sort").onch
 let WK=[],WR=[],wsel=null,wopen=null;
 const pct=(o,b)=>o+b?Math.round(o*100/(o+b))+"%":"—";
 const wlab=d=>{const a=new Date(d+"T00:00:00"),e=new Date(a);e.setDate(a.getDate()+6);const f=x=>x.toLocaleDateString("uz-UZ",{day:"2-digit",month:"2-digit",year:"numeric"});return f(a)+" – "+f(e)};
-async function loadWeeks(){const r=await api("weeks");WK=r.weeks||[];if(!wsel)wsel=WK[0]||null;if(wsel)WR=(await api("week",{week:wsel})).rows||[];renderW()}
+async function loadWeeks(){const r=await api("weeks");WK=r.weeks||[];if(!wsel)wsel=WK[0]||null;if(wsel)WR=normWR((await api("week",{week:wsel})).rows||[]);renderW()}
 function renderW(){const el=document.getElementById("wmain");
  if(!WK.length){el.innerHTML=`<div class="msg">📅 Hali tayyor hisobot yo'q.<br><br>Hisobot har <b>dushanba</b> kuni soat 00:05 da o'tgan hafta (dushanba–yakshanba) bo'yicha avtomatik tuziladi.</div>`;return}
  const sect={},usr={};
@@ -97,23 +99,24 @@ function renderW(){const el=document.getElementById("wmain");
  ${UL.map(([id,u])=>`<tr data-wu="${id}" style="cursor:pointer"><td>${wopen==id?"▾":"▸"} ${esc(u.name)}${u.un?` <span class="s">@${esc(u.un)}</span>`:""}</td><td class="n">${dur(u.sec)}</td><td class="n ok">${u.ok}</td><td class="n no">${u.bad}</td><td class="n">${pct(u.ok,u.bad)}</td></tr>`+
    (wopen==id?u.S.sort((a,b)=>b.seconds-a.seconds).map(r=>`<tr class="sub"><td>&nbsp;&nbsp;${esc(r.sect)}</td><td class="n">${dur(r.seconds)}</td><td class="n">${r.ok}</td><td class="n">${r.bad}</td><td class="n">${pct(r.ok,r.bad)}</td></tr>`).join(""):"")).join("")}</table></div>
  <div class="s" style="text-align:center">Hisobot har dushanba 00:05 da avtomatik yangilanadi.</div>`;
- document.getElementById("wsel").onchange=async e=>{wsel=e.target.value;wopen=null;WR=(await api("week",{week:wsel})).rows||[];renderW()};
+ document.getElementById("wsel").onchange=async e=>{wsel=e.target.value;wopen=null;WR=normWR((await api("week",{week:wsel})).rows||[]);renderW()};
  el.querySelectorAll("[data-wu]").forEach(tr=>tr.onclick=()=>{wopen=wopen==tr.dataset.wu?null:tr.dataset.wu;renderW()});
 }
 
 // ---- Kunlik reyting ----
-let DD=[],dsel="live",DR=null;
+let DD=[],dsel="live",DR=null,dview="all";
 const MON=["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentyabr","oktyabr","noyabr","dekabr"];
 const dlab=d=>{const x=new Date(d+"T00:00:00");return x.getDate()+"-"+MON[x.getMonth()]};
 const dprev=d=>{const x=new Date(d+"T00:00:00");x.setDate(x.getDate()-1);return x.toISOString().slice(0,10)};
 async function loadDays(){const r=await api("days");DD=r.days||[];await loadDay()}
-async function loadDay(){DR=await api("day",dsel==="live"?{live:true}:{day:dsel});renderD()}
+async function loadDay(){DR=await api("day",dsel==="live"?{live:true}:{day:dsel});(DR.rows||[]).forEach(r=>{r.raw=r.sects||{};r.sects=mergeS(r.raw)});renderD()}
 function renderD(){const el=document.getElementById("dmain"),R=(DR&&DR.rows)||[],d=DR&&DR.day;
+ if(dview!=="all")return renderDView(el,R);
  const T=R.reduce((a,r)=>(a.ok+=r.ok,a.bad+=r.bad,a.sec+=r.seconds,a),{ok:0,bad:0,sec:0});
  const md=n=>n===1?"🥇":n===2?"🥈":n===3?"🥉":n+".";
  const mv=r=>r.prev_rank==null?`<span class="mv nw">🆕 yangi</span>`:r.prev_rank>r.rank?`<span class="mv up">⬆ +${r.prev_rank-r.rank}</span>`:r.prev_rank<r.rank?`<span class="mv dn">⬇ −${r.rank-r.prev_rank}</span>`:`<span class="mv eq">= o'zgarmadi</span>`;
  const mvT=r=>r.prev_rank==null?"":r.prev_rank>r.rank?` Oldingi kundan <b style="color:var(--ok)">${r.prev_rank-r.rank} pog'ona ko'tarildi</b> (${r.prev_rank}-o'rindan).`:r.prev_rank<r.rank?` Oldingi kundan <b style="color:var(--bad)">${r.rank-r.prev_rank} pog'ona tushdi</b> (${r.prev_rank}-o'rindan).`:` O'rni o'zgarmadi.`;
- el.innerHTML=`<div class="wk"><select id="dsel"><option value="live" ${dsel==="live"?"selected":""}>Bugun — davom etmoqda (21:00 da yopiladi)</option>${DD.map(x=>`<option value="${x}" ${x===dsel?"selected":""}>${dlab(x)} · ${dlab(dprev(x))} 21:00 – ${dlab(x)} 21:00</option>`).join("")}</select></div>
+ el.innerHTML=`${dselHTML()}${dviewTabs()}
  <div class="btns" style="margin:0 0 10px"><button class="g" id="dexp" style="flex:1;padding:10px;font-weight:600">📥 Jadvalni rasm qilib olish</button></div><div id="dexs" class="s" style="margin:-4px 0 10px"></div><div class="stats" style="margin-bottom:12px"><div class="st"><b>${R.length}</b>ishlagan</div><div class="st"><b class="ok">${T.ok}</b>to'g'ri</div><div class="st"><b class="no">${T.bad}</b>xato</div><div class="st"><b>${pct(T.ok,T.bad)}</b>natija</div><div class="st"><b>${dur(T.sec)}</b>vaqt</div></div>
  ${R.length?R.map(r=>{const S=Object.entries(r.sects||{}).filter(([,v])=>v[0]+v[1]>0).sort((a,b)=>(b[1][0]+b[1][1])-(a[1][0]+a[1][1]));
   const nm=esc(r.name||r.username||r.user_id);
@@ -121,8 +124,70 @@ function renderD(){const el=document.getElementById("dmain"),R=(DR&&DR.rows)||[]
   <div class="tx"><b>${nm}</b> — ${r.rank}-o'rin. ${dsel==="live"?"Bugun":"Shu kuni"} jami <b class="ok">${r.ok} ta to'g'ri</b>, <b class="no">${r.bad} ta xato</b>${S.length?" — "+S.map(([k,v])=>`${esc(k)} (✓${v[0]} ✕${v[1]})`).join(", "):""}.${mvT(r)}</div>
   <div class="sc">⏱ ${dur(r.seconds)} · natija ${pct(r.ok,r.bad)}</div></div>`}).join(""):`<div class="msg">${dsel==="live"?"Bugun hali hech kim test ishlamadi.":"Bu kunda natija yo'q."}</div>`}
  <div class="s" style="text-align:center;margin-top:8px">Kun har kuni 21:00 da yopiladi, 21:01 dan yangi kun boshlanadi. O'rin: to'g'ri javoblar soni bo'yicha (teng bo'lsa — kam xato).</div>`;
- document.getElementById("dexp").onclick=exportDay;document.getElementById("dsel").onchange=async e=>{dsel=e.target.value;el.innerHTML='<div class="msg">Yuklanmoqda…</div>';await loadDay()};
+ document.getElementById("dexp").onclick=exportDay;document.getElementById("dsel").onchange=async e=>{dsel=e.target.value;el.innerHTML='<div class="msg">Yuklanmoqda…</div>';await loadDay()};bindDTabs();
 }
+
+// ---- Hören / Lesen / Imtihon ko'rinishlari ----
+
+const fp=v=>String(Math.round(v*10)/10).replace(".",",");
+const exKey=k=>String(k).replace(/^imtihon\s*#\d+/i,"Imtihon");
+const mergeS=o=>{const m={};Object.entries(o||{}).forEach(([k,v])=>{const n=exKey(k),x=m[n]||(m[n]=[0,0]);x[0]+=v[0];x[1]+=v[1]});return m};
+const normWR=rows=>{const m={};rows.forEach(r=>{const k=r.user_id+"|"+exKey(r.sect),x=m[k];if(x){x.seconds+=r.seconds;x.ok+=r.ok;x.bad+=r.bad}else m[k]={...r,sect:exKey(r.sect)}});return Object.values(m)};
+const EXQ={L1:[5,5],L2:[5,5],L3:[10,2.5],H1:[5,5],H2:[10,2.5],H3:[5,5]}; // [savollar soni, har biri necha ball]
+const EXN={L1:"Lesen 1",L2:"Lesen 2",L3:"Lesen 3",H1:"Hören 1",H2:"Hören 2",H3:"Hören 3"};
+const EX_PASS=135, EX_MAXP=Object.values(EXQ).reduce((a,[n,p])=>a+n*p,0), EX_NQ=Object.values(EXQ).reduce((a,[n])=>a+n,0); // saytdagi o'tish bali bilan bir xil bo'lsin
+const isEx=k=>/^imtihon/i.test(k);
+const skillOf=k=>/h(ö|o)ren/i.test(k)?"H":/lesen/i.test(k)?"L":null;
+const teilOf=k=>{const m=k.match(/teil\s*(\d)/i)||k.match(/(\d)\s*$/);return m?+m[1]:0};
+function dselHTML(){return `<div class="wk"><select id="dsel"><option value="live" ${dsel==="live"?"selected":""}>Bugun — davom etmoqda (21:00 da yopiladi)</option>${DD.map(x=>`<option value="${x}" ${x===dsel?"selected":""}>${dlab(x)} · ${dlab(dprev(x))} 21:00 – ${dlab(x)} 21:00</option>`).join("")}</select></div>`}
+function dviewTabs(){const T=[["all","🏆 Umumiy"],["H","🎧 Hören"],["L","📖 Lesen"],["X","📝 Imtihon"]];
+ return `<div class="tabs" id="dvt">${T.map(([k,t])=>`<button data-v="${k}" class="${dview===k?"on":""}" style="font-size:13px;padding:8px 2px">${t}</button>`).join("")}</div>`}
+function bindDTabs(){const el=document.getElementById("dmain");
+ el.querySelectorAll("#dvt button").forEach(b=>b.onclick=()=>{dview=b.dataset.v;renderD()})}
+function bindDSel(el){const x=document.getElementById("dsel");if(x)x.onchange=async e=>{dsel=e.target.value;el.innerHTML='<div class="msg">Yuklanmoqda…</div>';await loadDay()};bindDTabs()}
+const medal=n=>n===1?"🥇":n===2?"🥈":n===3?"🥉":n+".";
+function rankRows(L,key){L.sort(key);let prev=null;L.forEach((r,i)=>{r.pos=prev&&prev.cmp===r.cmp?prev.pos:i+1;prev=r});return L}
+const nameOf=r=>`${esc(r.name||r.username||r.user_id)}${r.username?` <span class="s">@${esc(r.username)}</span>`:""}`;
+const cellHTML=(lab,ok,bad,extra)=>`<div class="tc ${ok+bad?"":"z"}"><small>${lab}</small><b>${ok+bad?`<span class="ok">✓${fp(ok)}</span> <span class="no">✕${fp(bad)}</span>`:"—"}</b>${extra||""}</div>`;
+function renderDView(el,R){
+ const head=dselHTML()+dviewTabs();
+ const empty=m=>{el.innerHTML=head+`<div class="msg">${m}</div>`;bindDSel(el)};
+ if(dview==="X")return renderDExam(el,R,head,empty);
+ const sk=dview,nm=sk==="H"?"Hören":"Lesen";
+ const L=[];
+ R.forEach(r=>{const t={1:[0,0],2:[0,0],3:[0,0]};let o=[0,0];
+  Object.entries(r.sects||{}).forEach(([k,v])=>{if(isEx(k)||skillOf(k)!==sk)return;const x=t[teilOf(k)]||o;x[0]+=v[0];x[1]+=v[1]});
+  const ok=t[1][0]+t[2][0]+t[3][0]+o[0],bad=t[1][1]+t[2][1]+t[3][1]+o[1];
+  if(ok+bad>0)L.push({r,t,ok,bad,cmp:ok+"/"+bad})});
+ rankRows(L,(a,b)=>b.ok-a.ok||a.bad-b.bad);
+ if(!L.length)return empty(dsel==="live"?`Bugun hali hech kim ${nm} ishlamadi.`:`Bu kunda ${nm} bo'yicha natija yo'q.`);
+ const T=L.reduce((a,x)=>(a.ok+=x.ok,a.bad+=x.bad,[1,2,3].forEach(i=>{a.t[i][0]+=x.t[i][0];a.t[i][1]+=x.t[i][1];if(x.t[i][0]+x.t[i][1])a.u[i]++}),a),{ok:0,bad:0,t:{1:[0,0],2:[0,0],3:[0,0]},u:{1:0,2:0,3:0}});
+ el.innerHTML=head+`<div class="stats" style="margin-bottom:12px"><div class="st"><b>${L.length}</b>ishlagan</div><div class="st"><b class="ok">${T.ok}</b>to'g'ri</div><div class="st"><b class="no">${T.bad}</b>xato</div><div class="st"><b>${pct(T.ok,T.bad)}</b>natija</div></div>
+ <div class="tw"><table class="grid"><tr><th>${nm}</th><th>Odam</th><th>✓</th><th>✕</th><th>%</th></tr>${[1,2,3].map(i=>`<tr><td>${nm} Teil ${i}</td><td class="n">${T.u[i]}</td><td class="n ok">${T.t[i][0]}</td><td class="n no">${T.t[i][1]}</td><td class="n">${pct(T.t[i][0],T.t[i][1])}</td></tr>`).join("")}</table></div>`+
+ L.map(x=>`<div class="rk ${x.pos<=3?"g"+x.pos:""}"><div class="t"><span class="m">${medal(x.pos)}</span><span class="nm">${nameOf(x.r)}</span><span class="mv eq"><b class="ok">✓${x.ok}</b> <b class="no">✕${x.bad}</b></span></div>
+ <div class="tg">${[1,2,3].map(i=>cellHTML(nm+" "+i,x.t[i][0],x.t[i][1])).join("")}</div><div class="sc">natija ${pct(x.ok,x.bad)}</div></div>`).join("")+
+ `<div class="s" style="text-align:center;margin-top:8px">Faqat ${nm} mashqlari (imtihon alohida hisoblanadi). Tartib: to'g'ri javoblar soni bo'yicha, teng bo'lsa — kam xato.</div>`;
+ bindDSel(el)}
+function examAttempts(r){
+ const G={};
+ Object.entries(r.raw||r.sects||{}).forEach(([k,v])=>{if(!isEx(k))return;const sk=skillOf(k),t=teilOf(k),id=sk&&t?sk+t:null;if(!id||!EXQ[id])return;
+  const m=k.match(/^imtihon\s*#(\d+)/i),key=m?m[1]:"old",g=G[key]||(G[key]={n:m?+m[1]:0,c:{},q:0}),x=g.c[id]||(g.c[id]=[0,0]);x[0]+=v[0];x[1]+=v[1];g.q+=v[0]+v[1]});
+ return Object.values(G).map(g=>{const att=g.n?1:Math.max(1,Math.round(g.q/EX_NQ));let pts=0;
+  const cells=Object.keys(EXQ).map(id=>{const [ok,bad]=g.c[id]||[0,0],a=ok/att,b=bad/att,p=a*EXQ[id][1];pts+=p;return {id,a,b,p}});
+  return {n:g.n,att,pts,pass:pts>=EX_PASS,cells}}).sort((a,b)=>a.n-b.n)}
+function renderDExam(el,R,head,empty){
+ const L=[];
+ R.forEach(r=>{const A=examAttempts(r);if(!A.length)return;const best=Math.max(...A.map(x=>x.pts));L.push({r,A,best,cmp:String(best)})});
+ rankRows(L,(a,b)=>b.best-a.best);
+ if(!L.length)return empty(dsel==="live"?"Bugun hali hech kim imtihon topshirmadi.":"Bu kunda imtihon topshirgan yo'q.");
+ const all=L.flatMap(x=>x.A),cnt=all.reduce((a,x)=>a+x.att,0),np=all.filter(x=>x.pass).reduce((a,x)=>a+x.att,0);
+ el.innerHTML=head+`<div class="stats" style="margin-bottom:12px"><div class="st"><b>${L.length}</b>o'quvchi</div><div class="st"><b>${cnt}</b>imtihon</div><div class="st"><b class="ok">${np}</b>o'tdi</div><div class="st"><b class="no">${cnt-np}</b>o'ta olmadi</div></div>`+
+ L.map(x=>`<div class="rk ${x.pos<=3?"g"+x.pos:""}"><div class="t"><span class="m">${medal(x.pos)}</span><span class="nm">${nameOf(x.r)}</span><span class="mv nw">📝 ${x.A.reduce((a,y)=>a+y.att,0)} ta imtihon</span></div>
+ ${x.A.map(y=>`<div class="ea"><div class="eah"><b>${y.n?y.n+"-imtihon":"Avvalgi hisob"+(y.att>1?` (${y.att} ta, o'rtacha)`:"")}</b><span class="mv ${y.pass?"up":"dn"}">${y.pass?"✅ O'tdi":"❌ O'ta olmadi"}</span></div>
+ <div class="tx"><b style="font-size:18px">${fp(y.pts)} / ${EX_MAXP} ball</b>${y.pass?"":` <span class="s">· yana ${fp(EX_PASS-y.pts)} ball yetishmadi</span>`}</div>
+ <div class="tg">${y.cells.map(c=>cellHTML(EXN[c.id],c.a,c.b,`<small>${fp(c.p)}/${fp(EXQ[c.id][0]*EXQ[c.id][1])} ball</small>`)).join("")}</div></div>`).join("")}</div>`).join("")+
+ `<div class="s" style="text-align:center;margin-top:8px">O'tish bali: ${EX_PASS} / ${EX_MAXP}. Har bir imtihon alohida ko'rsatilgan (n-imtihon — o'quvchining n-marta topshirgani). Savol ballari: Lesen 1, Lesen 2, Hören 1, Hören 3 — 5 ball; Lesen 3, Hören 2 — 2,5 ball. Tartib: eng yaxshi ball bo'yicha.</div>`;
+ bindDSel(el)}
 
 // ---- Reyting jadvali (rasm) ----
 const COLS=[["Hören 1",/h(ö|o)ren.*1/i],["Hören 2",/h(ö|o)ren.*2/i],["Hören 3",/h(ö|o)ren.*3/i],["Lesen 1",/lesen.*1/i],["Lesen 2",/lesen.*2/i],["Lesen 3",/lesen.*3/i],["Sprachb.",/sprach/i]];
