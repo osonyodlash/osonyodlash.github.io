@@ -4,7 +4,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:#f4f6fb;--card:#fff;--tx:#1b2333;--mu:#6b7489;--ln:#e3e7f0;--ac:#3b6ef5;--ok:#1f9d55;--bad:#d64545}
-*{box-sizing:border-box}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
 header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--ln);padding:12px 16px;z-index:2}
 h1{font-size:17px;margin:0 0 8px}.stats{display:flex;gap:8px;flex-wrap:wrap}.st{background:var(--bg);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--mu)}.st b{display:block;font-size:16px;color:var(--tx)}
 .tools{display:flex;gap:8px;margin-top:10px}input,select{flex:1;padding:9px 10px;border:1px solid var(--ln);border-radius:9px;font:inherit;background:#fff;min-width:0}
@@ -18,10 +18,14 @@ main{padding:12px 16px 40px;max-width:900px;margin:0 auto}
 .btns .r{color:var(--bad);border-color:#f0c4c4}.btns .g{color:var(--ok);border-color:#bfe3cc}
 .sec{font-size:12px;color:var(--mu);margin:6px 0}.sec span{display:inline-block;background:var(--bg);border-radius:6px;padding:2px 7px;margin:2px}
 h2{font-size:14px;margin:18px 0 8px;color:var(--mu)}.msg{padding:40px 16px;text-align:center;color:var(--mu)}
+.tabs{display:flex;gap:6px;margin-bottom:10px}.tabs button{flex:1;border:1px solid var(--ln);background:#fff;border-radius:9px;padding:8px;font:inherit;cursor:pointer}.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.wk{display:flex;align-items:center;gap:8px;margin:4px 0 12px}.wk select{flex:1}
+.grid{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--ln);border-radius:12px;overflow:hidden;font-size:13px}.grid th,.grid td{padding:8px;border-bottom:1px solid var(--ln);text-align:left}.grid th{background:var(--bg);font-size:12px;color:var(--mu)}.grid td.n{text-align:right;white-space:nowrap}
+.ok{color:var(--ok);font-weight:600}.no{color:var(--bad);font-weight:600}.sub td{font-size:12px;color:var(--mu);background:#fafbfe}.tw{overflow-x:auto;margin-bottom:16px}
 </style></head><body>
-<header><h1>📊 telc B2 — foydalanuvchilar</h1><div class="stats" id="stats"></div>
-<div class="tools"><input id="q" placeholder="Ism yoki @username…"><select id="sort"><option value="last">Oxirgi kirish</option><option value="time">Ko'p vaqt</option><option value="visits">Ko'p kirish</option><option value="first">Yangi qo'shilgan</option></select></div></header>
-<main id="main"><div class="msg">Yuklanmoqda…</div></main>
+<header><h1>📊 telc B2 — admin</h1><div class="tabs"><button id="t1" class="on">👥 Foydalanuvchilar</button><button id="t2">📅 Haftalik hisobot</button></div><div class="stats" id="stats"></div>
+<div class="tools" id="tools"><input id="q" placeholder="Ism yoki @username…"><select id="sort"><option value="last">Oxirgi kirish</option><option value="time">Ko'p vaqt</option><option value="visits">Ko'p kirish</option><option value="first">Yangi qo'shilgan</option></select></div></header>
+<main id="main"><div class="msg">Yuklanmoqda…</div></main><main id="wmain" hidden></main>
 <script>
 const FN="https://hveicvjjqiehjxkwqobr.supabase.co/functions/v1/tg/admin";
 const W=window.Telegram&&Telegram.WebApp;try{W.ready();W.expand()}catch(e){}
@@ -67,5 +71,33 @@ async function detail(id){
 }
 document.getElementById("main").addEventListener("click",e=>{const c=e.target.closest(".u[data-id]");if(!c||e.target.closest(".det"))return;open=open==c.dataset.id?null:c.dataset.id;render()});
 document.getElementById("q").oninput=render;document.getElementById("sort").onchange=render;
+
+// ---- Haftalik hisobot ----
+let WK=[],WR=[],wsel=null,wopen=null;
+const pct=(o,b)=>o+b?Math.round(o*100/(o+b))+"%":"—";
+const wlab=d=>{const a=new Date(d+"T00:00:00"),e=new Date(a);e.setDate(a.getDate()+6);const f=x=>x.toLocaleDateString("uz-UZ",{day:"2-digit",month:"2-digit",year:"numeric"});return f(a)+" – "+f(e)};
+async function loadWeeks(){const r=await api("weeks");WK=r.weeks||[];if(!wsel)wsel=WK[0]||null;if(wsel)WR=(await api("week",{week:wsel})).rows||[];renderW()}
+function renderW(){const el=document.getElementById("wmain");
+ if(!WK.length){el.innerHTML=`<div class="msg">📅 Hali tayyor hisobot yo'q.<br><br>Hisobot har <b>dushanba</b> kuni soat 00:05 da o'tgan hafta (dushanba–yakshanba) bo'yicha avtomatik tuziladi.</div>`;return}
+ const sect={},usr={};
+ WR.forEach(r=>{const s=sect[r.sect]||(sect[r.sect]={u:new Set(),sec:0,ok:0,bad:0});s.u.add(r.user_id);s.sec+=r.seconds;s.ok+=r.ok;s.bad+=r.bad;
+  const u=usr[r.user_id]||(usr[r.user_id]={name:r.name||r.username||r.user_id,un:r.username,sec:0,ok:0,bad:0,S:[]});u.sec+=r.seconds;u.ok+=r.ok;u.bad+=r.bad;u.S.push(r)});
+ const SL=Object.entries(sect).sort((a,b)=>b[1].sec-a[1].sec),UL=Object.entries(usr).sort((a,b)=>b[1].sec-a[1].sec);
+ const T=UL.reduce((a,[,u])=>(a.sec+=u.sec,a.ok+=u.ok,a.bad+=u.bad,a),{sec:0,ok:0,bad:0});
+ el.innerHTML=`<div class="wk"><select id="wsel">${WK.map(w=>`<option value="${w}" ${w===wsel?"selected":""}>${wlab(w)}</option>`).join("")}</select></div>
+ <div class="stats" style="margin-bottom:12px"><div class="st"><b>${UL.length}</b>ishlagan o'quvchi</div><div class="st"><b>${dur(T.sec)}</b>umumiy vaqt</div><div class="st"><b class="ok">${T.ok}</b>to'g'ri</div><div class="st"><b class="no">${T.bad}</b>xato</div><div class="st"><b>${pct(T.ok,T.bad)}</b>natija</div></div>
+ <h2>📚 Bo'limlar (Teil) bo'yicha</h2><div class="tw"><table class="grid"><tr><th>Bo'lim</th><th>Odam</th><th>Vaqt</th><th>✓</th><th>✕</th><th>%</th></tr>
+ ${SL.map(([k,s])=>`<tr><td>${esc(k)}</td><td class="n">${s.u.size}</td><td class="n">${dur(s.sec)}</td><td class="n ok">${s.ok}</td><td class="n no">${s.bad}</td><td class="n">${pct(s.ok,s.bad)}</td></tr>`).join("")}</table></div>
+ <h2>👥 O'quvchilar bo'yicha</h2><div class="tw"><table class="grid"><tr><th>O'quvchi</th><th>Vaqt</th><th>✓</th><th>✕</th><th>%</th></tr>
+ ${UL.map(([id,u])=>`<tr data-wu="${id}" style="cursor:pointer"><td>${wopen==id?"▾":"▸"} ${esc(u.name)}${u.un?` <span class="s">@${esc(u.un)}</span>`:""}</td><td class="n">${dur(u.sec)}</td><td class="n ok">${u.ok}</td><td class="n no">${u.bad}</td><td class="n">${pct(u.ok,u.bad)}</td></tr>`+
+   (wopen==id?u.S.sort((a,b)=>b.seconds-a.seconds).map(r=>`<tr class="sub"><td>&nbsp;&nbsp;${esc(r.sect)}</td><td class="n">${dur(r.seconds)}</td><td class="n">${r.ok}</td><td class="n">${r.bad}</td><td class="n">${pct(r.ok,r.bad)}</td></tr>`).join(""):"")).join("")}</table></div>
+ <div class="s" style="text-align:center">Hisobot har dushanba 00:05 da avtomatik yangilanadi.</div>`;
+ document.getElementById("wsel").onchange=async e=>{wsel=e.target.value;wopen=null;WR=(await api("week",{week:wsel})).rows||[];renderW()};
+ el.querySelectorAll("[data-wu]").forEach(tr=>tr.onclick=()=>{wopen=wopen==tr.dataset.wu?null:tr.dataset.wu;renderW()});
+}
+function tab(n){document.getElementById("t1").classList.toggle("on",n===1);document.getElementById("t2").classList.toggle("on",n===2);
+ document.getElementById("main").hidden=n!==1;document.getElementById("tools").hidden=n!==1;document.getElementById("stats").hidden=n!==1;document.getElementById("wmain").hidden=n!==2;
+ if(n===2){document.getElementById("wmain").innerHTML='<div class="msg">Yuklanmoqda…</div>';loadWeeks()}}
+document.getElementById("t1").onclick=()=>tab(1);document.getElementById("t2").onclick=()=>tab(2);
 load();setInterval(load,60000);
 </script></body></html>

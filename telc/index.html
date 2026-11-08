@@ -27,10 +27,19 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
 var last=Date.now(),dead=false;
 ["copy","cut","contextmenu","dragstart"].forEach(function(e){document.addEventListener(e,function(x){if(!(x.target.closest&&x.target.closest("input,textarea")))x.preventDefault()},true)});
 var sh=document.getElementById("__sh");function cov(v){if(sh)sh.style.display=v?"block":"none"}
-function sect(){var b=document.querySelector("[data-t].on");var h=document.getElementById("h");return ((b&&b.textContent)||(h&&h.textContent)||"").trim().slice(0,60)}
+function sect(){var g=document.querySelector("#drw .dg.on span"),d=document.querySelector("#drw .dsub.open .ds.on"),h=document.getElementById("h");var t=(g?g.textContent.trim():"")+(d?" · "+d.textContent.trim():"");return (t||(h&&h.textContent)||"").trim().slice(0,60)}
+var A={},seen=new Set();
+function marks(){return [].filter.call(document.querySelectorAll("button.good,button.bad,button.miss"),function(e){return !e.closest("#drw")})}
+function scan(count,k){var els=marks();if(!els.length){seen.clear();return}var cs=new Set();els.forEach(function(e){cs.add(e.parentElement)});
+ cs.forEach(function(c){var sig=[].map.call(c.children,function(x){return x.className+":"+x.textContent}).join("|").slice(0,600);if(seen.has(sig))return;seen.add(sig);if(!count)return;
+ var r=A[k]||(A[k]=[0,0]);if(c.querySelector(".bad,.miss"))r[1]++;else r[0]++;})}
+function hit(){var k=sect();scan(false);setTimeout(function(){scan(sect()===k,k)},150);setTimeout(function(){scan(sect()===k,k)},700)}
+document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("button"))hit()},true);
+document.addEventListener("keydown",function(e){if(e.key==="Enter")hit()},true);
+scan(false);
 function lock(t){dead=true;document.body.innerHTML='<div id="__lk">'+t+'</div>';}
 function ping(beacon){if(dead)return;var now=Date.now(),sec=Math.round((now-last)/1000);last=now;if(document.visibilityState!=="visible"&&!beacon)return;
- var body=JSON.stringify({uid:C.uid,vid:C.vid,sid:C.sid,sec:Math.min(sec,120),sect:sect()});
+ var body=JSON.stringify({uid:C.uid,vid:C.vid,sid:C.sid,sec:Math.min(sec,120),sect:sect(),ans:A});A={};
  if(beacon&&navigator.sendBeacon){navigator.sendBeacon(C.fn+"/ping",new Blob([body],{type:"text/plain"}));return}
  fetch(C.fn+"/ping",{method:"POST",headers:{"content-type":"text/plain"},body:body,keepalive:true}).then(function(r){return r.json()}).then(function(j){
   if(j.s==="kick")lock("📱 Bu akkaunt boshqa qurilmada ochildi.<br>Bu yerda sessiya yopildi.");
