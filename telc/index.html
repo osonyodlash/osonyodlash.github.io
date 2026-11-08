@@ -21,10 +21,10 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
   if(r.err==="blocked") return show("⛔ Kirish cheklangan. Ustozingizga murojaat qiling.");
   if(!r.ok) return show("⚠️ Xatolik: "+(r.msg||r.err||"")+"<br>Keyinroq qayta urinib ko'ring.");
   const C={fn:FN,uid:r.uid,vid:r.vid,sid:r.sid};
-  const tag=(r.name+(r.un?" @"+r.un:"")+" · "+r.uid).replace(/[<>&"]/g,"");
-  const inj=`<div id="__wm" aria-hidden="true"></div><style>#__wm{position:fixed;inset:-50%;z-index:2147483646;pointer-events:none;opacity:.07;transform:rotate(-28deg);font:600 15px sans-serif;color:#000;white-space:pre;line-height:90px;overflow:hidden;word-spacing:60px}#__lk{position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font:16px sans-serif;padding:24px}</style>
+  const tag=(r.un?"@"+r.un:r.name).replace(/[<>&"]/g,"");
+  const inj=`<div id="__wm" aria-hidden="true"></div><style>#__wm{position:fixed;inset:-50%;z-index:2147483646;pointer-events:none;opacity:.035;transform:rotate(-28deg);font:600 13px sans-serif;color:#000;white-space:pre;line-height:160px;overflow:hidden;word-spacing:140px}#__lk{position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font:16px sans-serif;padding:24px}</style>
 <script>(function(){var C=${JSON.stringify(C)},T=${JSON.stringify(tag)};
-var w=document.getElementById("__wm"),line=(T+"      ").repeat(8),s="";for(var i=0;i<40;i++)s+=line+"\\n";w.textContent=s;
+var w=document.getElementById("__wm"),line=(T+"              ").repeat(5),s="";for(var i=0;i<25;i++)s+=line+"\\n";w.textContent=s;
 var last=Date.now(),dead=false;
 function sect(){var b=document.querySelector("[data-t].on");var h=document.getElementById("h");return ((b&&b.textContent)||(h&&h.textContent)||"").trim().slice(0,60)}
 function lock(t){dead=true;document.body.innerHTML='<div id="__lk">'+t+'</div>';}
