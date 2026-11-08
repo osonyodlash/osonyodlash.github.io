@@ -23,12 +23,15 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
   const show=(h)=>{m.innerHTML=h};
   const W=window.Telegram&&Telegram.WebApp; const init=W?W.initData:"";
   try{W&&W.ready();W&&W.expand();}catch(e){}
+  const fam=(location.hash.match(/[#&]k=([\w-]+)/)||[])[1]||"";
   let r;
-  try{ r=await (await fetch(FN+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:init,plat:W?W.platform:"web"})})).json(); }
+  try{ r=await (await fetch(FN+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(fam?{fam}:{initData:init,plat:W?W.platform:"web"})})).json(); }
   catch(e){ return show("⚠️ Internet aloqasini tekshiring va qayta oching."); }
   if(r.err==="notg") return show("🔒 Bu sayt faqat Telegram bot orqali ochiladi."+(r.bot?`<br><a class="b" href="https://t.me/${r.bot}">@${r.bot} ni ochish</a>`:""));
   if(r.err==="notmember") return show("🔒 Siz o'quvchilar guruhi a'zosi emassiz.<br><br>Ustozingizga murojaat qiling.");
   if(r.err==="blocked") return show("⛔ Kirish cheklangan. Ustozingizga murojaat qiling.");
+  if(r.err==="badlink") return show("🔒 Havola eskirgan yoki noto'g'ri.");
+  if(r.ok&&r.fam){ document.open(); document.write(r.html); document.close(); return; }
   if(!r.ok) return show("⚠️ Xatolik: "+(r.msg||r.err||"")+"<br>Keyinroq qayta urinib ko'ring.");
   const C={fn:FN,uid:r.uid,vid:r.vid,sid:r.sid};
   const tag=(r.un?"@"+r.un:r.name).replace(/[<>&"]/g,"");
