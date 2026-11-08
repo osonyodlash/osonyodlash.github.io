@@ -33,6 +33,7 @@ h2{font-size:14px;margin:18px 0 8px;color:var(--mu)}.msg{padding:40px 16px;text-
 <script>
 const FN="https://hveicvjjqiehjxkwqobr.supabase.co/functions/v1/tg/admin";
 const W=window.Telegram&&Telegram.WebApp;try{W.ready();W.expand()}catch(e){}
+  try{if(W&&/^(tdesktop|macos|weba|webk|web|unigram)$/.test(W.platform)&&W.isVersionAtLeast&&W.isVersionAtLeast("8.0")&&!W.isFullscreen)W.requestFullscreen();}catch(e){}
 const api=(op,x={})=>fetch(FN,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:W?W.initData:"",op,...x})}).then(r=>r.json());
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const dur=s=>{s=s||0;const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?`${h} soat ${m} daq`:m?`${m} daq`:`${s} s`};
