@@ -83,7 +83,7 @@ function hit(){var k=sect(),t0=Date.now();scan(false);function f(){scan(sect()==
 try{new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(n){if(n.nodeType!==1)return;var els=n.matches&&n.matches(".msg.ok,.msg.no")?[n]:[].slice.call(n.querySelectorAll?n.querySelectorAll(".msg.ok,.msg.no"):[]);
  els.forEach(function(el){if(el.closest("#xv"))return;var t=el.textContent;if(!/To'g'ri|Xato/.test(t)||/tugadi|Bitta ham/.test(t))return;msgAt=Date.now();add(sect(),el.classList.contains("ok")?1:0,el.classList.contains("no")?1:0)})})})}).observe(document.body,{childList:true,subtree:true})}catch(e){}
 try{if(typeof renderXRes==="function"){var _rx=renderXRes;renderXRes=function(){var r=_rx.apply(this,arguments);try{var js=JSON.stringify(EX),h=0;for(var i=0;i<js.length;i++)h=(h*31+js.charCodeAt(i))|0;var L=[];try{L=JSON.parse(localStorage.getItem("telc_exc")||"[]")}catch(e){}
- if(L.indexOf(h)<0){L.push(h);while(L.length>60)L.shift();try{localStorage.setItem("telc_exc",JSON.stringify(L))}catch(e){}EXS.forEach(function(x){var sc=exScore(x[0]);add("Imtihon · "+x[1],sc[0],sc[1]-sc[0])})}}catch(e){}return r}}}catch(e){}
+ if(L.indexOf(h)<0){L.push(h);while(L.length>60)L.shift();try{localStorage.setItem("telc_exc",JSON.stringify(L))}catch(e){}var en=1;try{en=exHist().length||1}catch(e){}EXS.forEach(function(x){var sc=exScore(x[0]);add("Imtihon #"+en+" · "+x[1],sc[0],sc[1]-sc[0])})}}catch(e){}return r}}}catch(e){}
 document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("button"))hit()},true);
 document.addEventListener("keydown",function(e){if(e.key==="Enter")hit()},true);
 scan(false);
