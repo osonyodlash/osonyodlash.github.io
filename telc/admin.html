@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>telc B2 · Admin</title><meta name="robots" content="noindex">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1b2333;--mu:#6b7489;--ln:#e3e7f0;--ac:#3b6ef5;--ok:#1f9d55;--bad:#d64545}
+*{box-sizing:border-box}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx)}
+header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--ln);padding:12px 16px;z-index:2}
+h1{font-size:17px;margin:0 0 8px}.stats{display:flex;gap:8px;flex-wrap:wrap}.st{background:var(--bg);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--mu)}.st b{display:block;font-size:16px;color:var(--tx)}
+.tools{display:flex;gap:8px;margin-top:10px}input,select{flex:1;padding:9px 10px;border:1px solid var(--ln);border-radius:9px;font:inherit;background:#fff;min-width:0}
+main{padding:12px 16px 40px;max-width:900px;margin:0 auto}
+.u{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:11px 13px;margin-bottom:8px;cursor:pointer}
+.u .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.u .n{font-weight:600}.u .s{font-size:12px;color:var(--mu);margin-top:3px}
+.bd{font-size:11px;padding:2px 7px;border-radius:20px;background:var(--bg);color:var(--mu);white-space:nowrap}.bd.on{background:#e3f6ea;color:var(--ok)}.bd.x{background:#fbe5e5;color:var(--bad)}.bd.a{background:#e6edff;color:var(--ac)}
+.det{margin-top:10px;border-top:1px dashed var(--ln);padding-top:10px;cursor:default}
+.det table{width:100%;border-collapse:collapse;font-size:12px}.det td,.det th{padding:4px 6px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.btns button{border:1px solid var(--ln);background:#fff;border-radius:8px;padding:7px 10px;font:inherit;cursor:pointer}
+.btns .r{color:var(--bad);border-color:#f0c4c4}.btns .g{color:var(--ok);border-color:#bfe3cc}
+.sec{font-size:12px;color:var(--mu);margin:6px 0}.sec span{display:inline-block;background:var(--bg);border-radius:6px;padding:2px 7px;margin:2px}
+h2{font-size:14px;margin:18px 0 8px;color:var(--mu)}.msg{padding:40px 16px;text-align:center;color:var(--mu)}
+</style></head><body>
+<header><h1>📊 telc B2 — foydalanuvchilar</h1><div class="stats" id="stats"></div>
+<div class="tools"><input id="q" placeholder="Ism yoki @username…"><select id="sort"><option value="last">Oxirgi kirish</option><option value="time">Ko'p vaqt</option><option value="visits">Ko'p kirish</option><option value="first">Yangi qo'shilgan</option></select></div></header>
+<main id="main"><div class="msg">Yuklanmoqda…</div></main>
+<script>
+const FN="https://hveicvjjqiehjxkwqobr.supabase.co/functions/v1/tg/admin";
+const W=window.Telegram&&Telegram.WebApp;try{W.ready();W.expand()}catch(e){}
+const api=(op,x={})=>fetch(FN,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:W?W.initData:"",op,...x})}).then(r=>r.json());
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dur=s=>{s=s||0;const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?`${h} soat ${m} daq`:m?`${m} daq`:`${s} s`};
+const dt=d=>{if(!d)return"—";const x=new Date(d);return x.toLocaleString("uz-UZ",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})};
+const ago=d=>{if(!d)return"hech qachon";const m=(Date.now()-new Date(d))/60000;return m<3?"hozir onlayn":m<60?Math.round(m)+" daq oldin":m<1440?Math.round(m/60)+" soat oldin":Math.round(m/1440)+" kun oldin"};
+let D={users:[]},open=null;
+async function load(){const r=await api("list");if(r.err){document.getElementById("main").innerHTML=`<div class="msg">${r.err==="notadmin"?"⛔ Siz admin emassiz":"⚠️ Panelni bot ichidan oching (/panel)"}</div>`;return}D=r;render()}
+function render(){
+  const U=D.users||[],now=Date.now();
+  const on=U.filter(u=>u.last_seen&&now-new Date(u.last_seen)<180000).length,today=U.filter(u=>u.last_seen&&now-new Date(u.last_seen)<86400000).length;
+  const tot=U.reduce((a,u)=>a+(u.seconds||0),0);
+  document.getElementById("stats").innerHTML=`<div class="st"><b>${U.length}</b>jami</div><div class="st"><b>${on}</b>onlayn</div><div class="st"><b>${today}</b>bugun</div><div class="st"><b>${dur(tot)}</b>umumiy vaqt</div><div class="st"><b>${(D.groups||[]).length}</b>guruh</div>`;
+  const q=document.getElementById("q").value.trim().toLowerCase(),so=document.getElementById("sort").value;
+  let L=U.filter(u=>!q||`${u.first_name} ${u.last_name} ${u.username} ${u.id}`.toLowerCase().includes(q));
+  const k={last:u=>-(new Date(u.last_seen||0)),time:u=>-(u.seconds||0),visits:u=>-(u.visits||0),first:u=>-(new Date(u.first_seen))}[so];L.sort((a,b)=>k(a)-k(b));
+  let h=L.map(u=>{const nm=esc([u.first_name,u.last_name].filter(Boolean).join(" ")||u.id),onl=u.last_seen&&now-new Date(u.last_seen)<180000;
+    return `<div class="u" data-id="${u.id}"><div class="t"><div><span class="n">${nm}</span> ${u.username?`<span class="s">@${esc(u.username)}</span>`:""}</div><div>${u.is_admin?'<span class="bd a">admin</span> ':""}${u.blocked?'<span class="bd x">bloklangan</span>':onl?'<span class="bd on">onlayn</span>':`<span class="bd">${ago(u.last_seen)}</span>`}</div></div>
+    <div class="s">🔁 ${u.visits||0} marta · ⏱ ${dur(u.seconds)} · 📍 ${esc(u.last_section||"—")}${u.member_status&&u.member_status!=="member"&&!u.is_admin?` · <span style="color:var(--bad)">guruhda emas</span>`:""}</div>
+    ${open==u.id?`<div class="det" id="det"></div>`:""}</div>`}).join("")||'<div class="msg">Hali hech kim kirmagan</div>';
+  if((D.denied||[]).length)h+=`<h2>🚫 Kirolmaganlar (guruhda emas)</h2>`+D.denied.slice(0,20).map(d=>`<div class="u" style="cursor:default"><div class="t"><span>${esc(d.name)} ${d.username?"@"+esc(d.username):""}</span><span class="bd">${dt(d.at)}</span></div></div>`).join("");
+  document.getElementById("main").innerHTML=h;
+  if(open)detail(open);
+}
+async function detail(id){
+  const u=D.users.find(x=>x.id==id),el=document.getElementById("det");if(!el)return;
+  el.innerHTML="…";const r=await api("user",{id});const V=r.visits||[];
+  const sec={};V.forEach(v=>Object.entries(v.sections||{}).forEach(([k,s])=>sec[k]=(sec[k]||0)+s));
+  const top=Object.entries(sec).sort((a,b)=>b[1]-a[1]);
+  el.innerHTML=`<div class="s">ID: ${u.id} · Birinchi kirish: ${dt(u.first_seen)} · Oxirgi: ${dt(u.last_seen)} · ${esc(u.last_platform||"")}</div>
+  <div class="btns">${u.blocked?`<button class="g" data-a="unblock">✅ Blokdan chiqarish</button>`:`<button class="r" data-a="block">⛔ Bloklash</button>`}
+  <button data-a="kick">📴 Sessiyani yopish</button>
+  ${u.allowed?`<button data-a="unallow">Ruxsatni olish</button>`:`<button data-a="allow" title="Guruhda bo'lmasa ham kira oladi">➕ Guruhsiz ruxsat</button>`}
+  ${u.is_admin?`<button class="r" data-a="unadmin">Adminlikdan olish</button>`:`<button data-a="admin">👑 Admin qilish</button>`}</div>
+  ${top.length?`<div class="sec"><b>Bo'limlar bo'yicha vaqt:</b><br>${top.map(([k,s])=>`<span>${esc(k)} — ${dur(s)}</span>`).join("")}</div>`:""}
+  <table><tr><th>Kirish</th><th>Davomiyligi</th><th>Qurilma</th></tr>${V.slice(0,40).map(v=>`<tr><td>${dt(v.started_at)}</td><td>${dur(v.seconds)}</td><td>${esc(v.platform||"")}</td></tr>`).join("")}</table>`;
+  el.onclick=async e=>{e.stopPropagation();const a=e.target.dataset.a;if(!a)return;
+    const m={block:["blocked",1],unblock:["blocked",0],allow:["allowed",1],unallow:["allowed",0],admin:["is_admin",1],unadmin:["is_admin",0]}[a];
+    if(a==="kick")await api("kick",{id});else await api("set",{id,field:m[0],val:!!m[1]});
+    try{W.HapticFeedback.notificationOccurred("success")}catch(e){}await load();};
+}
+document.getElementById("main").addEventListener("click",e=>{const c=e.target.closest(".u[data-id]");if(!c||e.target.closest(".det"))return;open=open==c.dataset.id?null:c.dataset.id;render()});
+document.getElementById("q").oninput=render;document.getElementById("sort").onchange=render;
+load();setInterval(load,60000);
+</script></body></html>
