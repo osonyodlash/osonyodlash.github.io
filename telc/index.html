@@ -46,7 +46,12 @@ function marks(){return [].filter.call(document.querySelectorAll("button.good,bu
 function scan(count,k){var els=marks();if(!els.length){seen.clear();return}var cs=new Set();els.forEach(function(e){cs.add(e.parentElement)});
  cs.forEach(function(c){var sig=[].map.call(c.children,function(x){return x.className+":"+x.textContent}).join("|").slice(0,600);if(seen.has(sig))return;seen.add(sig);if(!count)return;
  var r=A[k]||(A[k]=[0,0]);if(c.querySelector(".bad,.miss"))r[1]++;else r[0]++;})}
-function hit(){var k=sect();scan(false);setTimeout(function(){scan(sect()===k,k)},150);setTimeout(function(){scan(sect()===k,k)},700)}
+var msgAt=0;function add(k,o,x){if(!(o+x))return;var r=A[k]||(A[k]=[0,0]);r[0]+=o;r[1]+=x}
+function hit(){var k=sect(),t0=Date.now();scan(false);function f(){scan(sect()===k&&msgAt<t0,k)}setTimeout(f,150);setTimeout(f,700)}
+try{new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(n){if(n.nodeType!==1)return;var els=n.matches&&n.matches(".msg.ok,.msg.no")?[n]:[].slice.call(n.querySelectorAll?n.querySelectorAll(".msg.ok,.msg.no"):[]);
+ els.forEach(function(el){if(el.closest("#xv"))return;var t=el.textContent;if(!/To'g'ri|Xato/.test(t)||/tugadi|Bitta ham/.test(t))return;msgAt=Date.now();add(sect(),el.classList.contains("ok")?1:0,el.classList.contains("no")?1:0)})})})}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+try{if(typeof renderXRes==="function"){var _rx=renderXRes;renderXRes=function(){var r=_rx.apply(this,arguments);try{var js=JSON.stringify(EX),h=0;for(var i=0;i<js.length;i++)h=(h*31+js.charCodeAt(i))|0;var L=[];try{L=JSON.parse(localStorage.getItem("telc_exc")||"[]")}catch(e){}
+ if(L.indexOf(h)<0){L.push(h);while(L.length>60)L.shift();try{localStorage.setItem("telc_exc",JSON.stringify(L))}catch(e){}EXS.forEach(function(x){var sc=exScore(x[0]);add("Imtihon · "+x[1],sc[0],sc[1]-sc[0])})}}catch(e){}return r}}}catch(e){}
 document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("button"))hit()},true);
 document.addEventListener("keydown",function(e){if(e.key==="Enter")hit()},true);
 scan(false);
