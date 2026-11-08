@@ -22,10 +22,14 @@ h2{font-size:14px;margin:18px 0 8px;color:var(--mu)}.msg{padding:40px 16px;text-
 .wk{display:flex;align-items:center;gap:8px;margin:4px 0 12px}.wk select{flex:1}
 .grid{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--ln);border-radius:12px;overflow:hidden;font-size:13px}.grid th,.grid td{padding:8px;border-bottom:1px solid var(--ln);text-align:left}.grid th{background:var(--bg);font-size:12px;color:var(--mu)}.grid td.n{text-align:right;white-space:nowrap}
 .ok{color:var(--ok);font-weight:600}.no{color:var(--bad);font-weight:600}.sub td{font-size:12px;color:var(--mu);background:#fafbfe}.tw{overflow-x:auto;margin-bottom:16px}
+.rk{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:11px 13px;margin-bottom:8px}.rk .t{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.rk .m{font-size:20px;width:34px;text-align:center;flex:none}.rk .nm{flex:1;font-weight:600}.rk .tx{font-size:13px;margin-top:6px;line-height:1.45}.rk .sc{font-size:12px;color:var(--mu);margin-top:4px}
+.mv{font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}.mv.up{background:#e3f6ea;color:var(--ok)}.mv.dn{background:#fbe5e5;color:var(--bad)}.mv.eq{background:var(--bg);color:var(--mu)}.mv.nw{background:#e6edff;color:var(--ac)}
+.rk.g1{border-color:#f5c542;background:#fffbea}.rk.g2{border-color:#c9ced8}.rk.g3{border-color:#e0a46b}
 </style></head><body>
-<header><h1>📊 telc B2 — admin</h1><div class="tabs"><button id="t1" class="on">👥 Foydalanuvchilar</button><button id="t2">📅 Haftalik hisobot</button></div><div class="stats" id="stats"></div>
+<header><h1>📊 telc B2 — admin</h1><div class="tabs"><button id="t1" class="on">👥 Foydalanuvchilar</button><button id="t3">🏆 Kunlik reyting</button><button id="t2">📅 Haftalik</button></div><div class="stats" id="stats"></div>
 <div class="tools" id="tools"><input id="q" placeholder="Ism yoki @username…"><select id="sort"><option value="last">Oxirgi kirish</option><option value="time">Ko'p vaqt</option><option value="visits">Ko'p kirish</option><option value="first">Yangi qo'shilgan</option></select></div></header>
-<main id="main"><div class="msg">Yuklanmoqda…</div></main><main id="wmain" hidden></main>
+<main id="main"><div class="msg">Yuklanmoqda…</div></main><main id="wmain" hidden></main><main id="dmain" hidden></main>
 <script>
 const FN="https://hveicvjjqiehjxkwqobr.supabase.co/functions/v1/tg/admin";
 const W=window.Telegram&&Telegram.WebApp;try{W.ready();W.expand()}catch(e){}
@@ -95,9 +99,32 @@ function renderW(){const el=document.getElementById("wmain");
  document.getElementById("wsel").onchange=async e=>{wsel=e.target.value;wopen=null;WR=(await api("week",{week:wsel})).rows||[];renderW()};
  el.querySelectorAll("[data-wu]").forEach(tr=>tr.onclick=()=>{wopen=wopen==tr.dataset.wu?null:tr.dataset.wu;renderW()});
 }
-function tab(n){document.getElementById("t1").classList.toggle("on",n===1);document.getElementById("t2").classList.toggle("on",n===2);
+
+// ---- Kunlik reyting ----
+let DD=[],dsel="live",DR=null;
+const MON=["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentyabr","oktyabr","noyabr","dekabr"];
+const dlab=d=>{const x=new Date(d+"T00:00:00");return x.getDate()+"-"+MON[x.getMonth()]};
+const dprev=d=>{const x=new Date(d+"T00:00:00");x.setDate(x.getDate()-1);return x.toISOString().slice(0,10)};
+async function loadDays(){const r=await api("days");DD=r.days||[];await loadDay()}
+async function loadDay(){DR=await api("day",dsel==="live"?{live:true}:{day:dsel});renderD()}
+function renderD(){const el=document.getElementById("dmain"),R=(DR&&DR.rows)||[],d=DR&&DR.day;
+ const T=R.reduce((a,r)=>(a.ok+=r.ok,a.bad+=r.bad,a.sec+=r.seconds,a),{ok:0,bad:0,sec:0});
+ const md=n=>n===1?"🥇":n===2?"🥈":n===3?"🥉":n+".";
+ const mv=r=>r.prev_rank==null?`<span class="mv nw">🆕 yangi</span>`:r.prev_rank>r.rank?`<span class="mv up">⬆ +${r.prev_rank-r.rank}</span>`:r.prev_rank<r.rank?`<span class="mv dn">⬇ −${r.rank-r.prev_rank}</span>`:`<span class="mv eq">= o'zgarmadi</span>`;
+ const mvT=r=>r.prev_rank==null?"":r.prev_rank>r.rank?` Oldingi kundan <b style="color:var(--ok)">${r.prev_rank-r.rank} pog'ona ko'tarildi</b> (${r.prev_rank}-o'rindan).`:r.prev_rank<r.rank?` Oldingi kundan <b style="color:var(--bad)">${r.rank-r.prev_rank} pog'ona tushdi</b> (${r.prev_rank}-o'rindan).`:` O'rni o'zgarmadi.`;
+ el.innerHTML=`<div class="wk"><select id="dsel"><option value="live" ${dsel==="live"?"selected":""}>Bugun — davom etmoqda (21:00 da yopiladi)</option>${DD.map(x=>`<option value="${x}" ${x===dsel?"selected":""}>${dlab(x)} · ${dlab(dprev(x))} 21:00 – ${dlab(x)} 21:00</option>`).join("")}</select></div>
+ <div class="stats" style="margin-bottom:12px"><div class="st"><b>${R.length}</b>ishlagan</div><div class="st"><b class="ok">${T.ok}</b>to'g'ri</div><div class="st"><b class="no">${T.bad}</b>xato</div><div class="st"><b>${pct(T.ok,T.bad)}</b>natija</div><div class="st"><b>${dur(T.sec)}</b>vaqt</div></div>
+ ${R.length?R.map(r=>{const S=Object.entries(r.sects||{}).filter(([,v])=>v[0]+v[1]>0).sort((a,b)=>(b[1][0]+b[1][1])-(a[1][0]+a[1][1]));
+  const nm=esc(r.name||r.username||r.user_id);
+  return `<div class="rk ${r.rank<=3?"g"+r.rank:""}"><div class="t"><span class="m">${md(r.rank)}</span><span class="nm">${nm}${r.username?` <span class="s">@${esc(r.username)}</span>`:""}</span>${mv(r)}</div>
+  <div class="tx"><b>${nm}</b> — ${r.rank}-o'rin. ${dsel==="live"?"Bugun":"Shu kuni"} jami <b class="ok">${r.ok} ta to'g'ri</b>, <b class="no">${r.bad} ta xato</b>${S.length?" — "+S.map(([k,v])=>`${esc(k)} (✓${v[0]} ✕${v[1]})`).join(", "):""}.${mvT(r)}</div>
+  <div class="sc">⏱ ${dur(r.seconds)} · natija ${pct(r.ok,r.bad)}</div></div>`}).join(""):`<div class="msg">${dsel==="live"?"Bugun hali hech kim test ishlamadi.":"Bu kunda natija yo'q."}</div>`}
+ <div class="s" style="text-align:center;margin-top:8px">Kun har kuni 21:00 da yopiladi, 21:01 dan yangi kun boshlanadi. O'rin: to'g'ri javoblar soni bo'yicha (teng bo'lsa — kam xato).</div>`;
+ document.getElementById("dsel").onchange=async e=>{dsel=e.target.value;el.innerHTML='<div class="msg">Yuklanmoqda…</div>';await loadDay()};
+}
+function tab(n){document.getElementById("t1").classList.toggle("on",n===1);document.getElementById("t2").classList.toggle("on",n===2);document.getElementById("t3").classList.toggle("on",n===3);document.getElementById("dmain").hidden=n!==3;if(n===3){document.getElementById("dmain").innerHTML='<div class="msg">Yuklanmoqda…</div>';loadDays()}
  document.getElementById("main").hidden=n!==1;document.getElementById("tools").hidden=n!==1;document.getElementById("stats").hidden=n!==1;document.getElementById("wmain").hidden=n!==2;
  if(n===2){document.getElementById("wmain").innerHTML='<div class="msg">Yuklanmoqda…</div>';loadWeeks()}}
-document.getElementById("t1").onclick=()=>tab(1);document.getElementById("t2").onclick=()=>tab(2);
+document.getElementById("t1").onclick=()=>tab(1);document.getElementById("t3").onclick=()=>tab(3);document.getElementById("t2").onclick=()=>tab(2);
 load();setInterval(load,60000);
 </script></body></html>
