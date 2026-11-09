@@ -1,3 +1,129 @@
 {
-  "kunlar": []
+ "kunlar": [
+  {
+   "sana": "2026-11-10",
+   "sozlar": [
+    [
+     "tushunmoq",
+     "verstehen"
+    ],
+    [
+     "so'ramoq",
+     "fragen"
+    ],
+    [
+     "javob bermoq",
+     "antworten"
+    ],
+    [
+     "eshitmoq, tinglamoq",
+     "hören"
+    ],
+    [
+     "kulmoq",
+     "lachen"
+    ],
+    [
+     "yig'lamoq",
+     "weinen"
+    ],
+    [
+     "o'ynamoq, musiqa asbobida chalmoq",
+     "spielen"
+    ],
+    [
+     "ovqat pishirmoq",
+     "kochen"
+    ],
+    [
+     "sotmoq",
+     "verkaufen"
+    ],
+    [
+     "to'lamoq (pul)",
+     "bezahlen"
+    ],
+    [
+     "qidirmoq",
+     "suchen"
+    ],
+    [
+     "uchrashmoq",
+     "treffen"
+    ],
+    [
+     "yordam bermoq",
+     "helfen"
+    ],
+    [
+     "ko'rsatmoq",
+     "zeigen"
+    ],
+    [
+     "kutmoq",
+     "warten"
+    ],
+    [
+     "ishonmoq, o'ylamoq",
+     "glauben"
+    ],
+    [
+     "yashamoq, istiqomat qilmoq",
+     "wohnen"
+    ],
+    [
+     "boshlamoq",
+     "beginnen"
+    ],
+    [
+     "tugatmoq, to'xtatmoq",
+     "enden / aufhören"
+    ],
+    [
+     "ochmoq",
+     "öffnen"
+    ],
+    [
+     "yopmoq",
+     "schließen"
+    ],
+    [
+     "kerak bo'lmoq, ehtiyoj sezmoq",
+     "brauchen"
+    ],
+    [
+     "harakat qilib ko'rmoq, urinib ko'rmoq",
+     "versuchen"
+    ],
+    [
+     "tushuntirmoq",
+     "erklären"
+    ],
+    [
+     "oliygohda o'qimoq",
+     "studieren"
+    ],
+    [
+     "sayohat qilmoq",
+     "reisen"
+    ],
+    [
+     "haydamoq, transportda bormoq",
+     "fahren"
+    ],
+    [
+     "uchmoq",
+     "fliegen"
+    ],
+    [
+     "piyoda sayohat qilmoq",
+     "wandern"
+    ],
+    [
+     "tush ko'rmoq, orzu qilmoq",
+     "träumen"
+    ]
+   ]
+  }
+ ]
 }
