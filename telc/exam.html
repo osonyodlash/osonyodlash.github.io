@@ -14,7 +14,7 @@
   try{r=await (await fetch(FN+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:init})})).json()}
   catch(e){return show("⚠️ Internet bilan muammo","Aloqani tekshirib, qayta oching.")}
   if(r.err==="notmember")return show("🔒 Ruxsat yo'q","Imtihon faqat o'quvchilar guruhi a'zolari uchun.");
-  if(!r.ok)return show("⚠️ Xatolik","Birozdan keyin qayta urinib ko'ring.");
+  if(!r.ok)return show("⚠️ Xatolik","Birozdan keyin qayta urinib ko'ring.<br><small>kod: "+String(r.err||r.code||r.message||"?").replace(/[<>&]/g,"")+"</small>");
   var boot="<script>window.__X="+JSON.stringify({fn:FN,initData:init,name:r.name,uid:r.uid}).replace(/</g,"\\u003c")+"<\/script>";
   var html=r.html,i=html.indexOf("<script>");
   html=i>=0?html.slice(0,i)+boot+html.slice(i):boot+html;
