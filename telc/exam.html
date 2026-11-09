@@ -1,0 +1,23 @@
+<!doctype html><html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>telc B2 · Imtihon</title><meta name="robots" content="noindex">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f8fd;color:#1b2433;font:16px/1.5 -apple-system,system-ui,sans-serif;text-align:center;padding:24px}.b{max-width:340px}.b h2{margin:0 0 8px}.b p{margin:0;color:#5a6b84}</style></head>
+<body><div class="b" id="m"><h2>📝 telc B2 · Imtihon</h2><p>Tekshirilmoqda…</p></div>
+<script>
+(async function(){
+  var FN="https://hveicvjjqiehjxkwqobr.supabase.co/functions/v1/imtihon";
+  var m=document.getElementById("m");
+  function show(t,s){m.innerHTML="<h2>"+t+"</h2><p>"+(s||"")+"</p>"}
+  var W=window.Telegram&&Telegram.WebApp,init=W?W.initData:"";
+  try{if(W){W.ready();W.expand()}}catch(e){}
+  if(!init)return show("🔒 Faqat Telegram orqali","Bu sahifa imtihon botidagi tugma orqali ochiladi.");
+  var r;
+  try{r=await (await fetch(FN+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:init})})).json()}
+  catch(e){return show("⚠️ Internet bilan muammo","Aloqani tekshirib, qayta oching.")}
+  if(r.err==="notmember")return show("🔒 Ruxsat yo'q","Imtihon faqat o'quvchilar guruhi a'zolari uchun.");
+  if(!r.ok)return show("⚠️ Xatolik","Birozdan keyin qayta urinib ko'ring.");
+  var boot="<script>window.__X="+JSON.stringify({fn:FN,initData:init,name:r.name,uid:r.uid}).replace(/</g,"\\u003c")+"<\/script>";
+  var html=r.html,i=html.indexOf("<script>");
+  html=i>=0?html.slice(0,i)+boot+html.slice(i):boot+html;
+  document.open();document.write(html);document.close();
+})();
+</script></body></html>
