@@ -3,19 +3,15 @@
 (function () {
   var FN = "https://yhljeyxcporqienvdjax.supabase.co/functions/v1/sprechen";
   var MAXSEC = { 1: 210, 2: 120, 3: 120 };
+  // telc B2 mündliche Prüfung – Teil 1: 7 rasmiy mavzu. Har biri: [nemischa, o'zbekcha, kichik punktlar (nemischa), o'zbekcha izoh]
   var T1 = [
-    ["Ein besonderes Sportereignis", "Esda qolgan sport voqeasi"],
-    ["Eine Reise, die ich nie vergesse", "Hech unutilmas sayohatim"],
-    ["Ein Buch oder Film, der mich beeindruckt hat", "Menga ta'sir qilgan kitob yoki film"],
-    ["Ein Fest oder eine Tradition in Usbekistan", "O'zbekistondagi bayram yoki an'ana"],
-    ["Mein Traumberuf", "Orzuimdagi kasb"],
-    ["Ein Mensch, der mich inspiriert", "Meni ilhomlantiradigan inson"],
-    ["Mein Lieblingsort in meiner Stadt", "Shahrimdagi sevimli joyim"],
-    ["Ein Hobby, das mir wichtig ist", "Men uchun muhim bo'lgan hobbi"],
-    ["Eine Entscheidung, die mein Leben verändert hat", "Hayotimni o'zgartirgan qaror"],
-    ["Soziale Medien in meinem Leben", "Hayotimdagi ijtimoiy tarmoqlar"],
-    ["Umweltschutz im Alltag", "Kundalik hayotda atrof-muhitni asrash"],
-    ["Deutsch lernen – meine Erfahrungen", "Nemis tilini o'rganish — tajribam"]
+    ["Reise", "Sayohat", "Ziel, Zeit, Land und Leute, Sehenswürdigkeiten", "Manzil, vaqt, mamlakat va odamlar, diqqatga sazovor joylar"],
+    ["Buch", "Kitob", "Thema, Autor, Meinung", "Mavzu, muallif, fikringiz"],
+    ["Film", "Film", "Thema, Handlung, Schauspieler, Meinung", "Mavzu, syujet, aktyorlar, fikringiz"],
+    ["Sportereignis", "Sport voqeasi", "Sportart, Ort, Personen, Ergebnis", "Sport turi, joy, ishtirokchilar, natija"],
+    ["Musikveranstaltung", "Musiqa tadbiri", "Musikrichtung, Musiker, Ort", "Musiqa yo'nalishi, musiqachi, joy"],
+    ["Wichtige Person im Leben", "Hayotdagi muhim inson", "wer, wann, warum wichtig", "kim, qachon, nega muhim"],
+    ["Wichtige Erfahrung", "Muhim tajriba", "was, wann, wo, mit wem, warum wichtig", "nima, qachon, qayerda, kim bilan, nega muhim"]
   ];
   var TN = { 1: "Teil 1 · Präsentation", 2: "Teil 2 · Diskussion", 3: "Teil 3 · Gemeinsam planen" };
   var CR = [["aufgabe", "Topshiriqni bajarish"], ["fluss", "Ravonlik"], ["korrekt", "Grammatika"], ["wortschatz", "So'z boyligi"], ["aussprache", "Talaffuz"]];
@@ -166,7 +162,7 @@
     el.innerHTML = '<div class="ai"></div>'; var root = el.firstChild;
 
     function list() {
-      if (teil === 1) return T1.map(function (t) { return { title: t[0], uz: t[1] }; });
+      if (teil === 1) return T1.map(function (t) { return { title: t[0], uz: t[1], points: t[2] || "", pointsUz: t[3] || "" }; });
       return teil === 2 ? T2 : T3;
     }
 
@@ -179,7 +175,7 @@
         '<div class="ai-tabs">' + [1, 2, 3].map(function (n) { return '<button data-tl="' + n + '" class="' + (teil === n ? "on" : "") + '">Teil ' + n + '<br><small style="font-weight:600">' + ["Präsentation", "Diskussion", "Planen"][n - 1] + '</small></button>'; }).join("") + '</div>' +
         '<div class="ai-card"><input class="ai-q" id="aiq" placeholder="Mavzu qidirish…" value="' + esc(q) + '" autocomplete="off">' +
         (teil === 1 ? '<button class="ai-it" data-own="1"><b>✏️ O\'z mavzuim</b><small>Imtihonda tushgan mavzuni o\'zingiz yozing</small></button>' : "") +
-        rows.map(function (p) { return '<button class="ai-it" data-i="' + p[1] + '"><b>' + esc(p[0].title) + '</b><small>' + esc(p[0].uz || "") + '</small></button>'; }).join("") +
+        rows.map(function (p) { var sub = teil === 1 ? ((p[0].uz ? p[0].uz + " · " : "") + (p[0].points || "")) : (p[0].uz || ""); return '<button class="ai-it" data-i="' + p[1] + '"><b>' + esc(p[0].title) + '</b><small>' + esc(sub) + '</small></button>'; }).join("") +
         (rows.length ? "" : '<p>Topilmadi.</p>') + '</div>';
       [].forEach.call(root.querySelectorAll("[data-tl]"), function (b) { b.onclick = function () { teil = +b.dataset.tl; q = ""; try { localStorage.setItem("ai_teil", teil); } catch (e) {} home(); }; });
       var qi = root.querySelector("#aiq"); qi.oninput = function () { q = qi.value; var pos = qi.selectionStart; home(); var n = root.querySelector("#aiq"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} };
@@ -200,13 +196,14 @@
 
     function topicMeta() {
       var t = S.topic;
+      if (teil === 1) return { title: t.title, task: t.points ? ("Der Kandidat soll diese Punkte ansprechen: " + t.points) : "", points: t.points || "" };
       return { title: t.title, task: t.task || t.head || "", text: t.text || "", points: t.points || "" };
     }
 
     function chat() {
       var t = S.topic;
       var task = teil === 1
-        ? '<b>Mavzu:</b> ' + esc(t.title) + (t.uz ? ' <span style="color:#8a93a6">(' + esc(t.uz) + ')</span>' : "") + '<br>Taqdimot ~3 daqiqa: kirish → asosiy qism (tajriba, misol) → xulosa. Keyin AI savollar beradi.'
+        ? '<b>Thema: ' + esc(t.title) + '</b>' + (t.uz ? ' <span style="color:#8a93a6">(' + esc(t.uz) + ')</span>' : "") + (t.points ? '<br><span style="color:#5b6577">Punkte: ' + esc(t.points) + '</span>' + (t.pointsUz ? ' <span style="color:#8a93a6">(' + esc(t.pointsUz) + ')</span>' : "") : "") + '<br>Taqdimot ~2 daqiqa: kirish → asosiy qism (yuqoridagi punktlar bo\'yicha) → xulosa. Keyin Prüfer 1 ta savol beradi.'
         : teil === 2
         ? '<b>' + esc(t.head) + '</b>' + (t.text || t.textUz ? '<details><summary>Matnni o\'qish</summary><div class="tx">' + esc(t.text || t.textUz) + '</div>' + (t.text && t.textUz ? '<details><summary>O\'zbekcha tarjima</summary><div class="tx">' + esc(t.textUz) + '</div></details>' : "") + '</details>' : "")
         : '<b>' + esc(t.title) + '</b><br>' + esc(t.task || "") + (t.taskUz ? '<details><summary>O\'zbekcha</summary><div class="tx">' + esc(t.taskUz) + '</div></details>' : "");
