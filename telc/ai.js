@@ -60,8 +60,9 @@
   function initData() { if (INIT) return INIT; try { return (window.Telegram && Telegram.WebApp && Telegram.WebApp.initData) || ""; } catch (e) { return ""; } }
   function hap(t) { try { Telegram.WebApp.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} }
   function mmss(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
-  function errText(e) {
-    return { auth: "Kirish tasdiqlanmadi. Botdan saytni qayta oching.", nokey: "AI hali ulanmagan. Ustoz sozlashi kerak.", cap: "Bugungi limit tugadi. Ertaga davom eting.", big: "Yozuv juda uzun. Qisqaroq gapiring.", net: "Internet aloqasini tekshiring." }[e] || "AI hozir band (Google serverlari). Bir necha soniyadan keyin «Qayta yuborish»ni bosing.";
+  function errText(e, msg) {
+    if (msg && (e === "limit" || e === "nosession")) return msg; // server yuborgan aniq limit xabari
+    return { auth: "Kirish tasdiqlanmadi. Botdan saytni qayta oching.", nokey: "AI hali ulanmagan. Ustoz sozlashi kerak.", cap: "Bugungi limit tugadi. Ertaga davom eting.", limit: "Bugungi limit tugadi. Ertaga davom eting.", nosession: "Suhbat topilmadi. Mavzuni qaytadan tanlab boshlang.", big: "Yozuv juda uzun. Qisqaroq gapiring.", net: "Internet aloqasini tekshiring." }[e] || "AI hozir band (Google serverlari). Bir necha soniyadan keyin «Qayta yuborish»ni bosing.";
   }
 
   // AI band bo'lsa (Google serveri) bir marta avtomatik qayta urinadi
@@ -78,7 +79,7 @@
     else { opt.headers = { "content-type": "application/json" }; opt.body = JSON.stringify(meta); }
     return fetch(FN + path, opt).then(function (r) {
       if (path === "/tts" && r.ok) return r.blob();
-      return r.json().then(function (j) { if (!j.ok) throw new Error(j.err || "ai"); return j; }, function () { throw new Error("ai"); });
+      return r.json().then(function (j) { if (!j.ok) { var er = new Error(j.err || "ai"); er.msg = j.msg; throw er; } return j; }, function () { throw new Error("ai"); });
     }, function () { throw new Error("net"); });
   }
 
@@ -347,8 +348,13 @@
         if (mine) mine.remove();
         var ch = root.querySelector("#aich");
         if (ch) {
-          var d = document.createElement("div"); d.className = "ai-err"; d.innerHTML = "⚠️ " + esc(errText(e.message)) + (o.blob || o.start ? ' <button class="ai-x" style="margin-left:6px">🔁 Qayta yuborish</button>' : "");
+          var lim = e.message === "limit" || e.message === "nosession"; // limit tugagan: qayta yuborishning foydasi yo'q
+          var d = document.createElement("div"); d.className = "ai-err"; d.innerHTML = "⚠️ " + esc(errText(e.message, e.msg)) + (!lim && (o.blob || o.start) ? ' <button class="ai-x" style="margin-left:6px">🔁 Qayta yuborish</button>' : "");
           ch.appendChild(d); var rb = d.querySelector("button"); if (rb) rb.onclick = function () { d.remove(); ask(o); };
+          if (lim && o.start) {
+            removeBar();
+            if (!EX) { var hb = document.createElement("button"); hb.className = "ai-btn alt"; hb.textContent = "Mavzular"; hb.onclick = home; ch.appendChild(hb); }
+          }
         }
         if (o.text) S.hist.pop();
         S.busy = false; sync();
@@ -372,7 +378,7 @@
       if (EX) root.innerHTML = '<div class="ai-card" style="text-align:center"><h3>⏳ Javoblaringiz saqlanmoqda…</h3><p>10–20 soniya kuting. Ilovani yopmang.</p></div>';
       post("/eval", { teil: teil, topic: topicMeta(), hist: S.hist }).then(function (j) { if (cur === S) { if (EX) examNext(examItem(j.ev || {})); else result(j.ev || {}); } }, function (e) {
         if (cur !== S) return;
-        root.innerHTML = '<div class="ai-err">⚠️ ' + esc(errText(e.message)) + '</div><button class="ai-btn" id="airt">🔁 Qayta urinish</button>' + (EX ? "" : '<button class="ai-btn alt" id="aih">Mavzular</button>');
+        root.innerHTML = '<div class="ai-err">⚠️ ' + esc(errText(e.message, e.msg)) + '</div><button class="ai-btn" id="airt">🔁 Qayta urinish</button>' + (EX ? "" : '<button class="ai-btn alt" id="aih">Mavzular</button>');
         root.querySelector("#airt").onclick = finish; if (!EX) root.querySelector("#aih").onclick = home;
       });
     }
