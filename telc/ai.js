@@ -56,7 +56,8 @@
 
   function css() { if (document.getElementById("ai-css")) return; var s = document.createElement("style"); s.id = "ai-css"; s.textContent = CSS; document.head.appendChild(s); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function initData() { try { return (window.Telegram && Telegram.WebApp && Telegram.WebApp.initData) || ""; } catch (e) { return ""; } }
+  var INIT = "";
+  function initData() { if (INIT) return INIT; try { return (window.Telegram && Telegram.WebApp && Telegram.WebApp.initData) || ""; } catch (e) { return ""; } }
   function hap(t) { try { Telegram.WebApp.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} }
   function mmss(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
   function errText(e) {
@@ -159,6 +160,9 @@
     var T2 = (data.t2 || []).map(function (m) { return { title: m.t, uz: m.u, head: m.ot || m.t, text: m.od || "", textUz: m.ou || "" }; });
     var T3 = (data.t3 || []).map(function (x) { return { title: x[1], uz: x[2], task: x[3], taskUz: x[4], points: (x[5] || []).map(function (p) { return p[0]; }).join(" / ") }; });
     var teil = +(localStorage.getItem("ai_teil") || 2) || 2, q = "", S = null;
+    // Imtihon rejimi (@Timur_B2simulyatsiya_bot): Teil 1→2→3 ketma-ket, baho oxirida
+    var EX = data.exam || null, done = [];
+    if (EX) { INIT = EX.initData || ""; done = (EX.done || []).slice(); teil = done.length + 1; EX.topics = EX.topics || {}; }
     el.innerHTML = '<div class="ai"></div>'; var root = el.firstChild;
 
     function list() {
@@ -167,6 +171,7 @@
     }
 
     function home() {
+      if (EX) return examHome();
       stopPlay(); S = null; removeBar();
       var L = list(), qq = q.trim().toLowerCase();
       var rows = L.map(function (t, i) { return [t, i]; }).filter(function (p) { return !qq || (p[0].title + " " + (p[0].uz || "")).toLowerCase().indexOf(qq) >= 0; });
@@ -183,6 +188,52 @@
       var own = root.querySelector("[data-own]");
       if (own) own.onclick = function () {
         var t = prompt("Mavzuni nemischa yozing:", ""); if (!t || !t.trim()) return; begin({ title: t.trim(), uz: "" });
+      };
+    }
+
+    function examHead() {
+      return '<div class="ai-top"><b>Mündliche Prüfung · Teil ' + teil + ' / 3</b><span>' + ["Präsentation", "Diskussion", "Gemeinsam planen"][teil - 1] + '</span></div>';
+    }
+    function examHome() {
+      stopPlay(); S = null; removeBar();
+      if (teil > 3) return EX.onDone(done.slice());
+      if (teil === 1) {
+        var L1 = list();
+        root.innerHTML = examHead() +
+          '<div class="ai-card"><h3>🎤 Teil 1 · Präsentation</h3><p>Gapirmoqchi bo\'lgan mavzuingizni tanlang. Taxminan 2 daqiqa taqdimot qilasiz, keyin imtihon oluvchi 1 ta savol beradi.</p><p><i>Wählen Sie das Thema Ihrer Präsentation.</i></p></div>' +
+          '<div class="ai-card"><button class="ai-it" data-own="1"><b>✏️ O\'z mavzuim</b><small>Boshqa mavzuni o\'zingiz yozing</small></button>' +
+          L1.map(function (t, i) { return '<button class="ai-it" data-i="' + i + '"><b>' + esc(t.title) + '</b><small>' + esc((t.uz ? t.uz + " · " : "") + (t.points || "")) + '</small></button>'; }).join("") + '</div>';
+        [].forEach.call(root.querySelectorAll("[data-i]"), function (b) { b.onclick = function () { begin(L1[+b.dataset.i]); }; });
+        root.querySelector("[data-own]").onclick = function () { var t = prompt("Mavzuni nemischa yozing:", ""); if (!t || !t.trim()) return; begin({ title: t.trim(), uz: "" }); };
+        return;
+      }
+      var L = teil === 2 ? T2 : T3;
+      var ix = +EX.topics[teil];
+      if (!(ix >= 0 && ix < L.length)) { ix = Math.floor(Math.random() * L.length); EX.topics[teil] = ix; if (EX.onTopic) EX.onTopic(teil, ix); }
+      var t = L[ix];
+      root.innerHTML = examHead() +
+        '<div class="ai-card"><h3>🎲 Ihr Thema · Sizning mavzuingiz</h3><p style="font-size:17px;color:#1b2333"><b>' + esc(teil === 2 ? t.head : t.title) + '</b></p><p>' +
+        (teil === 2 ? "Mavzu tasodifiy tanlandi. Matnni o'qiysiz, keyin imtihon oluvchi 5 ta savol beradi." : "Mavzu tasodifiy tanlandi. Imtihon oluvchi bilan birgalikda reja tuzasiz: taklif bering, fikr bildiring, vazifalarni bo'ling.") +
+        '</p><button class="ai-btn" id="aigo">🎙 Boshlash</button></div>';
+      root.querySelector("#aigo").onclick = function () { begin(t); };
+    }
+    function examNext(item) {
+      done.push(item);
+      if (EX.onTeil) EX.onTeil(done.slice());
+      teil++; stopPlay(); removeBar(); S = null;
+      if (teil > 3) return EX.onDone(done.slice());
+      root.innerHTML = '<div class="ai-card" style="text-align:center"><h3>✅ Teil ' + (teil - 1) + ' tugadi</h3><p>Natijalar barcha qismlar tugagandan keyin chiqadi.</p><button class="ai-btn" id="ainx">Teil ' + teil + ' ga o\'tish ➜</button></div>';
+      root.querySelector("#ainx").onclick = examHome;
+      window.scrollTo(0, 0);
+    }
+    function examItem(ev) {
+      var sc = ev.scores || {}, s = {}, tot = 0;
+      CR.forEach(function (c) { var v = Math.max(0, Math.min(5, Math.round(+sc[c[0]] || 0))); s[c[0]] = v; tot += v; });
+      var arr = function (a, n) { return (Array.isArray(a) ? a : []).slice(0, n).map(function (x) { return String(x).slice(0, 300); }); };
+      return {
+        teil: teil, title: S.topic.title, s: s, tot: tot, niveau: String(ev.niveau || "").slice(0, 20), summary: String(ev.summary || "").slice(0, 1200),
+        good: arr(ev.good, 3), tips: arr(ev.tips, 3),
+        fixes: (Array.isArray(ev.fixes) ? ev.fixes : []).slice(0, 8).map(function (f) { return { wrong: String(f.wrong || "").slice(0, 300), right: String(f.right || "").slice(0, 300), why: String(f.why || "").slice(0, 300) }; })
       };
     }
 
@@ -204,13 +255,17 @@
       var t = S.topic;
       var task = teil === 1
         ? '<b>Thema: ' + esc(t.title) + '</b>' + (t.uz ? ' <span style="color:#8a93a6">(' + esc(t.uz) + ')</span>' : "") + (t.points ? '<br><span style="color:#5b6577">Punkte: ' + esc(t.points) + '</span>' + (t.pointsUz ? ' <span style="color:#8a93a6">(' + esc(t.pointsUz) + ')</span>' : "") : "") + '<br>Taqdimot ~2 daqiqa: kirish → asosiy qism (yuqoridagi punktlar bo\'yicha) → xulosa. Keyin Prüfer 1 ta savol beradi.'
+        : EX && teil === 2
+        ? '<b>' + esc(t.head) + '</b>' + (t.text ? '<div class="tx">' + esc(t.text) + '</div>' : "")
+        : EX
+        ? '<b>' + esc(t.title) + '</b><br>' + esc(t.task || "")
         : teil === 2
         ? '<b>' + esc(t.head) + '</b>' + (t.text || t.textUz ? '<details><summary>Matnni o\'qish</summary><div class="tx">' + esc(t.text || t.textUz) + '</div>' + (t.text && t.textUz ? '<details><summary>O\'zbekcha tarjima</summary><div class="tx">' + esc(t.textUz) + '</div></details>' : "") + '</details>' : "")
         : '<b>' + esc(t.title) + '</b><br>' + esc(t.task || "") + (t.taskUz ? '<details><summary>O\'zbekcha</summary><div class="tx">' + esc(t.taskUz) + '</div></details>' : "");
       root.innerHTML =
-        '<div class="ai-top"><b>' + TN[teil] + '</b><button class="ai-x" id="aiback">✕ Chiqish</button></div>' +
+        '<div class="ai-top"><b>' + TN[teil] + (EX ? " · " + teil + "/3" : "") + '</b>' + (EX ? "" : '<button class="ai-x" id="aiback">✕ Chiqish</button>') + '</div>' +
         '<div class="ai-card ai-task">' + task + '</div><div class="ai-chat" id="aich"></div>';
-      root.querySelector("#aiback").onclick = function () { if (S && S.rec) { try { Rec.stop(); } catch (e) {} } if (!S || S.hist.length < 3 || confirm("Suhbatdan chiqasizmi? Baho olinmaydi.")) home(); };
+      if (!EX) root.querySelector("#aiback").onclick = function () { if (S && S.rec) { try { Rec.stop(); } catch (e) {} } if (!S || S.hist.length < 3 || confirm("Suhbatdan chiqasizmi? Baho olinmaydi.")) home(); };
       S.hist.forEach(function (h) { bubble(h.role, h.text, true); });
       bar();
     }
@@ -233,7 +288,7 @@
     function sync() {
       var m = document.getElementById("aimic"); if (!m || !S) return;
       var f = document.getElementById("aifin");
-      if (f) f.textContent = S.ended ? "🏁 Baho olish" : "🏁 Yakunlash va baho olish";
+      if (f) f.textContent = EX ? (S.ended ? (teil < 3 ? "➜ Keyingi qismga o'tish" : "🏁 Imtihonni yakunlash") : "🏁 Shu qismni yakunlash") : S.ended ? "🏁 Baho olish" : "🏁 Yakunlash va baho olish";
       if (S.rec) { m.className = "ai-mic rec"; m.disabled = false; m.textContent = "⏹ To'xtatish · " + mmss((Date.now() - S.t0) / 1000) + " / " + mmss(MAXSEC[teil]); return; }
       m.className = "ai-mic"; m.disabled = S.busy || S.ended;
       m.textContent = S.ended ? "✅ Suhbat tugadi" : S.busy ? "⏳ AI o'ylayapti…" : "🎙 Gapirish";
@@ -304,14 +359,21 @@
       if (!S || S.busy) return;
       if (S.rec) { clearInterval(S.tmr); S.rec = false; try { Rec.stop(); } catch (e) {} }
       var mineN = S.hist.filter(function (h) { return h.role === "me"; }).length;
-      if (mineN < 1) { if (confirm("Hali hech narsa gapirmadingiz. Chiqasizmi?")) home(); return; }
+      if (mineN < 1) {
+        if (EX) {
+          if (!confirm("Hali hech narsa gapirmadingiz. Bu qism 0 ball bo'ladi. Keyingisiga o'tasizmi?")) return;
+          return examNext({ teil: teil, title: S.topic.title, s: { aufgabe: 0, fluss: 0, korrekt: 0, wortschatz: 0, aussprache: 0 }, tot: 0, niveau: "", summary: "Bu qismda javob berilmadi.", good: [], tips: [], fixes: [] });
+        }
+        if (confirm("Hali hech narsa gapirmadingiz. Chiqasizmi?")) home(); return;
+      }
       stopPlay(); removeBar();
       var cur = S;
       root.innerHTML = '<div class="ai-card" style="text-align:center"><h3>⏳ AI suhbatingizni baholamoqda…</h3><p>10–20 soniya kuting.</p></div>';
-      post("/eval", { teil: teil, topic: topicMeta(), hist: S.hist }).then(function (j) { if (cur === S) result(j.ev || {}); }, function (e) {
+      if (EX) root.innerHTML = '<div class="ai-card" style="text-align:center"><h3>⏳ Javoblaringiz saqlanmoqda…</h3><p>10–20 soniya kuting. Ilovani yopmang.</p></div>';
+      post("/eval", { teil: teil, topic: topicMeta(), hist: S.hist }).then(function (j) { if (cur === S) { if (EX) examNext(examItem(j.ev || {})); else result(j.ev || {}); } }, function (e) {
         if (cur !== S) return;
-        root.innerHTML = '<div class="ai-err">⚠️ ' + esc(errText(e.message)) + '</div><button class="ai-btn" id="airt">🔁 Qayta urinish</button><button class="ai-btn alt" id="aih">Mavzular</button>';
-        root.querySelector("#airt").onclick = finish; root.querySelector("#aih").onclick = home;
+        root.innerHTML = '<div class="ai-err">⚠️ ' + esc(errText(e.message)) + '</div><button class="ai-btn" id="airt">🔁 Qayta urinish</button>' + (EX ? "" : '<button class="ai-btn alt" id="aih">Mavzular</button>');
+        root.querySelector("#airt").onclick = finish; if (!EX) root.querySelector("#aih").onclick = home;
       });
     }
 
