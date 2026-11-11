@@ -1,5 +1,6 @@
-/* Sprechen AI — telc B2 mündliche Prüfung bilan ovozli mashq (Gemini).
-   app.html ichidan: AISprech.mount(el, {t2: MUND, t3: MT3}) */
+/* Sprechen — telc B2 mündliche Prüfung.
+   Asosiy bot (app.html ichidan: AISprech.mount(el, {t2: MUND, t3: MT3})): AI yo'q, o'quvchi o'z ovozini yozib, qayta eshitadi.
+   Imtihon boti (data.exam bilan): AI imtihon oluvchi (Gemini) va baho. */
 (function () {
   var FN = "https://yhljeyxcporqienvdjax.supabase.co/functions/v1/sprechen";
   var MAXSEC = { 1: 210, 2: 120, 3: 120 };
@@ -15,6 +16,30 @@
   ];
   var TN = { 1: "Teil 1 · Präsentation", 2: "Teil 2 · Diskussion", 3: "Teil 3 · Gemeinsam planen" };
   var CR = [["aufgabe", "Topshiriqni bajarish"], ["fluss", "Ravonlik"], ["korrekt", "Grammatika"], ["wortschatz", "So'z boyligi"], ["aussprache", "Talaffuz"]];
+
+  // ---- Ovozli mashq (asosiy bot @Shogirtlarim_uchun_bot): AI yo'q. O'quvchi o'z ovozini yozib oladi va qayta eshitib tahlil qiladi.
+  // Yozuvlar faqat telefonda (xotirada) turadi, serverga yuborilmaydi.
+  var EXAM_BOT = "Timur_B2simulyatsiya_bot";
+  var PR_RATE = 22050; // eshitish sifati uchun (AI uchun 16 kHz yetarli edi)
+  var Q2 = [
+    ["Worum geht es im Text?", "Matn nima haqida? Asosiy fikrni o'z so'zlaringiz bilan qisqacha aytib bering."],
+    ["Haben Sie persönliche Erfahrungen zu diesem Thema?", "Bu mavzu bo'yicha shaxsiy tajribangiz bormi? Misol keltiring."],
+    ["Welche positiven Aspekte hat das Thema?", "Ijobiy tomonlari qanday? Sabab bilan ayting."],
+    ["Welche negativen Aspekte sehen Sie?", "Salbiy tomonlari qanday? Sabab bilan ayting."],
+    ["Was ist Ihr Fazit?", "Xulosangiz: siz qaysi fikrdasiz va nega?"]
+  ];
+  var CHECK = {
+    1: ["Mavzuni aytib, kirish qildimmi?", "Barcha punktlar bo'yicha gapirdimmi?", "Bog'lovchilar ishlatdimmi (zuerst, außerdem, deshalb, zum Schluss)?", "Xulosa bilan tugatdimmi?", "Taxminan 2 daqiqa gapira oldimmi?"],
+    2: ["Matn mazmunini o'z so'zlarim bilan aytdimmi?", "Fikrimni sabab bilan asosladimmi (weil, da, denn)?", "Misol keltirdimmi?", "Ijobiy va salbiy tomonlarni aniq ajratdimmi?", "Aniq xulosa (Fazit) aytdimmi?"],
+    3: ["Taklif berdimmi (Ich schlage vor …, Wie wäre es, wenn …)?", "Sherigimning fikrini so'radimmi?", "Rozilik yoki rad etishni sabab bilan aytdimmi?", "Vazifalarni taqsimladimmi (wer macht was)?", "Kelishilgan natijani yakunladimmi?"],
+    all: ["Fe'l o'rni to'g'rimi (fe'l 2-o'rinda; weil/dass bilan oxirida)?", "Artikl va kelishiklar to'g'rimi (der/die/das, Akkusativ/Dativ)?", "Uzoq pauzalar va «äh» kam bo'ldimi?", "Talaffuz aniq, so'zlar tushunarlimi?"]
+  };
+  var PHRASES = {
+    1: ["Ich möchte heute über … sprechen.", "Zuerst möchte ich erzählen, …", "Besonders gut gefallen hat mir, dass …", "Abschließend kann ich sagen, dass …"],
+    2: ["In dem Text geht es um …", "Ich habe selbst die Erfahrung gemacht, dass …", "Ein großer Vorteil ist, dass …", "Andererseits muss man bedenken, dass …", "Zusammenfassend bin ich der Meinung, dass …"],
+    3: ["Ich schlage vor, dass wir …", "Wie wäre es, wenn wir …?", "Das ist eine gute Idee, aber …", "Was hältst du davon?", "Dann machen wir es so: Ich kümmere mich um …"]
+  };
+  var prCleanup = null;
 
   var CSS =
     ".ai{max-width:560px;margin:0 auto;padding:4px 2px 30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1b2333}" +
@@ -52,7 +77,16 @@
     ".ai-big{text-align:center}.ai-big .n{font-size:42px;font-weight:900;color:#db2777;line-height:1.1}.ai-big .lv{display:inline-block;margin-top:6px;background:#fbe7f1;color:#b0185f;font-weight:800;border-radius:20px;padding:4px 12px}" +
     ".ai-l{margin:6px 0 0;padding-left:18px;font-size:14.5px;line-height:1.5}.ai-l li{margin:4px 0}" +
     ".ai-fx{border-top:1px solid #eef1f6;padding:9px 0;font-size:14.5px;line-height:1.45}.ai-fx .w{color:#b3261e;text-decoration:line-through}.ai-fx .r{color:#127a3e;font-weight:700}.ai-fx .y{color:#5b6577;font-size:13.5px}" +
-    ".ai-err{background:#fdecec;color:#b3261e;border-radius:12px;padding:10px 12px;font-size:14px;margin:8px 0}";
+    ".ai-err{background:#fdecec;color:#b3261e;border-radius:12px;padding:10px 12px;font-size:14px;margin:8px 0}" +
+    // Ovozli mashq (asosiy bot)
+    ".pr-st{border-left:4px solid #db2777}.pr-st .n{display:inline-block;background:#fbe7f1;color:#b0185f;font-weight:800;font-size:12px;border-radius:20px;padding:2px 9px;margin-bottom:6px}" +
+    ".pr-st .de{font-size:16px;font-weight:700;color:#1b2333;margin:2px 0}.pr-st .uz{font-size:13.5px;color:#5b6577;margin:4px 0 8px;line-height:1.4}" +
+    ".pr-rec{display:block;width:100%;border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:800;background:#db2777;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent}" +
+    ".pr-rec.on{background:#e0453a;animation:aiP 1.2s infinite}.pr-rec:disabled{background:#c9cfdc}" +
+    ".pr-tk{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #eef1f6}.pr-tk b{font-size:13px;white-space:nowrap;color:#3b4a6b}" +
+    ".pr-tk audio{flex:1;min-width:0;height:38px}.pr-tk button{border:0;background:#eef2fb;border-radius:10px;padding:8px 9px;cursor:pointer;font-size:14px}" +
+    ".pr-ck label{display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:14.5px;line-height:1.4;border-bottom:1px solid #f1f3f8;cursor:pointer}.pr-ck label:last-child{border-bottom:0}" +
+    ".pr-ck input{width:19px;height:19px;margin:1px 0 0;flex:none;accent-color:#db2777}.pr-ck h4{margin:12px 0 2px;font-size:13px;color:#b0185f;text-transform:uppercase;letter-spacing:.03em}";
 
   function css() { if (document.getElementById("ai-css")) return; var s = document.createElement("style"); s.id = "ai-css"; s.textContent = CSS; document.head.appendChild(s); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -61,7 +95,7 @@
   function hap(t) { try { Telegram.WebApp.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} }
   function mmss(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
   function errText(e, msg) {
-    if (msg && (e === "limit" || e === "nosession")) return msg; // server yuborgan aniq limit xabari
+    if (msg && (e === "limit" || e === "nosession" || e === "moved")) return msg; // server yuborgan aniq xabar
     return { auth: "Kirish tasdiqlanmadi. Botdan saytni qayta oching.", nokey: "AI hali ulanmagan. Ustoz sozlashi kerak.", cap: "Bugungi limit tugadi. Ertaga davom eting.", limit: "Bugungi limit tugadi. Ertaga davom eting.", nosession: "Suhbat topilmadi. Mavzuni qaytadan tanlab boshlang.", big: "Yozuv juda uzun. Qisqaroq gapiring.", net: "Internet aloqasini tekshiring." }[e] || "AI hozir band (Google serverlari). Bir necha soniyadan keyin «Qayta yuborish»ni bosing.";
   }
 
@@ -86,13 +120,14 @@
   // ---- Ovoz yozish: 16 kHz mono WAV
   var Rec = {
     ctx: null, stream: null, node: null, src: null, bufs: [], rate: 16000, on: false,
-    start: function () {
+    start: function (rate) {
       var self = this;
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return Promise.reject(new Error("nomic"));
       return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } }).then(function (st) {
         var AC = window.AudioContext || window.webkitAudioContext;
         self.ctx = self.ctx || new AC();
         if (self.ctx.state === "suspended") self.ctx.resume();
+        self.rate = Math.min(rate || 16000, self.ctx.sampleRate || 48000);
         self.stream = st; self.bufs = []; self.on = true;
         self.src = self.ctx.createMediaStreamSource(st);
         self.node = self.ctx.createScriptProcessor(4096, 1, 1);
@@ -173,16 +208,23 @@
 
     function home() {
       if (EX) return examHome();
+      if (prCleanup) prCleanup();
       stopPlay(); S = null; removeBar();
       var L = list(), qq = q.trim().toLowerCase();
       var rows = L.map(function (t, i) { return [t, i]; }).filter(function (p) { return !qq || (p[0].title + " " + (p[0].uz || "")).toLowerCase().indexOf(qq) >= 0; });
       root.innerHTML =
-        '<div class="ai-card"><h3>🤖 AI bilan Sprechen</h3><p>Haqiqiy imtihondagidek: mavzuni tanlang, <b>mikrofon tugmasini bosib nemischa gapiring</b>, AI imtihon oluvchi sifatida ovoz bilan javob beradi. Oxirida telc mezonlari bo\'yicha baho va xatolaringiz tahlilini olasiz.</p></div>' +
+        '<div class="ai-card"><h3>🎙 Sprechen: o\'z ovozingizni eshiting</h3><p>Mavzuni tanlang, savollarga <b>nemischa gapirib yozib oling</b>, keyin o\'z ovozingizni qayta eshitib tahlil qiling. Bir savolga bir necha marta yozib, urinishlarni solishtirishingiz mumkin.</p><p>🔒 Yozuvlar faqat telefoningizda qoladi, hech qayerga yuborilmaydi.</p></div>' +
+        '<div class="ai-card"><h3>🤖 AI bilan baho</h3><p>AI imtihon oluvchi bilan to\'liq Sprechen va telc mezonlari bo\'yicha baho endi imtihon botida.</p><button class="ai-btn alt" id="aiexam">@' + EXAM_BOT + ' ga o\'tish</button></div>' +
         '<div class="ai-tabs">' + [1, 2, 3].map(function (n) { return '<button data-tl="' + n + '" class="' + (teil === n ? "on" : "") + '">Teil ' + n + '<br><small style="font-weight:600">' + ["Präsentation", "Diskussion", "Planen"][n - 1] + '</small></button>'; }).join("") + '</div>' +
         '<div class="ai-card"><input class="ai-q" id="aiq" placeholder="Mavzu qidirish…" value="' + esc(q) + '" autocomplete="off">' +
         (teil === 1 ? '<button class="ai-it" data-own="1"><b>✏️ O\'z mavzuim</b><small>Imtihonda tushgan mavzuni o\'zingiz yozing</small></button>' : "") +
         rows.map(function (p) { var sub = teil === 1 ? ((p[0].uz ? p[0].uz + " · " : "") + (p[0].points || "")) : (p[0].uz || ""); return '<button class="ai-it" data-i="' + p[1] + '"><b>' + esc(p[0].title) + '</b><small>' + esc(sub) + '</small></button>'; }).join("") +
         (rows.length ? "" : '<p>Topilmadi.</p>') + '</div>';
+      root.querySelector("#aiexam").onclick = function () {
+        var u = "https://t.me/" + EXAM_BOT;
+        try { if (window.Telegram && Telegram.WebApp && Telegram.WebApp.openTelegramLink) { Telegram.WebApp.openTelegramLink(u); return; } } catch (e) {}
+        window.open(u, "_blank");
+      };
       [].forEach.call(root.querySelectorAll("[data-tl]"), function (b) { b.onclick = function () { teil = +b.dataset.tl; q = ""; try { localStorage.setItem("ai_teil", teil); } catch (e) {} home(); }; });
       var qi = root.querySelector("#aiq"); qi.oninput = function () { q = qi.value; var pos = qi.selectionStart; home(); var n = root.querySelector("#aiq"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} };
       [].forEach.call(root.querySelectorAll("[data-i]"), function (b) { b.onclick = function () { begin(list()[+b.dataset.i]); }; });
@@ -241,6 +283,7 @@
     function removeBar() { var b = document.getElementById("ai-bar"); if (b) b.remove(); }
 
     function begin(topic) {
+      if (!EX) return practice(topic); // asosiy bot: AI o'rniga ovozli mashq
       unlock(); hap();
       S = { topic: topic, hist: [], busy: false, ended: false, rec: false, t0: 0, tmr: null, typing: false };
       chat(); ask({ start: true });
@@ -252,9 +295,103 @@
       return { title: t.title, task: t.task || t.head || "", text: t.text || "", points: t.points || "" };
     }
 
-    function chat() {
-      var t = S.topic;
-      var task = teil === 1
+    // ---------- Ovozli mashq: yozib olish va qayta eshitish ----------
+    function practice(topic) {
+      if (prCleanup) prCleanup();
+      stopPlay(); removeBar(); hap();
+      var t = topic, steps;
+      if (teil === 1) {
+        steps = [
+          { de: "Präsentation (ca. 2 Minuten)", uz: "Kirish → punktlar bo'yicha asosiy qism → xulosa. Taxminan 2 daqiqa to'xtamasdan gapiring.", max: MAXSEC[1] },
+          { de: "Nachfrage des Prüfers", uz: "Imtihonda taqdimotdan keyin 1 ta savol beriladi. Taqdimotda aytmagan bir jihat haqida 30–60 soniya javob bering, masalan: «Wie ist das in Usbekistan?»", max: 90 }
+        ];
+      } else if (teil === 2) {
+        steps = Q2.map(function (x) { return { de: x[0], uz: x[1], max: 120 }; });
+      } else {
+        var pts = String(t.points || "").split(" / ").map(function (s) { return s.trim(); }).filter(Boolean);
+        steps = pts.map(function (p) { return { de: "Vorschlag: " + p, uz: "Shu punkt bo'yicha taklif bering, sababini ayting va sherigingiz fikrini so'rang.", max: 120 }; });
+        if (!steps.length) steps.push({ de: "Gemeinsam planen", uz: "Takliflar bering, fikr bildiring, vazifalarni taqsimlang.", max: 120 });
+        steps.push({ de: "Zusammenfassung", uz: "Kelishilgan rejani qisqacha yakunlang: kim nima qiladi.", max: 90 });
+      }
+      steps.forEach(function (s) { s.takes = []; });
+      var P = { steps: steps, rec: -1, t0: 0, tmr: null };
+      prCleanup = function () {
+        if (P.tmr) clearInterval(P.tmr);
+        if (P.rec >= 0) { try { Rec.stop(); } catch (e) {} P.rec = -1; }
+        P.steps.forEach(function (s) { s.takes.forEach(function (k) { try { URL.revokeObjectURL(k.url); } catch (e) {} }); s.takes = []; });
+        prCleanup = null;
+      };
+      var ul = function (a) { return '<ul class="ai-l">' + a.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; };
+      var ck = function (a) { return a.map(function (x) { return '<label><input type="checkbox"><span>' + esc(x) + '</span></label>'; }).join(""); };
+      root.innerHTML =
+        '<div class="ai-top"><b>' + TN[teil] + '</b><button class="ai-x" id="prback">✕ Chiqish</button></div>' +
+        '<div class="ai-card ai-task">' + taskHtml(t) + '</div>' +
+        steps.map(function (s, i) {
+          return '<div class="ai-card pr-st" data-st="' + i + '"><span class="n">' + (steps.length > 1 ? (i + 1) + ' / ' + steps.length : "Javob") + '</span>' +
+            '<div class="de">' + esc(s.de) + '</div><div class="uz">' + esc(s.uz) + '</div>' +
+            '<button class="pr-rec" data-rec="' + i + '">🎙 Yozib olish</button><div class="pr-takes"></div></div>';
+        }).join("") +
+        '<div class="ai-card"><h3>🎧 Qanday tahlil qilish kerak</h3><p>1) Yozuvni eshiting va xatolaringizni yozib oling. 2) Shu javobni qayta yozing. 3) Ikki urinishni solishtiring. 4) Pastdagi ro\'yxatni belgilang.</p></div>' +
+        '<div class="ai-card pr-ck"><h3>✅ O\'zingizni tekshiring</h3><h4>' + esc(TN[teil]) + '</h4>' + ck(CHECK[teil]) + '<h4>Til</h4>' + ck(CHECK.all) + '</div>' +
+        '<div class="ai-card"><h3>💬 Foydali iboralar</h3>' + ul(PHRASES[teil]) + '</div>' +
+        '<button class="ai-btn alt" id="prhome">Boshqa mavzu</button>';
+      window.scrollTo(0, 0);
+      root.querySelector("#prback").onclick = root.querySelector("#prhome").onclick = function () {
+        var n = 0; P.steps.forEach(function (s) { n += s.takes.length; });
+        if (P.rec >= 0 || n) { if (!confirm("Chiqsangiz yozuvlaringiz o'chadi. Chiqasizmi?")) return; }
+        home();
+      };
+      [].forEach.call(root.querySelectorAll("[data-rec]"), function (b) { b.onclick = function () { tap(+b.dataset.rec); }; });
+
+      function syncBtns() {
+        [].forEach.call(root.querySelectorAll("[data-rec]"), function (b) {
+          var i = +b.dataset.rec;
+          if (P.rec === i) { b.className = "pr-rec on"; b.disabled = false; b.textContent = "⏹ To'xtatish · " + mmss((Date.now() - P.t0) / 1000) + " / " + mmss(P.steps[i].max); }
+          else { b.className = "pr-rec"; b.disabled = P.rec >= 0; b.textContent = P.steps[i].takes.length ? "🎙 Yana yozib olish" : "🎙 Yozib olish"; }
+        });
+      }
+      function note(i, html, ms) {
+        var box = root.querySelector('[data-st="' + i + '"]'); if (!box) return;
+        var e = document.createElement("div"); e.className = "ai-err"; e.innerHTML = html; box.appendChild(e);
+        if (ms) setTimeout(function () { e.remove(); }, ms);
+      }
+      function drawTakes(i) {
+        var box = root.querySelector('[data-st="' + i + '"] .pr-takes'); if (!box) return;
+        var s = P.steps[i];
+        box.innerHTML = s.takes.map(function (k, j) {
+          return '<div class="pr-tk"><b>' + (j + 1) + '-urinish · ' + mmss(k.sec) + '</b><audio controls preload="metadata" playsinline src="' + k.url + '"></audio><button data-del="' + j + '" title="O\'chirish">🗑</button></div>';
+        }).join("");
+        [].forEach.call(box.querySelectorAll("audio"), function (a) {
+          a.addEventListener("play", function () { [].forEach.call(root.querySelectorAll("audio"), function (o) { if (o !== a) try { o.pause(); } catch (e) {} }); });
+        });
+        [].forEach.call(box.querySelectorAll("[data-del]"), function (d) {
+          d.onclick = function () { var j = +d.dataset.del; try { URL.revokeObjectURL(s.takes[j].url); } catch (e) {} s.takes.splice(j, 1); drawTakes(i); syncBtns(); };
+        });
+      }
+      function tap(i) {
+        if (P.rec >= 0 && P.rec !== i) return;
+        if (P.rec < 0) {
+          [].forEach.call(root.querySelectorAll("audio"), function (o) { try { o.pause(); } catch (e) {} });
+          hap("medium");
+          Rec.start(PR_RATE).then(function () {
+            if (!prCleanup) { try { Rec.stop(); } catch (e) {} return; } // foydalanuvchi chiqib ketgan
+            P.rec = i; P.t0 = Date.now(); syncBtns();
+            P.tmr = setInterval(function () { if (P.rec < 0) return; syncBtns(); if ((Date.now() - P.t0) / 1000 >= P.steps[P.rec].max) tap(P.rec); }, 500);
+          }, function () {
+            note(i, "🎙 Mikrofonga ruxsat berilmadi. Telegram sozlamalaridan mikrofonga ruxsat bering va qayta urinib ko'ring.");
+          });
+          return;
+        }
+        clearInterval(P.tmr); P.tmr = null; P.rec = -1; hap("medium");
+        var r = Rec.stop();
+        if (r.sec < 1) { syncBtns(); note(i, "Juda qisqa yozuv. Tugmani bosing, gapiring, tugatgach yana bosing.", 4000); return; }
+        P.steps[i].takes.push({ url: URL.createObjectURL(r.blob), sec: r.sec });
+        drawTakes(i); syncBtns();
+      }
+    }
+
+    function taskHtml(t) {
+      return teil === 1
         ? '<b>Thema: ' + esc(t.title) + '</b>' + (t.uz ? ' <span style="color:#8a93a6">(' + esc(t.uz) + ')</span>' : "") + (t.points ? '<br><span style="color:#5b6577">Punkte: ' + esc(t.points) + '</span>' + (t.pointsUz ? ' <span style="color:#8a93a6">(' + esc(t.pointsUz) + ')</span>' : "") : "") + '<br>Taqdimot ~2 daqiqa: kirish → asosiy qism (yuqoridagi punktlar bo\'yicha) → xulosa. Keyin Prüfer 1 ta savol beradi.'
         : EX && teil === 2
         ? '<b>' + esc(t.head) + '</b>' + (t.text ? '<div class="tx">' + esc(t.text) + '</div>' : "")
@@ -263,6 +400,10 @@
         : teil === 2
         ? '<b>' + esc(t.head) + '</b>' + (t.text || t.textUz ? '<details><summary>Matnni o\'qish</summary><div class="tx">' + esc(t.text || t.textUz) + '</div>' + (t.text && t.textUz ? '<details><summary>O\'zbekcha tarjima</summary><div class="tx">' + esc(t.textUz) + '</div></details>' : "") + '</details>' : "")
         : '<b>' + esc(t.title) + '</b><br>' + esc(t.task || "") + (t.taskUz ? '<details><summary>O\'zbekcha</summary><div class="tx">' + esc(t.taskUz) + '</div></details>' : "");
+    }
+
+    function chat() {
+      var task = taskHtml(S.topic);
       root.innerHTML =
         '<div class="ai-top"><b>' + TN[teil] + (EX ? " · " + teil + "/3" : "") + '</b>' + (EX ? "" : '<button class="ai-x" id="aiback">✕ Chiqish</button>') + '</div>' +
         '<div class="ai-card ai-task">' + task + '</div><div class="ai-chat" id="aich"></div>';
@@ -409,6 +550,7 @@
   }
 
   function unmount() {
+    try { if (prCleanup) prCleanup(); } catch (e) {}
     try { stopPlay(); } catch (e) {}
     try { if (Rec.on) Rec.stop(); } catch (e) {}
     var b = document.getElementById("ai-bar"); if (b) b.remove();
