@@ -8,6 +8,7 @@ The telc B2 prep site is at `telc/`. Students open it ONLY through the Telegram 
 - `telc/admin.html` — admin panel (opened in the bot with /panel).
 - `telc/*.js`, `telc/h`, `l1`, … — images. They are public, which is fine.
 - `tools/pack.mjs` — encrypt/decrypt.
+- `telc/me.bin` — Behzod's personal copy (separate key). **Do not touch, change or delete it.**
 
 ## Changing the site
 The key (`TELC_KEY`) is not in this repo. Ask the admin for it and never write it into a file.
