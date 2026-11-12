@@ -56,6 +56,28 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
   try{W&&W.ready();W&&W.expand();}catch(e){}
   try{if(W&&/^(tdesktop|macos|weba|webk|web|unigram)$/.test(W.platform)&&W.isVersionAtLeast&&W.isVersionAtLeast("8.0")&&!W.isFullscreen)W.requestFullscreen();}catch(e){}
   const fam=(location.hash.match(/[#&]k=([\w-]+)/)||[])[1]||"";
+  const DV="https://yhljeyxcporqienvdjax.supabase.co/functions/v1/qurilma";
+  async function getDev(W){
+    var K="telc_dev",a="",b="",DS=null,ok=function(s){return /^[a-f0-9]{32}$/.test(s)};
+    try{a=localStorage.getItem(K)||""}catch(e){}
+    try{if(W&&W.isVersionAtLeast&&W.isVersionAtLeast("9.0")&&W.DeviceStorage)DS=W.DeviceStorage}catch(e){}
+    if(DS)b=await new Promise(function(res){var t=setTimeout(function(){res("")},1500);try{DS.getItem(K,function(e,v){clearTimeout(t);res(e?"":(v||""))})}catch(e){clearTimeout(t);res("")}});
+    var d=ok(b)?b:ok(a)?a:"";
+    if(!d){var u=new Uint8Array(16);crypto.getRandomValues(u);d=[].map.call(u,function(x){return("0"+x.toString(16)).slice(-2)}).join("")}
+    try{localStorage.setItem(K,d)}catch(e){}
+    if(DS&&b!==d){try{DS.setItem(K,d,function(){})}catch(e){}}
+    return d;
+  }
+  // Qurilma qulfi: bitta akkaunt = bitta qurilma. Faqat aniq "device" javobida bloklanadi (server ishlamasa — o'tkazib yuboradi).
+  async function devCheck(W,init){
+    try{
+      var c=new AbortController(),t=setTimeout(function(){c.abort()},7000);
+      var j=await (await fetch(DV+"/check",{method:"POST",headers:{"content-type":"application/json"},signal:c.signal,body:JSON.stringify({initData:init,dev:await getDev(W),plat:W?W.platform:"web"})})).json();
+      clearTimeout(t);return j;
+    }catch(e){return null}
+  }
+  function devMsg(j){return "Bitta akkaunt faqat bitta qurilmada ishlaydi. Bu akkaunt boshqa qurilmaga biriktirilgan.<br><br>Qurilmangizni almashtirgan bo'lsangiz, ustozingizga yozing: <b>@Timur_Rakhmonov</b><br><small>ID: "+String(j.uid||"").replace(/[^\d-]/g,"")+"</small>"}
+  if(!fam&&init){const dj=await devCheck(W,init); if(dj&&dj.err==="device") return show("📱 "+devMsg(dj));}
   let r;
   try{ r=await (await fetch(FN+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(fam?{fam}:{initData:init,plat:W?W.platform:"web"})})).json(); }
   catch(e){ return show("⚠️ Internet aloqasini tekshiring va qayta oching."); }
