@@ -76,8 +76,15 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
       clearTimeout(t);return j;
     }catch(e){return null}
   }
-  function devMsg(j){return "Bitta akkaunt faqat bitta qurilmada ishlaydi. Bu akkaunt boshqa qurilmaga biriktirilgan.<br><br>Qurilmangizni almashtirgan bo'lsangiz, ustozingizga yozing: <b>@Timur_Rakhmonov</b><br><small>ID: "+String(j.uid||"").replace(/[^\d-]/g,"")+"</small>"}
-  if(!fam&&init){const dj=await devCheck(W,init); if(dj&&dj.err==="device") return show("📱 "+devMsg(dj));}
+  function devMsg(j){if(j&&j.wait)return "Ikkinchi telefoningizga o‘tish so‘rovi qabul qilindi.<br><br><b>"+(+j.wait)+" daqiqadan</b> keyin botni shu telefonda qayta oching. O‘shanda boshqa telefoningizdagi bot avtomatik yopiladi.";return "Bitta akkaunt faqat bitta qurilmada ishlaydi. Bu akkaunt boshqa qurilmaga biriktirilgan.<br><br>Qurilmangizni almashtirgan bo'lsangiz, ustozingizga yozing: <b>@Timur_Rakhmonov</b><br><small>ID: "+String(j.uid||"").replace(/[^\d-]/g,"")+"</small>"}
+  let DJ=null;
+  // 2 telefon tartibidagi o'quvchi (server /check javobida multi:true): ochiq sahifa har 30 soniyada tekshiradi,
+  // akkaunt boshqa telefonga o'tkazilgan bo'lsa shu telefonda bot yopiladi. Boshqa o'quvchilarda bu kod ishlamaydi.
+  function hbScript(dev){
+    var B=JSON.stringify({u:DV+"/alive",b:JSON.stringify({initData:init,dev:dev})}).replace(/</g,"\\u003c");
+    return "<script>(function(){var B="+B+";var t=setInterval(function(){fetch(B.u,{method:'POST',headers:{'content-type':'application/json'},body:B.b}).then(function(r){return r.json()}).then(function(j){if(j&&j.err==='kick'){clearInterval(t);document.body.innerHTML='<div style=\"font:600 17px system-ui,sans-serif;text-align:center;padding:48px 20px;line-height:1.5\">📱 Akkauntingiz boshqa telefonga o‘tkazildi.<br><br>Bu telefonda bot yopildi.</div>'}}).catch(function(){})},30000)})();<\/script>";
+  }
+  if(!fam&&init){const dj=await devCheck(W,init); if(dj&&dj.err==="device") return show("📱 "+devMsg(dj)); DJ=dj;}
   let r;
   try{ r=await (await fetch(FN+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(fam?{fam}:{initData:init,plat:W?W.platform:"web"})})).json(); }
   catch(e){ return show("⚠️ Internet aloqasini tekshiring va qayta oching."); }
@@ -132,6 +139,7 @@ document.addEventListener("visibilitychange",function(){if(document.visibilitySt
 })();<\/script>`;
   let html=r.html; const i=html.lastIndexOf("</body>");
   html = i>=0 ? html.slice(0,i)+inj+html.slice(i) : html+inj;
+  if(DJ&&DJ.multi) html+=hbScript(await getDev(W));
   document.open(); document.write(html); document.close();
 })();
 </script></body></html>
