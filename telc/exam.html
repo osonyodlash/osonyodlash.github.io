@@ -40,8 +40,8 @@
   if(!r.ok)return show("⚠️ Xatolik","Birozdan keyin qayta urinib ko'ring.<br><small>kod: "+String(r.err||r.code||r.message||"?").replace(/[<>&]/g,"")+"</small>");
   var boot="<script>window.__X="+JSON.stringify({fn:FN,initData:init,name:r.name,uid:r.uid}).replace(/</g,"\\u003c")+"<\/script>";
   var html=r.html;
-  // 13.11.2026 (juma): 12 soat davomida faqat ustoz tanlagan biletlar, har bir Teil aralash tartibda. Muddat tugagach odatdagi tartib.
-  var FRI_END=Date.parse("2026-11-14T09:00:00+05:00");
+  // 13.11.2026 (juma): 14.11 soat 13:00 gacha (Toshkent) faqat ustoz tanlagan biletlar, har bir Teil aralash tartibda. Muddat tugagach odatdagi tartib.
+  var FRI_END=Date.parse("2026-11-14T13:00:00+05:00");
   if(Date.now()<FRI_END){
     var PA='function pick(id){const all=DATA[id];let used=new Set((ls.get("exu_"+id)||"").split(",").filter(Boolean));let left=all.filter(x=>!used.has(x.v));if(!left.length){used=new Set();left=all}const x=left[Math.random()*left.length|0];used.add(x.v);ls.set("exu_"+id,[...used].join(","));return x.v}';
     var FRI={L1:"1,2,3,6,8,9,10a,13,14,16,17,23,38",L2:"6,7,9,10,12,13,15,16a,17,18,21",L3:"4,9,14,16,17,18,20,21,23,26,27",H1:"2,4,5,7,8,11,12,14,33,39",H2:"1,1a,4,5,7,9,10,11,12,32,33",H3:"3,4,6,15,31,32,32a,34,36"};
