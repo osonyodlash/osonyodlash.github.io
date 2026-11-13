@@ -47,6 +47,10 @@
     var FRI={L1:"1,2,3,6,8,9,10a,13,14,16,17,23,38",L2:"6,7,9,10,12,13,15,16a,17,18,21",L3:"4,9,14,16,17,18,20,21,23,26,27",H1:"2,4,5,7,8,11,12,14,33,39",H2:"1,1a,4,5,7,9,10,11,12,32,33",H3:"3,4,6,15,31,32,32a,34,36"};
     var PB='function pick(id){let all=DATA[id],uk="exu_"+id;const fr=('+JSON.stringify(FRI)+')[id];if(fr&&Date.now()<'+FRI_END+'){const f=all.filter(x=>fr.split(",").includes(x.v));if(f.length){all=f;uk="exf1113_"+id}}let used=new Set((ls.get(uk)||"").split(",").filter(Boolean));let left=all.filter(x=>!used.has(x.v));if(!left.length){used=new Set();left=all}const x=left[Math.random()*left.length|0];used.add(x.v);ls.set(uk,[...used].join(","));return x.v}';
     if(html.indexOf(PA)>=0)html=html.replace(PA,function(){return PB});
+    // Bosh sahifada qizil e'lon (muddat tugagach o'zi yo'qoladi)
+    var HA='<main><div class="card"><h2>${X.name?esc(X.name)+", imtihonga xush kelibsiz!"';
+    var HB='<main>${Date.now()<'+FRI_END+'?`<div class="card" style="border:2px solid #c62828;background:#fdecea;color:#c62828;font-weight:800;text-align:center;line-height:1.45">🔴 Imtihonda tushadigan ayni imtihon savollari bo\'layapti.<br>Tugash vaqti: 14.11.2026 13:00</div>`:""}<div class="card"><h2>${X.name?esc(X.name)+", imtihonga xush kelibsiz!"';
+    if(html.indexOf(HA)>=0)html=html.replace(HA,function(){return HB});
   }
   var i=html.indexOf("<script>");
   html=i>=0?html.slice(0,i)+boot+html.slice(i):boot+html;
