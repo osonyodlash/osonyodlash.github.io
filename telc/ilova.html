@@ -141,8 +141,10 @@ window.IL=(function(){
  setInterval(function(){if(document.visibilityState==="visible")ping()},30000);
  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){sh&&(sh.style.display="block")}else{sh&&(sh.style.display="none");last=Date.now();ping()}});
 })();<\/script>`;
+    // «👥 Hozir kim shug'ullanyapti» (17.11.2026): telc/live.js
+    const liveTag='<script>window.__LIVE={mode:"app"}<\/script><script src="live.js?v=1" charset="utf-8"><\/script>';
     let html=r.html;const i=html.lastIndexOf("</body>");
-    html=i>=0?html.slice(0,i)+inj+html.slice(i):html+inj;
+    html=i>=0?html.slice(0,i)+inj+liveTag+html.slice(i):html+inj+liveTag;
     // Ilova ikonkasi va sarlavhasi saqlanib qolsin
     html=html.replace(/<head>/i,'<head><link rel="manifest" href="ilova.webmanifest"><link rel="apple-touch-icon" href="ic/apple-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="telc B2">');
     document.open();document.write(html);document.close();

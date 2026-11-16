@@ -38,3 +38,7 @@ Students install https://osonyodlash.github.io/telc/ilova.html to the home scree
 - Each phone makes a non-extractable ECDSA key; every request is signed. Copying the app to another phone doesn't work — a new phone means a new request.
 - Approval: student sends `/start app_CODE` to @Timur_B2simulyatsiya_bot → teacher gets ✅/❌ buttons. Approving a new phone closes the student's previous one. The exam bot's webhook points to `ilova/webhook`; everything except these app updates is forwarded unchanged to `imtihon/webhook`. To undo: `ilova/setup` with `what: "restore"`.
 - Revoke by hand: `update app_dev set status = 'old' where tg_id = <ID> and status = 'ok';`
+
+## Live "who is online" — `telc/live.js`
+A small 👥 button (bottom left) shows who is studying right now and in which section. It is loaded by `telc/index.html` (mode `tg`), `telc/ilova.html` (mode `app`) and `telc/exam.html` (mode `exam`, replaces the exam page's own 👥 button and also shows the current Teil).
+- Server: Supabase `yhljeyxcporqienvdjax`, function `ilova`: `/livetg`, `/live`, `/examlive`. Tables `main_live` (platform) and `exam_live` (+ column `teil`); SQL functions `main_live_ping`, `exam_live_ping2`. The teacher is never listed.
