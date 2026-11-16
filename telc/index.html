@@ -89,12 +89,15 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
   try{ r=await (await fetch(FN+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(fam?{fam}:{initData:init,plat:W?W.platform:"web"})})).json(); }
   catch(e){ return show("⚠️ Internet aloqasini tekshiring va qayta oching."); }
   if(r.err==="notg") return show("🔒 Bu sayt faqat Telegram bot orqali ochiladi."+(r.bot?`<br><a class="b" href="https://t.me/${r.bot}">@${r.bot} ni ochish</a>`:""));
+  // Guruhsiz ruxsat (16.11.2026): asosiy server "guruhda emas" desa, ruxsat ro'yxatidagi ID (main_access) uchun zaxira serverdan ochiladi
+  let FN2=FN;
+  if(r.err==="notmember"&&init){try{const OQ="https://yhljeyxcporqienvdjax.supabase.co/functions/v1/ochiq";const r2=await (await fetch(OQ+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:init})})).json();if(r2&&r2.ok){r=r2;FN2=OQ}}catch(e){}}
   if(r.err==="notmember") return show("🔒 Siz o'quvchilar guruhi a'zosi emassiz.<br><br>Ustozingizga murojaat qiling.");
   if(r.err==="blocked") return show("⛔ Kirish cheklangan. Ustozingizga murojaat qiling.");
   if(r.err==="badlink") return show("🔒 Havola eskirgan yoki noto'g'ri.");
   if(r.ok&&r.fam){ document.open(); document.write(r.html); document.close(); return; }
   if(!r.ok) return show("⚠️ Xatolik: "+(r.msg||r.err||"")+"<br>Keyinroq qayta urinib ko'ring.");
-  const C={fn:FN,uid:r.uid,vid:r.vid,sid:r.sid};
+  const C={fn:FN2,uid:r.uid,vid:r.vid,sid:r.sid};
   const tag=(r.un?"@"+r.un:r.name).replace(/[<>&"]/g,"");
   const inj=`<div id="__sh"></div><style>body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea{-webkit-user-select:text;user-select:text}#__sh{position:fixed;inset:0;z-index:2147483646;background:#fff;display:none}@media print{body *{display:none!important}}#__lk{position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font:16px sans-serif;padding:24px}</style>
 <script>(function(){var C=${JSON.stringify(C)},T=${JSON.stringify(tag)};
