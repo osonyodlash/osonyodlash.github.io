@@ -4,8 +4,8 @@
 <title>telc B2</title><meta name="robots" content="noindex">
 <!-- Telefon ilovasi (PWA), 17.11.2026: Telegram'siz ochiladi, lekin har bir telefon ustoz tasdiqlagandan keyingina ishlaydi.
      Server: Supabase yhljeyxcporqienvdjax, funksiya "ilova". Tasdiqlash — @Timur_B2simulyatsiya_bot orqali. -->
-<link rel="manifest" href="ilova.webmanifest">
-<link rel="apple-touch-icon" href="ic/apple-180.png">
+<link rel="manifest" href="ilova.webmanifest?v=2">
+<link rel="apple-touch-icon" href="ic/apple-180.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="telc B2">
@@ -61,7 +61,7 @@ window.IL=(function(){
 <script>
 (async function(){
   const m=document.getElementById("m"),show=h=>{m.innerHTML=h};
-  const LOGO='<img class="logo" src="ic/icon-192.png" alt="">';
+  const LOGO='<img class="logo" src="ic/icon-192.png?v=2" alt=""><div style="margin:-6px 0 14px;font:600 13px -apple-system,sans-serif;letter-spacing:.3px;color:#8a6d1f">Timur Rakhmonov · telc B2 tayyorlov</div>';
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
   const standalone=navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
 
@@ -146,7 +146,7 @@ window.IL=(function(){
     let html=r.html;const i=html.lastIndexOf("</body>");
     html=i>=0?html.slice(0,i)+inj+liveTag+html.slice(i):html+inj+liveTag;
     // Ilova ikonkasi va sarlavhasi saqlanib qolsin
-    html=html.replace(/<head>/i,'<head><link rel="manifest" href="ilova.webmanifest"><link rel="apple-touch-icon" href="ic/apple-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="telc B2">');
+    html=html.replace(/<head>/i,'<head><link rel="manifest" href="ilova.webmanifest?v=2"><link rel="apple-touch-icon" href="ic/apple-180.png?v=2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="telc B2">');
     document.open();document.write(html);document.close();
   }
 
