@@ -48,6 +48,20 @@
   if(!r.ok)return show("⚠️ Xatolik","Birozdan keyin qayta urinib ko'ring.<br><small>kod: "+String(r.err||r.code||r.message||"?").replace(/[<>&]/g,"")+"</small>");
   var boot="<script>window.__X="+JSON.stringify({fn:FN,initData:init,name:r.name,uid:r.uid}).replace(/</g,"\\u003c")+"<\/script>";
   var html=r.html;
+  // Faqat Lesen Teil 2 (bir martalik) — guruh a'zosi bo'lgan tanlangan o'quvchilar uchun (17.11.2026).
+  // Server bunday o'quvchiga «odatdagi sahifa + Lesen 2 tugmasi» beradi; bu yerda sahifa faqat Lesen 2 mashqiga aylantiriladi.
+  // Natija yuborilgach server ruxsatni yopadi va keyingi ochilishda odatdagi imtihon qaytadi. Ro'yxatda ID emas, sha256 ning boshi.
+  try{
+    var L2O=["6a764e710e435d2d"],L2X='if(L&&L.phase==="done"&&L.sent){L=null;ls.set(L15_KEY,"")}(function(){const o=ensureL15FAB;';
+    if(r.uid&&html.indexOf('"📖 Lesen Teil 2 · 1–20"')>=0&&html.indexOf(L2X)>=0){
+      var hb=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(String(r.uid))));
+      var hh=Array.prototype.map.call(hb,function(b){return("0"+b.toString(16)).slice(-2)}).join("").slice(0,16);
+      if(L2O.indexOf(hh)>=0){
+        var a=html.indexOf(L2X),b=html.indexOf("\n",a);
+        html=html.slice(0,a)+'delete MODES.G;delete MODES.S;delete MODES.M;S=null;ls.set(KEY,"");ensureL15FAB=function(){};viewIntro=function(){app.innerHTML=\'<main><div class="card"><h2>✅ Imtihon tugadi</h2><p>Natija ustozga yuborildi. Botni yopishingiz mumkin.</p></div></main>\'};if(!(L&&L.phase))newL15();'+html.slice(b);
+      }
+    }
+  }catch(e){}
   // Har hafta: juma 18:00 dan shanba 18:00 gacha (Toshkent, UTC+5) faqat ustoz tanlagan biletlar, har bir Teil aralash tartibda.
   // Oyna tashqarisida odatdagi tartib va qizil e'lon yo'q. Biletlar ro'yxati (FRI) ustoz yangilaguncha har hafta bir xil.
   var FRI_END=0,ENDTXT="";
