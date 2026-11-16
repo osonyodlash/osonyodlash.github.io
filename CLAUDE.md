@@ -30,3 +30,11 @@ Supabase project `telc-b2` (ref `hveicvjjqiehjxkwqobr`). Its Edge Function `tg`:
 - `/admin` — data for the panel.
 
 Tables: `users`, `visits`, `groups`, `denied`.
+
+## Phone app (PWA) — `telc/ilova.html`
+Students install https://osonyodlash.github.io/telc/ilova.html to the home screen (Safari → Share → Add to Home Screen). It opens the same `app.bin` without Telegram, but each phone works only after the teacher approves it.
+- `telc/ilova.html` — loader; `telc/ilova.webmanifest`, `telc/ic/*` — icon/manifest.
+- Server: Supabase project `yhljeyxcporqienvdjax`, Edge Function `ilova` (`/req`, `/status`, `/open`, `/ping`, `/webhook`, `/setup`), table `app_dev`.
+- Each phone makes a non-extractable ECDSA key; every request is signed. Copying the app to another phone doesn't work — a new phone means a new request.
+- Approval: student sends `/start app_CODE` to @Timur_B2simulyatsiya_bot → teacher gets ✅/❌ buttons. Approving a new phone closes the student's previous one. The exam bot's webhook points to `ilova/webhook`; everything except these app updates is forwarded unchanged to `imtihon/webhook`. To undo: `ilova/setup` with `what: "restore"`.
+- Revoke by hand: `update app_dev set status = 'old' where tg_id = <ID> and status = 'ok';`
