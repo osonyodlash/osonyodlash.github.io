@@ -86,7 +86,7 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
   }
   // Rad etilgan urinishlar jurnali (17.11.2026): hisobot/attempt — ustoz ro'yxatni so'raganda ko'rinadi
   const ATT=(reason)=>{try{if(init)fetch("https://yhljeyxcporqienvdjax.supabase.co/functions/v1/hisobot/attempt",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:init,bot:"platforma",reason:reason,plat:W?W.platform:"web"}),keepalive:true}).catch(()=>{})}catch(e){}};
-  if(!fam&&init){const dj=await devCheck(W,init); if(dj&&dj.err==="device"){ATT("device");return show("📱 "+devMsg(dj));} DJ=dj;}
+  if(!fam&&init){const dj=await devCheck(W,init); if(dj&&dj.err==="maint"){ATT("blocked");return show("🛠 Texnik ishlar ketayotgani sababli vaqtinchalik kirib bo‘lmaydi.");} if(dj&&dj.err==="device"){ATT("device");return show("📱 "+devMsg(dj));} DJ=dj;}
   let r;
   try{ r=await (await fetch(FN+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(fam?{fam}:{initData:init,plat:W?W.platform:"web"})})).json(); }
   catch(e){ return show("⚠️ Internet aloqasini tekshiring va qayta oching."); }
