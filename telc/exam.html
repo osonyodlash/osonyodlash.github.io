@@ -66,6 +66,20 @@
       }
     }
   }catch(e){}
+  // Bir martalik Lesen Teil 1 — faqat 1–15 biletlar aralash (19.11.2026). Server bu o'quvchiga odatdagi bir martalik Lesen 1 (scope L1)
+  // sahifasini beradi; bu yerda biletlar 1–15 bilan cheklanadi (1a kabi variantlar kirmaydi). Natija ketgach server ruxsatni yopadi.
+  try{
+    var L115=["9c26594ecc3e8b75"],LA='const all=DATA.L1.map(x=>x.v);',LK='L15_KEY="telc_lesen1all_1112",L15_N=DATA.L1.length',LR="/^([1-9]|1[0-5])$/";
+    if(r.uid&&html.indexOf(LA)>=0&&html.indexOf(LK)>=0){
+      var hb2=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(String(r.uid))));
+      var hh2=Array.prototype.map.call(hb2,function(b){return("0"+b.toString(16)).slice(-2)}).join("").slice(0,16);
+      if(L115.indexOf(hh2)>=0){
+        html=html.split(LK).join('L15_KEY="telc_lesen1_1to15",L15_N=DATA.L1.filter(x=>'+LR+'.test(x.v)).length');
+        html=html.split(LA).join('const all=DATA.L1.map(x=>x.v).filter(v=>'+LR+'.test(v));');
+        html=html.split('"📖 Lesen 1 · barcha biletlar"').join('"📖 Lesen Teil 1 · bilet 1–15"');
+      }
+    }
+  }catch(e){}
   // Har hafta: juma 18:00 dan shanba 18:00 gacha (Toshkent, UTC+5) faqat ustoz tanlagan biletlar, har bir Teil aralash tartibda.
   // Oyna tashqarisida odatdagi tartib va qizil e'lon yo'q. Biletlar ro'yxati (FRI) ustoz yangilaguncha har hafta bir xil.
   var FRI_END=0,ENDTXT="";
