@@ -40,6 +40,7 @@
   var dj=await devCheck(W,init);
   // Rad etilgan urinishlar jurnali (17.11.2026): hisobot/attempt — ustoz ro'yxatni so'raganda ko'rinadi
   var ATT=function(reason){try{if(init)fetch("https://yhljeyxcporqienvdjax.supabase.co/functions/v1/hisobot/attempt",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:init,bot:"imtihon",reason:reason,plat:W?W.platform:"web"}),keepalive:true}).catch(function(){})}catch(e){}};
+  if(dj&&dj.err==="maint"){ATT("blocked");return show("🛠 Texnik ishlar","Texnik ishlar ketayotgani sababli vaqtinchalik kirib bo‘lmaydi.");}
   if(dj&&dj.err==="device")ATT("device");
   if(dj&&dj.err==="device")return show(dj.wait?"📱 Telefon almashtirish":"📱 Boshqa qurilma",devMsg(dj));
   var r;
