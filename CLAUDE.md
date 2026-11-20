@@ -43,6 +43,14 @@ Students install https://osonyodlash.github.io/telc/ilova.html to the home scree
 A small 👥 button (bottom left) shows who is studying right now and in which section. It is loaded by `telc/index.html` (mode `tg`), `telc/ilova.html` (mode `app`) and `telc/exam.html` (mode `exam`, replaces the exam page's own 👥 button and also shows the current Teil).
 - Server: Supabase `yhljeyxcporqienvdjax`, function `ilova`: `/livetg`, `/live`, `/examlive`. Tables `main_live` (platform) and `exam_live` (+ column `teil`); SQL functions `main_live_ping`, `exam_live_ping2`. The teacher is never listed.
 
+## Schreiben (exam bot) — `telc/sw.js`
+Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic, the student writes the letter (typing or paste), AI corrects and grades it (3 criteria A–D ×3 = max 45; criterion I = D → 0).
+- Flow: Gesamte = Lesen → Hören → **Schreiben** → Sprechen; Nur schriftlich = Lesen → Hören → **Schreiben** → result; new mode «4) Nur Schreiben». 60 minutes (auto-submit), student can skip (0/45).
+- Lesen/Hören score (150, pass 135) and the certificate are unchanged; Schreiben is shown and sent to the teacher separately.
+- `telc/sw_topics.json` — the 35 topics (from the teacher's PDF, typos fixed). Used by both the page and the server.
+- `telc/exam.html` loads `sw.js` only if `schreiben/result` answers OK: the teacher (EXAM_TEACHER_ID) always; everyone else only when `bot_state.schreiben_open = '1'` (now `'0'`). Open for students: `update bot_state set value = '1' where key = 'schreiben_open';`
+- Server: Supabase `yhljeyxcporqienvdjax`, function `schreiben` (`/check`, `/result`, `/devcheck`), table `schreiben_results` (one row per student + exam id). Same Gemini keys/model as Sprechen. Limit 12 letters per student per day.
+
 ## Blocking and access reports
 - `blocked_users` table (project `yhljeyxcporqienvdjax`): a blocked Telegram ID can't open either bot (checked in the SQL function `device_check`). Add: `insert into blocked_users (tg_id, note) values (<ID>, '...')`.
 - "Texnik ishlar" block, both bots: `main_maint` table (same project). The `qurilma` function answers `err: "maint"` for these IDs (both @Shogirtlarim_uchun_bot and @Timur_B2simulyatsiya_bot), and `telc/index.html` / `telc/exam.html` show "🛠 Texnik ishlar ketayotgani sababli vaqtinchalik kirib bo‘lmaydi." Add: `insert into main_maint (tg_id, note) values (<ID>, '...')`; remove: `delete from main_maint where tg_id = <ID>`.
