@@ -1,0 +1,87 @@
+/* ===== ⏹ Imtihonni istalgan joyda yakunlash ===== */
+let FIN=null;
+const FINPH=["L","H","mid","mid2","M"];
+const _render0=render;
+render=function(){
+  if(!(L&&L.phase)&&S&&S.phase==="fin"){viewFin();return ensureL15FAB()}
+  _render0();finBtn();finBanner();
+};
+function finBtn(){
+  if(L&&L.phase)return;if(!S||!FINPH.includes(S.phase))return;
+  const bar=$("#bar");if(!bar||$("#finx"))return;
+  const b=document.createElement("button");b.id="finx";b.type="button";b.textContent="⏹ Yakunlash";
+  b.style.cssText="flex:none;background:#fdecea;color:#c62828;border:1.5px solid #eab0ab;border-radius:12px;padding:6px 11px;font:700 .82rem system-ui;cursor:pointer";
+  b.onclick=finAsk;
+  const tm=$("#tm");
+  if(tm){const w=document.createElement("span");w.style.cssText="display:flex;align-items:center;gap:8px";tm.replaceWith(w);w.append(tm,b)}else bar.append(b);
+}
+function finAsk(){
+  const o=document.createElement("div");o.id="finov";
+  o.style.cssText="position:fixed;inset:0;z-index:2147483500;background:rgba(20,28,48,.45);display:flex;align-items:center;justify-content:center;padding:18px";
+  o.innerHTML=`<div class="card" style="max-width:420px;width:100%;margin:0"><h2 style="margin:4px 0 8px">Imtihonni yakunlaysizmi?</h2>
+  <p style="margin:0;color:var(--muted)">Shu paytgacha ishlagan qismlaringiz hisoblanadi, natija ustozga yuboriladi va bosh menyuga qaytasiz. Ishlanmagan savollar 0 ball bo'ladi.</p>
+  <button class="go" id="finyes" style="background:#c62828">⏹ Ha, yakunlash</button><button class="go alt" id="finno" style="margin-top:10px">Davom etish</button></div>`;
+  document.body.appendChild(o);
+  $("#finno").onclick=()=>o.remove();
+  $("#finyes").onclick=()=>{o.remove();finStart()};
+}
+function finSum(){
+  const p=[];
+  if(S.res){let tp=0;S.res.secs.forEach(r=>{const s=SECS.find(x=>x.id===r.id);tp+=r.ok*s.pts});p.push(`✍️ Schriftlich: <b>${fp(tp)}/150</b>`)}
+  const d=(S.mund&&S.mund.done)||[];
+  if(S.mode!=="S"&&d.length)p.push(`🗣 Mündlich: <b>${mTotal()}/75</b> (${d.length}/3 Teil)`);
+  return p;
+}
+function finStart(){
+  if(!S)return;
+  try{window.AISprech&&window.AISprech.unmount()}catch(e){}
+  const ph=S.phase,mode=S.mode||"S",now=Date.now();
+  if(mode!=="M"&&(ph==="L"||ph==="H"||ph==="mid")){
+    if(!S.end.L)S.end.L=now;if(ph==="H")S.end.H=now;
+    S.res={id:S.id,ts:now,mode:mode,secs:SECS.map(gradeSec),usedL:Math.max(1,Math.round((S.end.L-S.t0.L)/60000)),
+      usedH:S.t0.H?Math.max(1,Math.round(((S.end.H||now)-S.t0.H)/60000)):0,auto:S.auto||{},early:ph};
+    S.sent=false;
+  }
+  const d=(S.mund&&S.mund.done)||[];
+  S.fin={from:ph,needS:!!(S.res&&!S.sent),needM:mode!=="S"&&d.length>0&&!S.mund.sent,sum:finSum()};
+  S.phase="fin";save();render();window.scrollTo(0,0);
+}
+function viewFin(){
+  const f=S.fin||{sum:[]};
+  app.innerHTML=`<div id="bar"><span>⏹ Imtihon yakunlanmoqda</span></div><main><div class="card"><h2>Imtihon yakunlandi</h2>
+  ${f.sum.length?`<ul class="rules">${f.sum.map(x=>`<li>${x}</li>`).join("")}</ul>`:`<p style="color:var(--muted)">Hech qaysi qism tugallanmagan — hisoblanadigan natija yo'q.</p>`}
+  <div id="snd" style="text-align:center;font-weight:600;color:var(--muted)"></div><p class="msg" id="msg"></p></div></main>`;
+  finSend();
+}
+async function finSend(){
+  const f=S.fin;if(!f)return;
+  const st=h=>{const e=$("#snd");if(e)e.innerHTML=h};
+  st("⏳ Natija ustozga yuborilmoqda…");
+  const post=b=>fetch(X.fn+"/submit",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(b)}).then(r=>r.json());
+  try{
+    if(f.needS&&!S.sent){const r=await post({initData:X.initData,res:S.res});if(!(r&&r.ok))throw 0;S.sent=true;save()}
+    if(f.needM&&!S.mund.sent){
+      const teile=S.mund.done.map(x=>({teil:x.teil,title:String(x.title||"").slice(0,80),s:x.s,tot:x.tot}));
+      const r=await post({initData:X.initData,kind:"mund",mode:S.mode,early:true,mund:{id:S.id,teile},res:S.mode==="G"?S.res:null});
+      if(!(r&&r.ok))throw 0;S.mund.sent=true;save()}
+  }catch(e){
+    st('⚠️ Natija yuborilmadi. Internetni tekshiring.');
+    const m=$("#msg");if(m){m.innerHTML='<button class="go" id="finre">Qayta yuborish</button><button class="go alt" id="finout" style="margin-top:10px">Yubormasdan bosh menyuga</button>';
+      $("#finre").onclick=finSend;$("#finout").onclick=finExit}
+    return;
+  }
+  finExit();
+}
+function finExit(){
+  const md=S.mode!=="S"&&((S.mund&&S.mund.done)||[]).length>0;
+  FIN={sum:(S.fin&&S.fin.sum)||[],sent:(!S.res||!!S.sent)&&(!md||!!S.mund.sent)};
+  S=null;CERT=null;ls.set(KEY,"");SEL=null;render();window.scrollTo(0,0);
+}
+function finBanner(){
+  if(!FIN||S||(L&&L.phase))return;const m=app.querySelector("main");if(!m||$("#finbn"))return;
+  const d=document.createElement("div");d.id="finbn";d.className="card";d.style.cssText="border-color:var(--ok);background:var(--okbg)";
+  d.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><b>⏹ Oldingi imtihon yakunlandi</b><button type="button" id="finbx" style="border:0;background:none;font:700 1.1rem system-ui;color:var(--muted);cursor:pointer">×</button></div>
+  ${FIN.sum.length?`<div style="margin-top:6px">${FIN.sum.join("<br>")}</div>`:`<div style="margin-top:6px;color:var(--muted)">Tugallangan qism yo'q edi.</div>`}
+  <div style="margin-top:6px;font-weight:600;color:var(--muted)">${FIN.sent?"✅ Natija ustozga yuborildi":FIN.sum.length?"⚠️ Natija ustozga yuborilmadi":""}</div>`;
+  m.prepend(d);$("#finbx").onclick=()=>{FIN=null;d.remove()};
+}
