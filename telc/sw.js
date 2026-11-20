@@ -3,7 +3,9 @@
    Imtihon sahifasining o'z o'zgaruvchilaridan foydalanadi (S, MODES, render, newExam, endPhase …) — sahifadan KEYIN yuklanishi shart.
    Oqim: Gesamte — Lesen → Hören → SCHREIBEN → Sprechen;  Nur schriftlich — Lesen → Hören → SCHREIBEN → natija;  «4) Nur Schreiben» — faqat Schreiben.
    Vaqt 60 daqiqa (tugasa yozilgani avtomatik topshiriladi). O'quvchi xohlasa o'tkazib yuboradi (0/45). Copy-paste mumkin.
-   Mavzular: sw_topics.json (35 ta). Baholash serverda (schreiben funksiyasi): 3 mezon A–D ×3, max 45. */
+   Mavzular: sw_topics.json (35 ta). Baholash serverda (schreiben funksiyasi): 3 mezon A–D ×3, max 45.
+   Hisob (20.11.2026): Schreiben Schriftlich ga qo'shiladi — Lesen 75 + Hören 75 + Schreiben 45 = 195, o'tish bali 135.
+   Shuning uchun Lesen/Hören natijasi ustozga Schreiben tugagandan KEYIN yuboriladi (imtihon serveri Schreiben balini o'zi qo'shadi). */
 (function(){
   if(typeof MODES==="undefined"||!MODES.S||typeof S==="undefined")return; // maxsus (bir martalik) sahifalarda ishlamaydi
   var SW_FN="https://yhljeyxcporqienvdjax.supabase.co/functions/v1/schreiben";
@@ -38,9 +40,9 @@
   /* ---- Rejimlar: Gesamte va Nur schriftlich ga Schreiben qo'shiladi, yangi «4) Nur Schreiben» ---- */
   var LI='<li>✍️ <b>Schreiben</b> — shikoyat xati (Beschwerde) · <b>'+SW_LIM+' daqiqa</b>. AI tekshiradi, xatolarni to\'g\'rilaydi va telc bo\'yicha <b>45 ball</b>dan baholaydi. Xohlasangiz o\'tkazib yuborishingiz mumkin.</li>';
   MODES.G.d="To'liq imtihon: avval Schriftlich (Lesen + Hören + Schreiben), keyin Mündlich (Sprechen)";
-  var g0=MODES.G.r;MODES.G.r=function(){var h=g0();var i=h.indexOf("<li>🗣");return i>=0?h.slice(0,i)+LI+h.slice(i):h+LI};
+  var g0=MODES.G.r;MODES.G.r=function(){var h=g0().replace("/150</b>","/195</b>");var i=h.indexOf("<li>🗣");return i>=0?h.slice(0,i)+LI+h.slice(i):h+LI};
   MODES.S.d="Faqat yozma qism: Lesen + Hören + Schreiben";
-  var s0=MODES.S.r;MODES.S.r=function(){var h=s0();var i=h.indexOf("<li>Hören'da");return i>=0?h.slice(0,i)+LI+h.slice(i):h+LI};
+  var s0=MODES.S.r;MODES.S.r=function(){var h=s0().replace("<b>150 ball</b>","<b>195 ball</b> (Lesen 75 + Hören 75 + Schreiben 45)");var i=h.indexOf("<li>Hören'da");return i>=0?h.slice(0,i)+LI+h.slice(i):h+LI};
   MODES.W={t:"4) Nur Schreiben",d:"Faqat yozma xat: shikoyat (Beschwerde), AI tekshiradi va baholaydi",
     r:function(){return '<li>📝 Mavzu tasodifiy beriladi (35 ta Beschwerde mavzusidan)</li><li>⏱ Vaqt: <b>'+SW_LIM+' daqiqa</b> — tugasa yozganingiz avtomatik topshiriladi</li><li>Xatni o\'zingiz yozasiz yoki boshqa joydan nusxa olib qo\'yishingiz mumkin</li><li>AI grammatik xatolarni to\'g\'rilaydi, tavsiya beradi va telc mezonlari bo\'yicha <b>45 ball</b>dan baholaydi</li><li>Natija ustozga ham yuboriladi</li>'}};
 
@@ -60,6 +62,15 @@
     _ep(auto);
     if(wasH&&S&&S.sw&&!S.sw.fin){S.sw.next=S.phase;S.phase="SW";save();render();window.scrollTo(0,0)}
   };
+
+  /* Lesen/Hören natijasi Schreiben tugaguncha ustozga yuborilmaydi (ball birga hisoblanadi) */
+  var _send=send;
+  send=function(){if(S&&S.sw&&!S.sw.fin&&S.mode!=="W")return;return _send()};
+  /* Sahifadagi Schriftlich bali: Lesen + Hören + Schreiben (195 dan) */
+  var swPts=function(){return S&&S.sw&&S.sw.fin&&S.mode!=="W"?(S.sw.skip||!S.sw.res?0:(+S.sw.res.total||0)):null};
+  var _sch=schrift;
+  schrift=function(){var W=_sch();var p=swPts();if(p!==null){W.tp+=p;W.tm+=45}return W};
+  if(typeof finSum==="function"){var _fs=finSum;finSum=function(){var a=_fs(),p=swPts();if(p!==null&&S&&S.res)a=a.map(function(x){return x.indexOf("Schriftlich")>=0?x.replace(/<b>([\d,]+)\/150<\/b>/,function(m,v){return "<b>"+fp(parseFloat(v.replace(",","."))+p)+"/195</b>"}):x});return a}}
 
   /* ---- Ko'rinishlar ---- */
   function bar(t,right){return '<div id="bar"><span>'+t+'</span>'+(right||"")+'</div>'}
@@ -124,6 +135,7 @@
       if(!r||!r.ok){var e=new Error("x");e.msg=r&&r.msg;throw e}
       if(r.skipped){w.skip=true;w.res=null}else w.res=r.res;
       w.ph="done";w.fin=true;S.phase=S.mode==="W"?"done":(w.next||"done");save();busy=false;render();window.scrollTo(0,0);
+      if(S.mode!=="W"&&!S.sent)_send(); // endi Lesen + Hören + Schreiben birga ustozga ketadi
     }catch(e){
       busy=false;
       var m=$("#msg");if(!m)return;
@@ -172,7 +184,7 @@
       if(!TP)return loadTopics(function(){extra()});
       var a=$("#again");if(!a)return;
       var d=document.createElement("div");d.id="swres";
-      d.innerHTML='<h4 class="sec">✍️ Schriftlich · Schreiben</h4>'+resHTML(S.sw);
+      d.innerHTML='<h4 class="sec">✍️ Schriftlich · Schreiben (Schriftlicher Ausdruck)</h4>'+resHTML(S.sw);
       a.parentNode.insertBefore(d,a);
     }
     if(S.phase==="mid2"&&!$("#swmid")){

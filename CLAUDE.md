@@ -46,7 +46,9 @@ A small 👥 button (bottom left) shows who is studying right now and in which s
 ## Schreiben (exam bot) — `telc/sw.js`
 Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic, the student writes the letter (typing or paste), AI corrects and grades it (3 criteria A–D ×3 = max 45; criterion I = D → 0).
 - Flow: Gesamte = Lesen → Hören → **Schreiben** → Sprechen; Nur schriftlich = Lesen → Hören → **Schreiben** → result; new mode «4) Nur Schreiben». 60 minutes (auto-submit), student can skip (0/45).
-- Lesen/Hören score (150, pass 135) and the certificate are unchanged; Schreiben is shown and sent to the teacher separately.
+- Scoring (teacher's decision 20.11.2026): Schreiben is part of Schriftlich — Lesen 75 + Hören 75 + Schreiben 45 = **195, pass mark stays 135**. The certificate shows a «Schriftlicher Ausdruck x / 45» row. If an exam has no Schreiben row (section closed / ended before), the old 150 scoring applies.
+- Because of that, `sw.js` holds back the Lesen/Hören submit until Schreiben is done; the `imtihon` function then looks up `schreiben_results` (tg_id + exam id = the page's `S.id`) and adds it (`/submit`, `submitMund`, certificate). `exam_results.schreiben` stores the Schreiben points (`total` includes them).
+- The `imtihon` function now loads its FINX («⏹ Yakunlash») and LIVE patch code from `telc/xp_finx.txt` and `telc/xp_live.txt` (previously the modules finx.ts / live.ts). Don't delete those files.
 - `telc/sw_topics.json` — the 35 topics (from the teacher's PDF, typos fixed). Used by both the page and the server.
 - `telc/exam.html` loads `sw.js` only if `schreiben/result` answers OK: the teacher (EXAM_TEACHER_ID) always; everyone else only when `bot_state.schreiben_open = '1'` (now `'0'`). Open for students: `update bot_state set value = '1' where key = 'schreiben_open';`
 - Server: Supabase `yhljeyxcporqienvdjax`, function `schreiben` (`/check`, `/result`, `/devcheck`), table `schreiben_results` (one row per student + exam id). Same Gemini keys/model as Sprechen. Limit 12 letters per student per day.
