@@ -239,7 +239,7 @@
     }
     function examHome() {
       stopPlay(); S = null; removeBar();
-      if (teil > 3) return EX.onDone(done.slice());
+      if (teil > 3) return exDone(done.slice());
       if (teil === 1) {
         var L1 = list();
         root.innerHTML = examHead() +
@@ -260,11 +260,59 @@
         '</p><button class="ai-btn" id="aigo">🎙 Boshlash</button></div>';
       root.querySelector("#aigo").onclick = function () { begin(t); };
     }
+    // 21.11.2026 (ustoz so'rovi): imtihon tugagach, past ball olgan o'quvchiga AI tahlili — xatolar va to'g'risi,
+    // nega past ball olgani (o'zbekcha), maslahatlar, maslahatlar va foydali iboralar. Natija avval odatdagidek yuboriladi (EX.onDone),
+    // keyin tahlil oynasi ochiladi. Past ball: Mündlich < 45/75 yoki biror Teil < 15/25. Boshqalarga — «📋 Sprechen tahlili» tugmasi.
+    function exDone(items) {
+      var r = EX.onDone(items);
+      setTimeout(function () { try { analysisUI(items); } catch (e) {} }, 700);
+      return r;
+    }
+    function analysisUI(items) {
+      if (!items || !items.length) return;
+      var tot = items.reduce(function (a, x) { return a + (+x.tot || 0); }, 0);
+      var low = tot < 45 || items.some(function (x) { return (+x.tot || 0) < 15; });
+      var old = document.getElementById("ai-anb"); if (old) old.remove();
+      var b = document.createElement("button");
+      b.id = "ai-anb"; b.type = "button";
+      b.textContent = "📋 Sprechen tahlili: xatolar va maslahatlar";
+      b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));z-index:2147483000;border:0;border-radius:24px;padding:12px 18px;font:800 14.5px -apple-system,system-ui,sans-serif;background:#db2777;color:#fff;box-shadow:0 6px 20px rgba(219,39,119,.35);cursor:pointer;max-width:92vw";
+      b.onclick = function () { openAnalysis(items, tot, low); };
+      document.body.appendChild(b);
+      if (low) openAnalysis(items, tot, low);
+    }
+    function openAnalysis(items, tot, low) {
+      css();
+      var o = document.createElement("div");
+      o.id = "ai-an";
+      o.style.cssText = "position:fixed;inset:0;z-index:2147483600;background:#f4f6fb;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px 12px calc(40px + env(safe-area-inset-bottom))";
+      var ul = function (a) { return (a && a.length) ? '<ul class="ai-l">' + a.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : ""; };
+      var teilHTML = function (x) {
+        var bad = (+x.tot || 0) < 15;
+        var sc = x.s || {};
+        return '<details class="ai-card"' + (bad || !low ? " open" : "") + ' style="border-left:5px solid ' + (bad ? "#e0453a" : "#16a34a") + '">' +
+          '<summary style="cursor:pointer;font-weight:800;font-size:16px;list-style:none">' + (bad ? "🔴 " : "🟢 ") + esc(TN[x.teil] || ("Teil " + x.teil)) + ' — ' + (+x.tot || 0) + ' / 25' + (x.title ? '<div style="font-weight:600;font-size:13px;color:#5b6577;margin-top:2px">' + esc(x.title) + '</div>' : "") + '</summary>' +
+          '<div style="margin-top:8px">' + CR.map(function (c) { var v = Math.max(0, Math.min(5, +sc[c[0]] || 0)); return '<div class="ai-sc"><span>' + c[1] + '</span><i><b style="width:' + (v * 20) + '%;background:' + (v < 3 ? "#e0453a" : "#db2777") + '"></b></i><em>' + v + '/5</em></div>'; }).join("") + '</div>' +
+          (x.summary ? '<h3 style="margin-top:12px">📝 Nega shu ball?</h3><p style="color:#1b2333">' + esc(x.summary) + '</p>' : "") +
+          (x.fixes && x.fixes.length ? '<h3 style="margin-top:12px">✏️ Xatolar va to\'g\'risi</h3>' + x.fixes.map(function (f) { return '<div class="ai-fx"><div class="w">' + esc(f.wrong) + '</div><div class="r">✓ ' + esc(f.right) + '</div><div class="y">' + esc(f.why) + '</div></div>'; }).join("") : "") +
+          (x.tips && x.tips.length ? '<h3 style="margin-top:12px">🎯 Maslahatlar</h3>' + ul(x.tips) : "") +
+          (x.phrases && x.phrases.length ? '<h3 style="margin-top:12px">💬 Foydali iboralar</h3>' + ul(x.phrases) : "") +
+          (x.good && x.good.length ? '<h3 style="margin-top:12px">👍 Yaxshi tomonlar</h3>' + ul(x.good) : "") +
+          '</details>';
+      };
+      o.innerHTML = '<div class="ai" style="padding-top:0">' +
+        '<div class="ai-card ai-big"><div>🗣 Mündliche Prüfung — AI tahlili</div><div class="n" style="color:' + (tot < 45 ? "#e0453a" : "#16a34a") + '">' + tot + ' / 75</div>' +
+        '<div style="color:#5b6577;font-size:14px">' + (low ? "Ballingiz past chiqqan qismlar qizil bilan belgilangan. Quyida AI xatolaringizni to\'g\'rilab, nega past ball olganingizni tushuntirib beradi." : "Yaxshi natija! Quyida har bir Teil bo\'yicha tahlil.") + '</div></div>' +
+        items.slice().sort(function (a, b) { return (a.tot || 0) - (b.tot || 0); }).map(teilHTML).join("") +
+        '<button class="ai-btn" id="ai-anx">Yopish ✕</button></div>';
+      document.body.appendChild(o);
+      o.querySelector("#ai-anx").onclick = function () { o.remove(); };
+    }
     function examNext(item) {
       done.push(item);
       if (EX.onTeil) EX.onTeil(done.slice());
       teil++; stopPlay(); removeBar(); S = null;
-      if (teil > 3) return EX.onDone(done.slice());
+      if (teil > 3) return exDone(done.slice());
       root.innerHTML = '<div class="ai-card" style="text-align:center"><h3>✅ Teil ' + (teil - 1) + ' tugadi</h3><p>Natijalar barcha qismlar tugagandan keyin chiqadi.</p><button class="ai-btn" id="ainx">Teil ' + teil + ' ga o\'tish ➜</button></div>';
       root.querySelector("#ainx").onclick = examHome;
       window.scrollTo(0, 0);
@@ -275,8 +323,8 @@
       var arr = function (a, n) { return (Array.isArray(a) ? a : []).slice(0, n).map(function (x) { return String(x).slice(0, 300); }); };
       return {
         teil: teil, title: S.topic.title, s: s, tot: tot, niveau: String(ev.niveau || "").slice(0, 20), summary: String(ev.summary || "").slice(0, 1200),
-        good: arr(ev.good, 3), tips: arr(ev.tips, 3),
-        fixes: (Array.isArray(ev.fixes) ? ev.fixes : []).slice(0, 8).map(function (f) { return { wrong: String(f.wrong || "").slice(0, 300), right: String(f.right || "").slice(0, 300), why: String(f.why || "").slice(0, 300) }; })
+        good: arr(ev.good, 3), tips: arr(ev.tips, 4), phrases: arr(ev.phrases, 4),
+        fixes: (Array.isArray(ev.fixes) ? ev.fixes : []).slice(0, 10).map(function (f) { return { wrong: String(f.wrong || "").slice(0, 300), right: String(f.right || "").slice(0, 300), why: String(f.why || "").slice(0, 300) }; })
       };
     }
 

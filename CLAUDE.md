@@ -57,3 +57,7 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 - `blocked_users` table (project `yhljeyxcporqienvdjax`): a blocked Telegram ID can't open either bot (checked in the SQL function `device_check`). Add: `insert into blocked_users (tg_id, note) values (<ID>, '...')`.
 - "Texnik ishlar" block, both bots: `main_maint` table (same project). The `qurilma` function answers `err: "maint"` for these IDs (both @Shogirtlarim_uchun_bot and @Timur_B2simulyatsiya_bot), and `telc/index.html` / `telc/exam.html` show "🛠 Texnik ishlar ketayotgani sababli vaqtinchalik kirib bo‘lmaydi." Add: `insert into main_maint (tg_id, note) values (<ID>, '...')`; remove: `delete from main_maint where tg_id = <ID>`.
 - Refused attempts (not in group / other device / blocked) are logged by `telc/index.html` and `telc/exam.html` to `hisobot/attempt` → table `access_attempts`. Reports (cron_secret): `hisobot/attempts`, `hisobot/nonmembers`.
+
+## 21.11.2026 changes
+- Schreiben: copy-paste is now FORBIDDEN in the letter box (`telc/sw.js`): paste/drop/copy/cut/context menu are blocked, and any single input that adds 30+ characters is reverted. `exam.html` loads `sw.js?v=3`.
+- Sprechen (exam bot, `telc/ai.js`): when the whole oral exam ends, results go to the server as before (`EX.onDone`), then an «AI tahlili» overlay opens automatically if Mündlich < 45/75 or any Teil < 15/25 — per Teil: why this score (Uzbek summary), errors with corrections, tips, useful phrases, strengths. Everyone else gets a «📋 Sprechen tahlili» button.

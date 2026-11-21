@@ -2,7 +2,7 @@
    exam.html bu faylni faqat ruxsat bo'lsa yuklaydi (schreiben/result javobi: ustoz yoki bot_state.schreiben_open = '1').
    Imtihon sahifasining o'z o'zgaruvchilaridan foydalanadi (S, MODES, render, newExam, endPhase …) — sahifadan KEYIN yuklanishi shart.
    Oqim: Gesamte — Lesen → Hören → SCHREIBEN → Sprechen;  Nur schriftlich — Lesen → Hören → SCHREIBEN → natija;  «4) Nur Schreiben» — faqat Schreiben.
-   Vaqt 60 daqiqa (tugasa yozilgani avtomatik topshiriladi). O'quvchi xohlasa o'tkazib yuboradi (0/45). Copy-paste mumkin.
+   Vaqt 60 daqiqa (tugasa yozilgani avtomatik topshiriladi). O'quvchi xohlasa o'tkazib yuboradi (0/45). Copy-paste TAQIQLANGAN (21.11.2026, ustoz qarori): xat maydoniga joylashtirish/sudrab tashlash bloklanadi, bir martada 30+ belgi qo'shilsa ham qaytariladi.
    Mavzular: sw_topics.json (35 ta). Baholash serverda (schreiben funksiyasi): 3 mezon A–D ×3, max 45.
    Hisob (20.11.2026): Schreiben Schriftlich ga qo'shiladi — Lesen 75 + Hören 75 + Schreiben 45 = 195, o'tish bali 135.
    Shuning uchun Lesen/Hören natijasi ustozga Schreiben tugagandan KEYIN yuboriladi (imtihon serveri Schreiben balini o'zi qo'shadi). */
@@ -101,7 +101,14 @@
         '<button class="go" id="swsend">✅ Tekshirishga yuborish</button><button class="go alt" id="swsk" style="margin-top:10px">⏭ O\'tkazib yuborish</button></section></main>';
       var ta=$("#swta");ta.value=w.text||"";
       var wc=function(){var n=nw(ta.value);$("#swwc").textContent=n+" so'z"};wc();
-      var tmr=null;ta.oninput=function(){w.text=ta.value;wc();clearTimeout(tmr);tmr=setTimeout(save,400);var m=$("#msg");if(m)m.textContent=""};
+      // 21.11.2026: copy-paste taqiqlangan — xat faqat qo'lda yoziladi
+      var last=ta.value;
+      var noPaste=function(e){e.preventDefault();var m=$("#msg");if(m)m.textContent="⛔ Nusxa ko'chirib joylashtirish mumkin emas — xatni o'zingiz yozing."};
+      ["paste","drop","dragover","copy","cut","contextmenu"].forEach(function(ev){ta.addEventListener(ev,noPaste)});
+      ta.addEventListener("beforeinput",function(e){var t=e.inputType||"";if(t==="insertFromPaste"||t==="insertFromPasteAsQuotation"||t==="insertFromDrop"||t==="insertFromYank")noPaste(e)});
+      var tmr=null;ta.oninput=function(){
+        if(ta.value.length-last.length>30){var p=ta.selectionStart;ta.value=last;try{ta.selectionStart=ta.selectionEnd=Math.min(p,last.length)}catch(_e){}noPaste({preventDefault:function(){}});return}
+        last=ta.value;w.text=ta.value;wc();clearTimeout(tmr);tmr=setTimeout(save,400);var m=$("#msg");if(m)m.textContent=""};
       var ok2=false;
       $("#swsend").onclick=function(){
         w.text=ta.value;save();var n=nw(w.text);
