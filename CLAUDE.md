@@ -50,7 +50,7 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 - Because of that, `sw.js` holds back the Lesen/Hören submit until Schreiben is done; the `imtihon` function then looks up `schreiben_results` (tg_id + exam id = the page's `S.id`) and adds it (`/submit`, `submitMund`, certificate). `exam_results.schreiben` stores the Schreiben points (`total` includes them).
 - The `imtihon` function now loads its FINX («⏹ Yakunlash») and LIVE patch code from `telc/xp_finx.txt` and `telc/xp_live.txt` (previously the modules finx.ts / live.ts). Don't delete those files.
 - `telc/sw_topics.json` — the 35 topics (from the teacher's PDF, typos fixed). Used by both the page and the server.
-- `telc/exam.html` loads `sw.js` only if `schreiben/result` answers OK: the teacher (EXAM_TEACHER_ID) always; everyone else only when `bot_state.schreiben_open = '1'` (now `'0'`). Open for students: `update bot_state set value = '1' where key = 'schreiben_open';`
+- `telc/exam.html` loads `sw.js` only if `schreiben/result` answers OK: the teacher (EXAM_TEACHER_ID) always; everyone else only when `bot_state.schreiben_open = '1'` (opened for students 21.11.2026 18:10 by a one-shot pg_cron job; a red «Schreiben qismi test rejimida ishlayapti!» banner shows on the start page until 22.11.2026 18:10, set in `telc/exam.html`). Open for students: `update bot_state set value = '1' where key = 'schreiben_open';`
 - Server: Supabase `yhljeyxcporqienvdjax`, function `schreiben` (`/check`, `/result`, `/devcheck`), table `schreiben_results` (one row per student + exam id). Same Gemini keys/model as Sprechen. Limit 12 letters per student per day.
 
 ## Blocking and access reports

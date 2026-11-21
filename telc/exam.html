@@ -104,6 +104,12 @@
     var HB='<main>${Date.now()<'+FRI_END+'?`<div class="card" style="border:2px solid #c62828;background:#fdecea;color:#c62828;font-weight:800;text-align:center;line-height:1.45">🔴 Imtihonda tushadigan ayni imtihon savollari bo\'layapti.<br>Tugash vaqti: '+ENDTXT+'</div>`:""}<div class="card"><h2>${X.name?esc(X.name)+", imtihonga xush kelibsiz!"';
     if(html.indexOf(HA)>=0)html=html.replace(HA,function(){return HB});
   }
+  // Schreiben test rejimi e'loni (21.11.2026): 21.11 18:10 dan 22.11 18:10 gacha (Toshkent) bosh sahifada qizil yozuv, keyin o'zi yo'qoladi. Schreiben ishlashda davom etadi.
+  (function(){
+    var A='<div class="card"><h2>${X.name?esc(X.name)+", imtihonga xush kelibsiz!"';
+    var B='${Date.now()>=1795266600000&&Date.now()<1795353000000?`<div class="card" style="border:2px solid #c62828;background:#fdecea;color:#c62828;font-weight:800;text-align:center;line-height:1.45">📢 Schreiben qismi test rejimida ishlayapti!</div>`:""}';
+    var k=html.indexOf(A);if(k>=0)html=html.slice(0,k)+B+html.slice(k);
+  })();
   var i=html.indexOf("<script>");
   html=i>=0?html.slice(0,i)+boot+html.slice(i):boot+html;
   if(dj&&dj.multi)html+=hbScript(await getDev(W));
