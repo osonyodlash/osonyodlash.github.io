@@ -65,3 +65,7 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 ## 23.11.2026 changes
 - Public simulator buyers (@telcB2_imtihon_bot tariffs via @timur_lehrer_bot) are listed in `exam_quiet` (filled by trigger `lb_quiet_on_pay` on `lb_payments`; removed if the person buys a course package). The `imtihon` function (`isQuiet`) does NOT send their results to the teacher; results are still saved (`exam_results`, `mund_results`) and the student still gets their own result/certificate. Their Lesen 1 results are not added to the teacher's daily Lesen ranking. Re-enable for one person: `delete from exam_quiet where tg_id = <ID>;`
 - `zentrale/index.html` (Agent markaz): status colours — green = working, yellow = waiting for approval / important, red = sleeping. New agent «Kuzatuvchi» (table `sim_visitors`, daily report `sim_daily_report()` via pg_cron `sim-kunlik-2100`).
+
+## 23.11.2026 — bot roles
+- @timur_lehrer_bot (function `lehrer`) is ONLY for payments: packages, receipts (✅/❌), access, student reminders.
+- Every agent message to the teacher goes to @Agent_ofis_bot (token `zentrale_bot_token`): Reels/Stories previews (✅/❌/✏️), "muddati tugadi" (x/e/k buttons), Mini App report, material requests, Instagram posts/reports, failures. `lehrer` sends them with `ztg`; `zentrale` forwards those callbacks and the teacher's agent messages (caption edit, files, /tayyor) to `lehrer/zbot`. The zentrale webhook allows `message` + `callback_query`. Scheduled tasks use `zentrale_bot_token`, never `lehrer_bot_token`.
