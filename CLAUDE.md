@@ -61,3 +61,7 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 ## 21.11.2026 changes
 - Schreiben: copy-paste is now FORBIDDEN in the letter box (`telc/sw.js`): paste/drop/copy/cut/context menu are blocked, and any single input that adds 30+ characters is reverted. `exam.html` loads `sw.js?v=3`.
 - Sprechen (exam bot, `telc/ai.js`): when the whole oral exam ends, results go to the server as before (`EX.onDone`), then an «AI tahlili» overlay opens automatically if Mündlich < 45/75 or any Teil < 15/25 — per Teil: why this score (Uzbek summary), errors with corrections, tips, useful phrases, strengths. Everyone else gets a «📋 Sprechen tahlili» button.
+
+## 23.11.2026 changes
+- Public simulator buyers (@telcB2_imtihon_bot tariffs via @timur_lehrer_bot) are listed in `exam_quiet` (filled by trigger `lb_quiet_on_pay` on `lb_payments`; removed if the person buys a course package). The `imtihon` function (`isQuiet`) does NOT send their results to the teacher; results are still saved (`exam_results`, `mund_results`) and the student still gets their own result/certificate. Their Lesen 1 results are not added to the teacher's daily Lesen ranking. Re-enable for one person: `delete from exam_quiet where tg_id = <ID>;`
+- `zentrale/index.html` (Agent markaz): status colours — green = working, yellow = waiting for approval / important, red = sleeping. New agent «Kuzatuvchi» (table `sim_visitors`, daily report `sim_daily_report()` via pg_cron `sim-kunlik-2100`).

@@ -13,7 +13,7 @@
    PICTURE: the office floor itself, rooms light up when the agent works, amber flag when it waits for him.
    COLOUR and TYPE: his brand — deep navy night, gold B2 accent; Montserrat like his avatar and Reels.
    LAYOUT: finding title + 4 figures, then the office, then the tapped agent's card, then today's schedule. */
-:root{color-scheme:dark;--bg:#0b1226;--bg2:#111b38;--ink:#f3f5fb;--soft:#a9b4d6;--line:#26325c;--gold:#ffcc2e;--wait:#ffb020;--ok:#3ddc97;--idle:#6f86d6;--plan:#b48cff}
+:root{color-scheme:dark;--bg:#0b1226;--bg2:#111b38;--ink:#f3f5fb;--soft:#a9b4d6;--line:#26325c;--gold:#ffcc2e;--wait:#ffd23f;--ok:#2ee59d;--idle:#ff4d5e;--plan:#7b86a8}
 :root[data-theme=light]{--bg:#0b1226;--ink:#f3f5fb}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:radial-gradient(1200px 700px at 60% 30%,#1b2a5c 0,var(--bg) 60%) fixed,var(--bg);color:var(--ink);font:16px/1.5 Montserrat,system-ui,sans-serif;overflow-x:clip}
@@ -40,6 +40,10 @@ h1{font-size:clamp(26px,5.2vw,46px);line-height:1.08;margin:14px 0 6px;font-weig
 .working .screen{animation:glow 1.2s ease-in-out infinite alternate}
 .waiting .flag{animation:pop 1s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:bottom center}
 .star{animation:tw 3s ease-in-out infinite alternate}
+.lamp{animation:lampp 1.4s ease-in-out infinite alternate}
+.legend{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;color:var(--soft);font:700 13px Montserrat,sans-serif;margin:4px 0 8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+@keyframes lampp{to{opacity:.6}}
 @keyframes bob{50%{transform:translateY(-3px)}}
 @keyframes glow{from{opacity:.55}to{opacity:1}}
 @keyframes pop{to{transform:scale(1.15)}}
@@ -71,7 +75,7 @@ h1{font-size:clamp(26px,5.2vw,46px);line-height:1.08;margin:14px 0 6px;font-weig
 .tabs{position:sticky;top:0;z-index:5;display:flex;gap:6px;padding:10px max(4vw,14px);background:rgba(11,18,38,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .tab{flex:none;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--soft);font:700 14px Montserrat,sans-serif;cursor:pointer}
 .tab[aria-selected=true]{background:var(--gold);color:#0b1226;border-color:var(--gold)}
-.tab b{display:inline-block;min-width:20px;margin-left:6px;padding:0 6px;border-radius:9px;background:#ffb020;color:#0b1226;font-size:12px}
+.tab b{display:inline-block;min-width:20px;margin-left:6px;padding:0 6px;border-radius:9px;background:#ffd23f;color:#0b1226;font-size:12px}
 .view{display:none}.view.on{display:block}
 .goal{margin-top:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
 .goal .bar{height:12px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden;margin:8px 0 6px}
@@ -96,7 +100,7 @@ textarea,input[type=number]{width:100%;font:16px Montserrat,sans-serif;color:var
 textarea{min-height:96px;resize:vertical}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:30;background:#f3f5fb;color:#0b1226;padding:12px 18px;border-radius:12px;font-weight:700;display:none;max-width:90vw}
 .lock{padding:40px 20px;text-align:center;color:var(--soft)}
-.st-new{color:#ffb020}.st-done{color:#3ddc97}.st-working{color:#4fc3f7}.st-failed{color:#ff6b81}
+.st-new{color:#ffd23f}.st-done{color:#3ddc97}.st-working{color:#4fc3f7}.st-failed{color:#ff6b81}
 </style>
 </head>
 <body>
@@ -114,6 +118,7 @@ textarea{min-height:96px;resize:vertical}
   <div class="kpis" id="kpis"></div>
   <div class="goal" id="goal"></div>
   <div class="office" id="office"><svg id="scene" viewBox="0 0 1000 700" role="img" aria-label="Agentlar ofisi"></svg></div>
+  <div class="legend"><span><i style="background:var(--ok)"></i>ishlayapti</span><span><i style="background:var(--wait)"></i>sizni kutmoqda / muhim xabar</span><span><i style="background:var(--idle)"></i>uxlayapti</span></div>
   <div class="hint">← Ofisni suring →</div>
   <div class="chips" id="chips" role="toolbar" aria-label="Agentlar"></div>
   <div class="grid2">
@@ -136,7 +141,7 @@ let D = {"at":"2026-11-22T17:21:00Z","kassir":{"pending":0,"month_count":0,"last
 let live = false;
 var X = {feed:[], tasks:[], pending:{content:[], payments:[]}, goal:0};
 
-const C = {ok:'#3ddc97',wait:'#ffb020',idle:'#6f86d6',plan:'#b48cff'};
+const C = {ok:'#2ee59d',wait:'#ffd23f',idle:'#ff4d5e',plan:'#7b86a8'};
 const som = n => (n||0).toLocaleString('ru-RU').replace(/ /g,' ')+" so'm";
 const nowMin = () => { const p = new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Samarkand',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()).split(':'); return (+p[0])*60+(+p[1]); };
 const m = t => { const [h,mm] = t.split(':'); return h*60+ +mm; };
@@ -192,13 +197,15 @@ const A = [
  {id:'davomatchi',name:'Davomatchi',col:1,row:3,color:'#90a4ae',times:[],plan:true,
   role:"Tez orada: dars vaqtida Google Meet havolasini tashlaydi va kim kirganini belgilaydi.",
   st:d=>({s:'plan'}), rows:d=>[["Holati","rejada"],["Kerak","guruhlar jadvali, Meet havolasi"]]},
- {id:'bosh',name:"Bo'sh xona",col:2,row:3,color:'#5c6bc0',times:[],plan:true,empty:true,
-  role:"Yangi agent uchun joy. Masalan: Telegram kanal agenti yoki shogirdlar faolligi tahlilchisi.",
-  st:d=>({s:'plan'}), rows:d=>[["Holati","bo'sh"]]},
+ {id:'kuzatuvchi',name:'Kuzatuvchi',col:2,row:3,color:'#5c6bc0',times:[],always:true,
+  role:"@telcB2_imtihon_bot'ga kim kirganini kuzatadi: yangi odam haqida darhol xabar beradi, har kuni 21:00 da hisobot yuboradi.",
+  st:d=>({s: d.kuzatuvchi && d.kuzatuvchi.leads ? 'wait':'ok'}),
+  rows:d=>[["Bugun yangi",d.kuzatuvchi?.today ?? 0],["Bugun video ko'rdi",d.kuzatuvchi?.video_today ?? 0],["Bugun sotib oldi",d.kuzatuvchi?.bought_today ?? 0],["Jami kirganlar",d.kuzatuvchi?.total ?? 0]],
+  need:d=>d.kuzatuvchi && d.kuzatuvchi.leads ? `Bugun ${d.kuzatuvchi.leads} kishi videoni ko'rdi, lekin hali sotib olmadi — ularga yozib ko'ring (ro'yxat kechki hisobotda).` : ''},
 ];
 const waitCount = d => d.reels.pending + d.stories.pending + d.kassir.pending + d.nazoratchi.expired + d.materiallar.open;
 const stateOf = a => { const s = a.st(D).s; if (s) return s; if (a.always) return 'ok'; return near(a.times) ? 'ok' : 'idle'; };
-const LABEL = {ok:'ishlayapti',wait:'sizni kutmoqda',idle:'dam olmoqda',plan:'tez orada'};
+const LABEL = {ok:'ishlayapti',wait:'sizni kutmoqda',idle:'uxlayapti',plan:'tez orada'};
 
 // --- Izometrik sahna ---
 const S = 9.4, OX = 500, OY = 60;
@@ -232,6 +239,7 @@ function roomSVG(a){
     if (!a.plan){
       g += `<rect x="${px-11}" y="${py-30}" width="22" height="28" rx="10" fill="${col}"/>`;
       g += `<g class="head"><circle cx="${px}" cy="${py-40}" r="11" fill="#f2c9a0"/><path d="M${px-11} ${py-42} a11 11 0 0 1 22 0 q-11 -6 -22 0z" fill="#2b2b3a"/></g>`;
+      g += `<g class="lamp"><circle cx="${px}" cy="${py-68}" r="13" fill="${C[st]}" opacity=".28"/><circle cx="${px}" cy="${py-68}" r="7" fill="${C[st]}" stroke="#0b1226" stroke-width="1.5"/></g>`;
     } else {
       g += `<rect x="${px-11}" y="${py-30}" width="22" height="28" rx="10" fill="none" stroke="${col}" stroke-width="2.5" stroke-dasharray="4 4"/>`;
       g += `<circle cx="${px}" cy="${py-40}" r="11" fill="none" stroke="${col}" stroke-width="2.5" stroke-dasharray="4 4"/>`;
@@ -239,7 +247,7 @@ function roomSVG(a){
     // o'simlik
     const [qx,qy] = P(x1-1.6, y0+1.6, 0);
     g += `<rect x="${qx-6}" y="${qy-10}" width="12" height="11" rx="2" fill="#c98a5a"/><circle cx="${qx}" cy="${qy-18}" r="10" fill="#3fae6b"/><circle cx="${qx-6}" cy="${qy-12}" r="7" fill="#2f9a5b"/>`;
-    if (st === 'idle') g += `<text x="${px+16}" y="${py-52}" fill="#a9b4d6" font-size="18" font-weight="800" font-family="Montserrat">z z</text>`;
+    if (st === 'idle') g += `<text x="${px+16}" y="${py-52}" fill="#ff8a95" font-size="18" font-weight="800" font-family="Montserrat">z z</text>`;
   } else {
     const [cx,cy] = P(x0+RW/2, y0+RD/2, 0);
     g += `<text x="${cx}" y="${cy+8}" text-anchor="middle" fill="#6f7fb8" font-size="34" font-weight="900" font-family="Montserrat">+</text>`;
@@ -249,10 +257,11 @@ function roomSVG(a){
   let t = `<g class="room" data-id="${a.id}" aria-hidden="true">`;
   const [lx,ly] = P(x0+RW*0.5, y0+RD*0.86, 0);
   const w = a.name.length*11.5 + 50;
-  t += `<g class="pill"><rect x="${lx-w/2}" y="${ly-19}" width="${w}" height="38" rx="19" fill="#0e1630" stroke="${C[st]}" stroke-width="2"/>`;
-  t += `<circle cx="${lx-w/2+20}" cy="${ly}" r="7" fill="${C[st]}"/>`;
-  t += `<text x="${lx-w/2+34}" y="${ly+6}" fill="#f3f5fb" font-size="19" font-weight="800" font-family="Montserrat">${a.name}</text></g>`;
-  if (st === 'wait') t += `<g class="flag"><circle cx="${lx+w/2-2}" cy="${ly-22}" r="13" fill="#ffb020"/><text x="${lx+w/2-2}" y="${ly-15}" text-anchor="middle" fill="#0b1226" font-size="19" font-weight="900" font-family="Montserrat">!</text></g>`;
+  const ink = st === 'idle' || st === 'plan' ? '#ffffff' : '#0b1226';
+  t += `<g class="pill"><rect x="${lx-w/2}" y="${ly-19}" width="${w}" height="38" rx="19" fill="${C[st]}" stroke="#0b1226" stroke-width="2"/>`;
+  t += `<circle cx="${lx-w/2+20}" cy="${ly}" r="7" fill="${ink}" opacity=".85"/>`;
+  t += `<text x="${lx-w/2+34}" y="${ly+6}" fill="${ink}" font-size="19" font-weight="800" font-family="Montserrat">${a.name}</text></g>`;
+  if (st === 'wait') t += `<g class="flag"><circle cx="${lx+w/2-2}" cy="${ly-22}" r="13" fill="#ffd23f" stroke="#0b1226" stroke-width="2"/><text x="${lx+w/2-2}" y="${ly-15}" text-anchor="middle" fill="#0b1226" font-size="19" font-weight="900" font-family="Montserrat">!</text></g>`;
   return [g, t + `</g>`];
 }
 
@@ -282,7 +291,7 @@ function drawScene(){
 let cur = null;
 const ES = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const QUICK = {hisobchi:[['report','📊 Hisobotni hozir yubor']], nazoratchi:[['cron','⏳ Muddatlarni hozir tekshir']]};
-const HINT = {goyachi:"Masalan: Ertaga Lesen 2 haqida maslahat video qil", montajchi:"Masalan: Sertifikatlar bilan yangi Reels tayyorla", dizayner:"Masalan: Sprechen Teil 1 bo'yicha Stories", joylovchi:"Masalan: Bugun Reels joylama", tahlilchi:"Masalan: Oxirgi 7 kun bo'yicha qisqa tahlil yubor", kassir:"Masalan: To'lov matnini o'zgartir", hisobchi:"Masalan: Noyabr bo'yicha paketlar kesimida hisobot", nazoratchi:"Masalan: Muddati tugashiga 5 kun qolganlarni ro'yxat qil", taminotchi:"Masalan: Shogirdlardan video sharh so'ra", direktor:"Masalan: Bu hafta nimaga e'tibor berishim kerak?", davomatchi:"Rejadagi agent — vazifa yozib qo'ysangiz, ishga tushganda bajaradi"};
+const HINT = {goyachi:"Masalan: Ertaga Lesen 2 haqida maslahat video qil", montajchi:"Masalan: Sertifikatlar bilan yangi Reels tayyorla", dizayner:"Masalan: Sprechen Teil 1 bo'yicha Stories", joylovchi:"Masalan: Bugun Reels joylama", tahlilchi:"Masalan: Oxirgi 7 kun bo'yicha qisqa tahlil yubor", kassir:"Masalan: To'lov matnini o'zgartir", kuzatuvchi:"Masalan: Video ko'rib sotib olmaganlar ro'yxatini yubor", hisobchi:"Masalan: Noyabr bo'yicha paketlar kesimida hisobot", nazoratchi:"Masalan: Muddati tugashiga 5 kun qolganlarni ro'yxat qil", taminotchi:"Masalan: Shogirdlardan video sharh so'ra", direktor:"Masalan: Bu hafta nimaga e'tibor berishim kerak?", davomatchi:"Rejadagi agent — vazifa yozib qo'ysangiz, ishga tushganda bajaradi"};
 const fmtT = s => s ? new Date(s).toLocaleString('ru-RU',{timeZone:'Asia/Samarkand',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
 function select(id){
   const a = A.find(x=>x.id===id); if (!a || a.empty) return; cur = id;
