@@ -43,7 +43,8 @@
   var g0=MODES.G.r;MODES.G.r=function(){var h=g0().replace("/150</b>","/195</b>");var i=h.indexOf("<li>🗣");return i>=0?h.slice(0,i)+LI+h.slice(i):h+LI};
   MODES.S.d="Faqat yozma qism: Lesen + Hören + Schreiben";
   var s0=MODES.S.r;MODES.S.r=function(){var h=s0().replace("<b>150 ball</b>","<b>195 ball</b> (Lesen 75 + Hören 75 + Schreiben 45)");var i=h.indexOf("<li>Hören'da");return i>=0?h.slice(0,i)+LI+h.slice(i):h+LI};
-  MODES.W={t:"4) Nur Schreiben",d:"Faqat yozma xat: shikoyat (Beschwerde), AI tekshiradi va baholaydi",
+  /* 23.11.2026: ommaviy simulyator xaridorlariga (window.__NO_NURSW) alohida «Nur Schreiben» rejimi berilmaydi */
+  if(!window.__NO_NURSW)MODES.W={t:"4) Nur Schreiben",d:"Faqat yozma xat: shikoyat (Beschwerde), AI tekshiradi va baholaydi",
     r:function(){return '<li>📝 Mavzu tasodifiy beriladi (35 ta Beschwerde mavzusidan)</li><li>⏱ Vaqt: <b>'+SW_LIM+' daqiqa</b> — tugasa yozganingiz avtomatik topshiriladi</li><li>Xatni o\'zingiz yozasiz yoki boshqa joydan nusxa olib qo\'yishingiz mumkin</li><li>AI grammatik xatolarni to\'g\'rilaydi, tavsiya beradi va telc mezonlari bo\'yicha <b>45 ball</b>dan baholaydi</li><li>Natija ustozga ham yuboriladi</li>'}};
 
   var _ne=newExam;
