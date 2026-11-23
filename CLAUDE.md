@@ -69,3 +69,8 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 ## 23.11.2026 — bot roles
 - @timur_lehrer_bot (function `lehrer`) is ONLY for payments: packages, receipts (✅/❌), access, student reminders.
 - Every agent message to the teacher goes to @Agent_ofis_bot (token `zentrale_bot_token`): Reels/Stories previews (✅/❌/✏️), "muddati tugadi" (x/e/k buttons), Mini App report, material requests, Instagram posts/reports, failures. `lehrer` sends them with `ztg`; `zentrale` forwards those callbacks and the teacher's agent messages (caption edit, files, /tayyor) to `lehrer/zbot`. The zentrale webhook allows `message` + `callback_query`. Scheduled tasks use `zentrale_bot_token`, never `lehrer_bot_token`.
+
+## 23.11.2026 — «★ Nur Hören» (until 24.11.2026 00:00)
+- Members of the lesson groups «noyabr 17:00» and «noyabr 20:00» get a Hören-only exam in @Timur_B2simulyatsiya_bot: Teil 1 + 2 + 3, random tickets each attempt, 20 min, 75 points (shown threshold 45). Unlimited attempts until 00:00; every result goes to the teacher and to the student as a text message (not saved to `exam_results`; `exam_done.kind = 'HX'`).
+- `imtihon` function: `hxPage()` adds mode `H` to the exam page; scope `HX` = not in the main group → only this mode; main-group members who are also in these groups get it as an extra mode. `HX_UNTIL` closes it automatically.
+- Groups: table `horen_groups` (until = 24.11 00:00). Filled by `/ulash` in the group (@timur_lehrer_bot; BEFORE INSERT trigger `lb_groups_horen` diverts «noyabr 17:00/20:00» away from `lb_groups`) or by the exam bot's webhook (`seen_chats` → trigger `seen_chats_horen`). Membership is checked with the @timur_lehrer_bot token (fallback: exam bot token).
