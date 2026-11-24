@@ -75,3 +75,7 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 - `imtihon` function: `hxPage()` adds mode `H` to the exam page; scope `HX` = not in the main group → only this mode; main-group members who are also in these groups get it as an extra mode. `HX_UNTIL` closes it automatically.
 - Groups: table `horen_groups` (until = 24.11 00:00). Filled by `/ulash` in the group (@timur_lehrer_bot; BEFORE INSERT trigger `lb_groups_horen` diverts «noyabr 17:00/20:00» away from `lb_groups`) or by the exam bot's webhook (`seen_chats` → trigger `seen_chats_horen`). Membership is checked with the @timur_lehrer_bot token (fallback: exam bot token).
 - Individual IDs can be added to `horen_groups` with `chat_id = <tg_id>`: the bot's getChatMember on that private chat returns only that user, so it opens Nur Hören for that one person. Added 23.11 for 6 IDs (the group `/ulash` route did not register).
+
+## 25.11.2026 — «📖 Lesen Teil 3» bir martalik (scope `L3`)
+- `imtihon` function: new scope `L3` (`l3Page`, same engine as `L2`): main Lesen 3 tickets 1–39 shuffled (no 1a/3b variants), 10 letters per ticket (A–L or X; no l→i conversion), result `kind = "lesen3"` → image to teacher and student, then access closes. `exam_access_scope_check` now allows `L3`.
+- Give: `insert into exam_access (tg_id, scope, once, expires_at) values (<ID>, 'L3', true, now() + interval '7 days');` (if the ID already has a row: `update exam_access set scope='L3', once=true, started_at=null, used_at=null, expires_at=now()+interval '7 days' where tg_id=<ID>;`)
