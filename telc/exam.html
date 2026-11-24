@@ -116,7 +116,7 @@
   // Kalit tuzatish (16.11.2026): Hören Teil 2, bilet 36 (Eisschwimmen) — 52-savol audioga ko'ra richtig (oldin falsch edi)
   html=html.split('{"v":"36","p":["h/h559.jpg"],"n":"67923"').join('{"v":"36","p":["h/h559.jpg"],"n":"6793"');
   // Kalit tuzatish (17.11.2026, audioga ko'ra): Hören Teil 2, bilet 32 (Lisa Eisenberg) — falsch: 46, 50, 52, 54, 55 (oldin 47, 49, 52, 54, 55)
-  html=html.split('{"v":"32","p":["h/h555.jpg"],"n":"79245"').join('{"v":"32","p":["h/h555.jpg"],"n":"60245"');
+  html=html.split('{"v":"32","p":["h/h555.jpg"],"n":"79245"').join('{"v":"32","p":["h/h555.jpg"],"n":"60245"');html=html.replace(/("p":\s*\["h\/h555\.jpg"\],\s*"n":\s*")79245"/g,'$160245"');
   // Kalit tuzatish (17.11.2026, audioga ko'ra): Hören Teil 2, bilet 15 (TU Dresden) — 46-savol falsch (oldin richtig edi)
   html=html.split('{"v":"15","p":["h/h538.jpg"],"n":"7914"').join('{"v":"15","p":["h/h538.jpg"],"n":"67914"');
   // 🎧 Hören audio (16.11.2026; H2 15, 18, 20, 21, 32 qo'shildi): mos biletlarga audio pleyer (bir marta eshitiladi) — rasm ustida, Hören vaqti audio uzunligiga moslanadi. Fayllar: telc/aud/

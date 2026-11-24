@@ -144,6 +144,8 @@ setInterval(ping,30000);
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){cov(1);ping(true)}else{cov(0);last=Date.now()}});
 })();<\/script>`;
   let html=r.html; const i=html.lastIndexOf("</body>");
+  // Kalit tuzatish (24.11.2026, audioga ko'ra): Hören Teil 2, bilet 32 (Lisa Eisenberg) — falsch: 46, 50, 52, 54, 55 (oldin 47, 49, 52, 54, 55)
+  html=html.replace(/("p":\s*\["h\/h555\.jpg"\],\s*"n":\s*")79245"/g,'$160245"');
   html = i>=0 ? html.slice(0,i)+inj+html.slice(i) : html+inj;
   if(DJ&&DJ.multi) html+=hbScript(await getDev(W));
   // «👥 Hozir kim shug'ullanyapti» (17.11.2026): telc/live.js
