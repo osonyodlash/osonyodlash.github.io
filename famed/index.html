@@ -38,8 +38,8 @@ a{color:var(--pri)}
 .wrap{margin-left:250px;padding:26px max(3vw,18px) 60px;max-width:1290px}
 .scrim{display:none}
 @media(max-width:900px){
- .side{transform:translateX(-102%);transition:transform .22s;box-shadow:0 0 40px rgba(0,0,0,.4)}
- body.menu .side{transform:none}
+ .side{transform:translateX(-102%);transition:transform .22s,visibility .22s;visibility:hidden}
+ body.menu .side{transform:none;visibility:visible;box-shadow:0 0 40px rgba(0,0,0,.4)}
  body.menu .scrim{display:block;position:fixed;inset:0;background:rgba(5,10,25,.45);z-index:35}
  .top{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--line);padding:calc(8px + env(safe-area-inset-top)) 12px 8px}
  .top button{width:46px;height:46px;min-height:46px;padding:0;border-radius:12px}
@@ -135,6 +135,34 @@ dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:12p
 #timer button{background:rgba(255,255,255,.14);border:0;color:#fff;min-height:40px;border-radius:999px}
 .toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font:600 14px var(--F);z-index:60;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 @media(max-width:600px){.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{border:0;padding:3px 0}}
+
+/* ===== Dizayn tuzatishlari (v5) */
+@media(max-width:560px){.ring{width:74px;height:74px;right:14px;top:14px}.ring b{font-size:19px}.ring span{font-size:10.5px}.hero h2{padding-right:78px}.hero .k{padding-right:78px}}
+.hd{flex-wrap:wrap;row-gap:2px}.hd h3{min-width:0;flex:1 1 auto}
+@media(max-width:600px){
+ table.wt,table.wt tbody{display:block}
+ table.wt tr{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:12px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+ table.wt tr:last-child{border-bottom:0}
+ table.wt td{border:0;padding:0;width:auto!important}
+ table.wt td:first-child{grid-row:1 / span 2}
+ table.wt td:nth-child(3){grid-column:2;color:var(--mut);margin-top:2px}
+ table.wt td:only-child{grid-column:1 / -1;grid-row:auto}
+}
+details.month{margin-top:14px;background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:0 14px}
+details.month[open]{padding-bottom:14px}
+details.month>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px;padding:14px 0;font:600 15.5px var(--F)}
+details.month>summary>span{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+details.month>summary::-webkit-details-marker{display:none}
+details.month>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(45deg);transition:transform .2s;flex:none}
+details.month[open]>summary::after{transform:rotate(-135deg)}
+details.month>summary small{font:600 12.5px var(--F);color:var(--mut);background:var(--sf2);padding:3px 9px;border-radius:99px;white-space:nowrap}
+details.month.now>summary small{background:var(--pri2);color:var(--pri)}
+details.month .wk a{background:var(--bg)}
+details.addc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font:600 18px var(--F)}
+details.addc>summary::-webkit-details-marker{display:none}
+details.addc>summary::after{content:"+";font:600 24px/1 var(--F);color:var(--pri)}
+details.addc[open]>summary::after{content:"−"}
+.more{margin-top:12px;width:100%}
 </style>
 </head>
 <body>
@@ -720,7 +748,7 @@ function bindSpk(root){root.querySelectorAll('[data-s]').forEach(b=>b.onclick=()
 function bindJumps(r){r.querySelectorAll('[data-sys]').forEach(a=>a.onclick=e=>{e.preventDefault();act('sys:'+a.dataset.sys)});r.querySelectorAll('[data-ddx]').forEach(a=>a.onclick=e=>{e.preventDefault();act('ddx:'+a.dataset.ddx)})}
 function blkSys(i,part){const m=SYS[i];let h=`<div class="card"><div class="muted small ff">Organ tizimi ${i+1}/12</div><h3 style="font-size:22px;margin:4px 0">${esc(m.uz)}</h3><div class="muted" lang="de">${esc(m.de)}</div><div class="rule">${esc(m.ph)}</div>${links(m.de,m.de+' einfach erklärt Medizin')}
   <h3 style="margin-top:18px">Asosiy gaplar</h3>${m.key.map(k=>`<div class="ex">${spk(k)}<div><b lang="de">${esc(k)}</b></div></div>`).join('')}</div>`;
-  if(part!=='dis')h+=`<div class="card sec"><div class="hd"><h3>Anatomiya so'zlari</h3><span>${m.ana.length} ta</span></div><div class="scroll"><table><tbody>${m.ana.map(s=>{const c=split(s);return `<tr><td>${spk(c.de)}</td><td><b lang="de">${esc(c.de)}</b>${c.fach?`<div class="muted small">${esc(c.fach)}</div>`:''}</td><td>${esc(c.uz)}${c.note?`<div class="muted small">${esc(c.note)}</div>`:''}</td></tr>`}).join('')}</tbody></table></div></div>`;
+  if(part!=='dis')h+=`<div class="card sec"><div class="hd"><h3>Anatomiya so'zlari</h3><span>${m.ana.length} ta</span></div><div class="scroll"><table class="wt"><tbody>${m.ana.map(s=>{const c=split(s);return `<tr><td>${spk(c.de)}</td><td><b lang="de">${esc(c.de)}</b>${c.fach?`<div class="muted small">${esc(c.fach)}</div>`:''}</td><td>${esc(c.uz)}${c.note?`<div class="muted small">${esc(c.note)}</div>`:''}</td></tr>`}).join('')}</tbody></table></div></div>`;
   if(part!=='ana')h+=`<div class="card sec"><div class="hd"><h3>Kasalliklar</h3><span>${m.dis.length} ta</span></div>${m.dis.map(d=>{const p=d[3].split(';');return `<div class="dz"><div class="dzh">${spk(d[0])}<div><b lang="de">${esc(d[0])}</b><span class="muted"> · ${esc(d[1])}${d[2]?' · '+esc(d[2]):''}</span></div></div>
    <dl><dt>Belgilari</dt><dd lang="de">${esc(p[0]||'')}</dd>${p[1]?`<dt>Tekshiruv</dt><dd lang="de">${esc(p[1])}</dd>`:''}${p[2]?`<dt>Davolash</dt><dd lang="de">${esc(p.slice(2).join(';'))}</dd>`:''}</dl>${links(bare(d[2]&&!/^z\. B\./.test(d[2])&&d[2].length<30?d[2]:d[0]))}</div>`}).join('')}</div>`;
   return h}
@@ -761,7 +789,7 @@ function vWeek(){const wk=viewWk||curWk(),K=kind(wk),locked=wk>curWk(),cs=CARDS.
   if(K.k==='lang'){const w=W[K.i];body=`<div class="cols"><div><div class="card"><div class="muted small ff">Grammatika</div><h3 style="font-size:21px;margin-top:4px">${esc(w.g)}</h3><div class="rule">${esc(w.gx)}</div>${vidLinks(gTopic(w.g))}
    <div style="margin-top:10px">${w.ex.map(e=>`<div class="ex">${spk(e[0])}<div><b lang="de">${esc(e[0])}</b><span>${esc(e[1])}</span></div></div>`).join('')}</div></div>
    <div class="card sec"><div class="muted small ff">Vazifalar</div><table><tbody><tr><td><b>Tinglash</b></td><td>${esc(w.lis)} <a href="https://learngerman.dw.com/de/" target="_blank" rel="noopener">ochish</a></td></tr><tr><td><b>Gapirish</b></td><td>${esc(w.spk)}</td></tr><tr><td><b>Yozish</b></td><td>${esc(w.wr)}</td></tr></tbody></table></div></div>
-   <div class="card"><div class="hd"><h3>So'zlar: ${esc(w.m)}</h3><span>${cs.length} ta</span></div><div class="scroll"><table><tbody>${cs.map(c=>`<tr><td>${spk(c.de)}</td><td><b lang="de">${esc(c.de)}</b>${c.fach?`<div class="muted small">${esc(c.fach)}</div>`:''}</td><td>${esc(c.uz)}${c.note?`<div class="muted small">${esc(c.note)}</div>`:''}</td></tr>`).join('')}</tbody></table></div></div></div>`}
+   <div class="card"><div class="hd"><h3>So'zlar: ${esc(w.m)}</h3><span>${cs.length} ta</span></div><div class="scroll"><table class="wt"><tbody>${cs.map(c=>`<tr><td>${spk(c.de)}</td><td><b lang="de">${esc(c.de)}</b>${c.fach?`<div class="muted small">${esc(c.fach)}</div>`:''}</td><td>${esc(c.uz)}${c.note?`<div class="muted small">${esc(c.note)}</div>`:''}</td></tr>`).join('')}</tbody></table></div></div></div>`}
   else if(K.k==='sysA'||K.k==='sysD'){const g=GB2X[K.i];body=blkSys(K.i,K.k==='sysA'?'ana':'dis')+`<div class="card sec"><div class="muted small ff">B2 grammatika</div><h3 style="margin-top:4px">${esc(g[0])}</h3><div class="rule">${esc(g[1])}</div><div class="ex">${spk(g[2])}<div><b lang="de">${esc(g[2])}</b></div></div>${vidLinks(g[3])}</div>`}
   else if(K.k==='rev')body=`<div class="card"><p>Bu ikki hafta barcha 12 ta tizimni takrorlaysiz.</p><div class="row">${SYS.map((m,i)=>`<button data-act="sys:${i}">${esc(m.uz)}</button>`).join('')}</div></div>`;
   else if(K.k==='ls'||K.k==='sim')body=blkLS(K.i,K.k==='ls'?K.j:-1);
@@ -802,9 +830,9 @@ function rate(q){const t=today(),c=findCard(cur),isNew=!S.prog[cur],p=Object.ass
   p.due=t+p.ivl;p.reps++;S.prog[cur]=p;const g=L();g.rev=(g.rev||0)+1;if(isNew){if(c&&c.fb)g.nf=(g.nf||0)+1;else g.neu=(g.neu||0)+1}save();next()}
 function vCards(){
   v.innerHTML=`<div class="cols"><div><h2 style="margin-bottom:14px">Kartalar</h2><div class="fc" id="fc"></div><div class="row"><button data-act="test:${curWk()}">Shu hafta testi</button><a class="btn" href="#bugun">Bugungi rejaga</a></div><p class="muted small">Kompyuterda: Enter - javobni ochish, 1-4 - baholash.</p></div>
-  <div><div class="card"><h3>O'z kartangizni qo'shing</h3><form id="add"><label for="fu">O'zbekcha</label><input id="fu" required><label for="fg">Nemischa (artikl bilan)</label><input id="fg" required lang="de" autocapitalize="off">
-   <label for="ff">Shifokor tili / lotincha (ixtiyoriy)</label><input id="ff"><label for="fn">Eslatma (ixtiyoriy)</label><input id="fn"><div class="row"><button class="pri">Qo'shish</button></div></form></div>
-   <div class="card sec"><div class="hd"><h3>Mening kartalarim</h3><span>${S.custom.length} ta</span></div><div class="scroll" style="max-height:380px;overflow-y:auto"><table><tbody id="tb"></tbody></table></div><p class="muted small">Barcha so'zlar: Fachbegriffe va Bu hafta bo'limlarida.</p></div></div></div>`;
+  <div><details class="card sec addc"><summary>O'z kartangizni qo'shing</summary><form id="add"><label for="fu">O'zbekcha</label><input id="fu" required><label for="fg">Nemischa (artikl bilan)</label><input id="fg" required lang="de" autocapitalize="off">
+   <label for="ff">Shifokor tili / lotincha (ixtiyoriy)</label><input id="ff"><label for="fn">Eslatma (ixtiyoriy)</label><input id="fn"><div class="row"><button class="pri">Qo'shish</button></div></form></details>
+   <div class="card sec"><div class="hd"><h3>Mening kartalarim</h3><span>${S.custom.length} ta</span></div><div class="scroll" style="max-height:380px;overflow-y:auto"><table class="wt"><tbody id="tb"></tbody></table></div><p class="muted small">Barcha so'zlar: Fachbegriffe va Bu hafta bo'limlarida.</p></div></div></div>`;
   $('add').onsubmit=e=>{e.preventDefault();const g=id=>$(id).value.trim();S.custom.push({id:'u'+Date.now().toString(36),wk:0,deck:"Mening kartalarim",uz:g('fu'),de:g('fg'),fach:g('ff'),note:g('fn')});save();['fu','fg','ff','fn'].forEach(i=>$(i).value='');toast("Karta qo'shildi");list();if(!cur)buildQ()};
   bindAct(v);list();buildQ()}
 function list(){const tb=$('tb');if(!tb)return;const t=today();
@@ -891,22 +919,23 @@ function vGram(){const items=[...W.map((w,i)=>({h:(i+1)+'-hafta',t:w.g,x:w.gx,ex
   v.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{gSel=+b.dataset.g;vGram()});bindSpk(v);
   const s=v.querySelector('.pills [aria-selected=true]');if(s)s.scrollIntoView({block:'nearest',inline:'center'})}
 /* ---------- LUG'AT (Fachbegriffe) ---------- */
-let lCat='',lQ='',lImp=false;
+let lCat='',lQ='',lImp=false,lShow=60;
 const CATS=[...new Set(FB.map(x=>x[0]))];
 function vLug(){
   v.innerHTML=`<h2 style="margin-bottom:6px">Fachbegriffe (Mainz ro'yxati)</h2><p class="muted" style="margin-top:0;max-width:72ch">${FB.length} ta lotincha tibbiy atama, nemischa (bemor tili) va o'zbekcha tarjimasi bilan. Yulduzcha bilan belgilanganlari ro'yxatda muhim deb belgilangan: ular kartalarda birinchi chiqadi (kuniga ${S.newFb} ta yangi).</p>
   <div class="row" style="margin-top:0"><input id="lq" placeholder="Qidirish: lotincha, nemischa yoki o'zbekcha" value="${esc(lQ)}" style="flex:1;min-width:220px"><button id="li" aria-pressed="${lImp}" class="${lImp?'pri':''}">★ Faqat muhimlari</button></div>
   <div class="pills" style="margin-top:12px"><button aria-selected="${!lCat}" data-c="">Hammasi</button>${CATS.map(c=>`<button aria-selected="${c===lCat}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>
-  <div class="card"><div id="lc" class="muted small"></div><div class="scroll"><table class="lex"><tbody id="lt"></tbody></table></div></div>`;
+  <div class="card"><div id="lc" class="muted small"></div><div class="scroll"><table class="lex wt"><tbody id="lt"></tbody></table></div><button id="lm" class="more" hidden>Yana 60 ta ko'rsatish</button></div>`;
   const draw=()=>{const q=norm(lQ),r=FB.map((x,i)=>[x,i]).filter(([x])=>(!lCat||x[0]===lCat)&&(!lImp||x[4])&&(!q||norm(x[1]+' '+x[2]+' '+x[3]).includes(q)));
-    $('lc').textContent=r.length+" ta atama"+(r.length>300?" (birinchi 300 tasi ko'rsatilmoqda)":"");
-    $('lt').innerHTML=r.slice(0,300).map(([x,i])=>{const p=S.prog['f'+i];return `<tr><td>${spk(x[2].split(/[\/,]/)[0])}</td><td><b lang="de">${esc(x[2])}</b><div class="muted small" lang="la">${x[4]?'<span class="star">★</span> ':''}${esc(x[1])}</div></td><td>${esc(x[3])}${p?'<div class="small" style="color:var(--ok)">kartada o\'rganilmoqda</div>':''}</td></tr>`}).join('');bindSpk($('lt'))};
-  $('lq').oninput=e=>{lQ=e.target.value;draw()};$('li').onclick=()=>{lImp=!lImp;vLug()};
-  v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{lCat=b.dataset.c;vLug()});draw()}
+    const N=Math.min(r.length,lShow);$('lc').textContent=r.length+" ta atama"+(r.length>N?` · ${N} tasi ko'rsatilmoqda`:"");
+    $('lt').innerHTML=r.slice(0,N).map(([x,i])=>{const p=S.prog['f'+i];return `<tr><td>${spk(x[2].split(/[\/,]/)[0])}</td><td><b lang="de">${esc(x[2])}</b><div class="muted small" lang="la">${x[4]?'<span class="star">★</span> ':''}${esc(x[1])}</div></td><td>${esc(x[3])}${p?'<div class="small" style="color:var(--ok)">kartada o\'rganilmoqda</div>':''}</td></tr>`}).join('');bindSpk($('lt'));$('lm').hidden=r.length<=N};
+  $('lm').onclick=()=>{lShow+=60;draw()};
+  $('lq').oninput=e=>{lQ=e.target.value;lShow=60;draw()};$('li').onclick=()=>{lImp=!lImp;lShow=60;vLug()};
+  v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{lCat=b.dataset.c;lShow=60;vLug()});draw()}
 /* ---------- REJA ---------- */
 function vPlan(){const cw=curWk(),grp=[[1,13,"1-3-oylar · Til poydevori + kitob"],[14,26,"4-6-oylar · Til, tibbiy so'zlar + kitob"],[27,52,"7-12-oylar · Tibbiyot asoslari nemis tilida + kitob"],[53,72,"13-17-oylar · Simptomdan tashxisga"],[73,78,"18-oy · FSP / FaMed qoliplari"],[79,104,"19-24-oylar · Imtihon rejimi"]];
   v.innerHTML=`<h2>2 yillik batafsil reja</h2><p class="muted" style="max-width:70ch">104 hafta, har kuni ketma-ket vazifalar. Har haftaning 7-kuni takrorlash va test. Haftani bosib, uning materiallarini oching. KP bosqichi: Tibbiyot bilimi → 5 yillik yo'l.</p>
-  ${grp.map(g=>`<div class="month"><h3>${g[2]}</h3><div class="wk">${Array.from({length:g[1]-g[0]+1},(_,j)=>{const n=g[0]+j,K=kind(n),sc=S.tests[n],B=bookOf(n);return `<a href="#hafta" data-w="${n}" class="${n===cw?'cur':n<cw?'past':''}"><small>${n}-hafta${n===cw?' · hozir':''}</small><b>${esc(K.t)}</b>${K.k==='lang'?`<span>${esc(W[K.i].g)}</span>`:''}${B?`<span>Kitob: ${B.u[0]}-bob ${esc(B.u[1])}</span>`:''}${sc!=null?`<i class="badge${sc>=8?' g':''}">${sc}/10</i>`:''}</a>`}).join('')}</div></div>`).join('')}`;
+  ${grp.map(g=>{const on=cw>=g[0]&&cw<=g[1],dn=Array.from({length:g[1]-g[0]+1},(_,j)=>g[0]+j).filter(n=>n<cw).length;return `<details class="month${on?' now':''}"${on?' open':''}><summary><span>${g[2]}<small>${on?'hozir · ':''}${g[0]}–${g[1]}-haftalar${dn?` · ${dn} o'tdi`:''}</small></span></summary><div class="wk">${Array.from({length:g[1]-g[0]+1},(_,j)=>{const n=g[0]+j,K=kind(n),sc=S.tests[n],B=bookOf(n);return `<a href="#hafta" data-w="${n}" class="${n===cw?'cur':n<cw?'past':''}"><small>${n}-hafta${n===cw?' · hozir':''}</small><b>${esc(K.t)}</b>${K.k==='lang'?`<span>${esc(W[K.i].g)}</span>`:''}${B?`<span>Kitob: ${B.u[0]}-bob ${esc(B.u[1])}</span>`:''}${sc!=null?`<i class="badge${sc>=8?' g':''}">${sc}/10</i>`:''}</a>`}).join('')}</div></details>`}).join('')}`;
   v.querySelectorAll('[data-w]').forEach(a=>a.onclick=()=>{viewWk=+a.dataset.w})}
 /* ---------- SOZLAMA ---------- */
 function vSet(){v.innerHTML=`<h2>Sozlamalar</h2><div class="cols"><div class="card"><h3>Reja</h3>
