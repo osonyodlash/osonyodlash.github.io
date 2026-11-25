@@ -889,25 +889,39 @@ function vBook(){const cw=curWk();
   <div class="grid2">${BOOK.map((b,i)=>{const w1=2*i+1,cur=cw===w1||cw===w1+1;return `<div class="card unit${cur?' cur':''}"><small>${w1}-${w1+1}-haftalar${cur?' · hozir':''} · ${b[0]}-bob</small><b lang="de">${esc(b[1])}</b><span class="muted">${esc(b[2])}</span><p class="small" style="margin:4px 0 0">${esc(b[5])}</p><div class="row" style="margin-top:8px"><button class="tiny" data-act="pdf:${b[3]}">PDF ${b[3]}–${b[4]}-sahifa</button></div></div>`}).join('')}</div>`;
   bindAct(v)}
 /* ---------- KITOB (PDF) ---------- */
-let PDF=null,pdfLoading=null;
+let PDF=null,pdfLoading=null,pdfErr='';
 const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('famed-yoli',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
 const idbGet=k=>idb().then(db=>new Promise((res,rej)=>{const q=db.transaction('f').objectStore('f').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)}));
-const idbPut=(k,val)=>idb().then(db=>new Promise((res,rej)=>{const tx=db.transaction('f','readwrite');tx.objectStore('f').put(val,k);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)}));
-function loadPdfJs(){if(window.pdfjsLib)return Promise.resolve();if(!pdfLoading)pdfLoading=import('./pdfjs/pdf.min.mjs').then(m=>{m.GlobalWorkerOptions.workerSrc='./pdfjs/pdf.worker.min.mjs';window.pdfjsLib=m}).catch(e=>{pdfLoading=null;throw e});return pdfLoading}
-async function openPdf(buf){await loadPdfJs();PDF=await pdfjsLib.getDocument({data:buf}).promise}
+const idbPut=(k,val)=>idb().then(db=>new Promise((res,rej)=>{const tx=db.transaction('f','readwrite');tx.objectStore('f').put(val,k);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error||new Error('saqlash bekor qilindi'))}));
+const addScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('yuklanmadi: '+src));document.head.appendChild(s)});
+function loadPdfJs(){if(window.pdfjsLib)return Promise.resolve();
+  if(!pdfLoading)pdfLoading=import('./pdfjs/pdf.min.mjs').then(m=>{m.GlobalWorkerOptions.workerSrc=new URL('./pdfjs/pdf.worker.min.mjs',location.href).href;window.pdfjsLib=m})
+   .catch(()=>addScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js').then(()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}))
+   .catch(e=>{pdfLoading=null;throw e});
+  return pdfLoading}
+let bookBuf=null;
+async function openPdf(buf){bookBuf=buf;await loadPdfJs();PDF=await pdfjsLib.getDocument({data:new Uint8Array(buf.slice(0))}).promise}
+async function getStored(){let x=await idbGet('book');if(!x)return null;if(x instanceof Blob)x=await x.arrayBuffer();return x}
+function rawOpen(){if(!bookBuf)return;try{const u=URL.createObjectURL(new Blob([bookBuf],{type:'application/pdf'}));window.open(u+'#page='+kPage,'_blank')}catch(e){toast("Ochib bo'lmadi")}}
 async function vKitob(){
-  v.innerHTML=`<h2 style="margin-bottom:12px">Kitob</h2><div id="kb"><div class="card"><p class="muted">Yuklanmoqda...</p></div></div>`;
+  v.innerHTML=`<h2 style="margin-bottom:12px">Kitob</h2><div id="kb"><div class="card"><p class="muted">Kitob yuklanmoqda...</p></div></div>`;
   const kb=$('kb');
-  try{if(!PDF){const blob=await idbGet('book');if(blob)await openPdf(await blob.arrayBuffer())}}catch(e){}
-  if(!PDF){kb.innerHTML=`<div class="card" style="max-width:720px"><h3>Kitob faylini bir marta tanlang</h3><p class="muted">"Trainingseinheiten Deutsch B2·C1 Medizin" PDF faylini telefoningiz yoki kompyuteringizdan tanlang. U faqat shu qurilmada saqlanadi, internetga yuklanmaydi. Keyin har bir vazifadagi "Kitobni ochish" tugmasi kerakli sahifani darhol ochadi.</p>
-   <label class="btn pri" for="pf" style="margin-top:10px;color:light-dark(#fff,#0a1020)">PDF faylni tanlash</label><input type="file" id="pf" accept="application/pdf,.pdf" hidden><p class="small" id="pm"></p></div>`;
-   $('pf').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('pm').textContent="Saqlanmoqda...";try{await idbPut('book',f);await openPdf(await f.arrayBuffer());vKitob()}catch(x){$('pm').textContent="Faylni ochib bo'lmadi. Internetga ulanib, sahifani yangilang va qayta urinib ko'ring."}};return}
+  if(!PDF){try{const buf=await getStored();if(buf)await openPdf(buf)}catch(e){pdfErr=String(e&&e.message||e)}}
+  if(!PDF){kb.innerHTML=`<div class="card" style="max-width:720px"><h3>1-qadam: kitob PDF faylini tanlang</h3><p>Sayt kitobni o'zi yuklab ololmaydi: "Trainingseinheiten Deutsch B2·C1 Medizin" PDF faylini telefoningizdan <b>bir marta</b> tanlashingiz kerak. Fayl faqat shu telefonda saqlanadi.</p>
+   <ol class="small muted" style="padding-left:20px"><li>Agar kitob Telegram'da bo'lsa, avval uni telefonga yuklab oling (faylni bosib, "Yuklab olish" yoki "Fayllarga saqlash").</li><li>Pastdagi tugmani bosing va "Fayllar" (Files) ichidan PDF'ni tanlang.</li><li>Shundan keyin vazifalardagi "Kitobni ochish" tugmalari kerakli sahifani o'zi ochadi.</li></ol>
+   <label class="btn pri big" for="pf" style="margin-top:10px;color:light-dark(#fff,#0a1020)">PDF faylni tanlash</label><input type="file" id="pf" accept="application/pdf,.pdf" style="position:absolute;opacity:0;width:1px;height:1px"><p class="small" id="pm">${pdfErr?'Oldingi xato: '+esc(pdfErr):''}</p>
+   <p class="muted small">Maslahat: saytni Telegram ichida emas, Chrome yoki Safari'da oching.</p></div>`;
+   $('pf').onchange=async e=>{const f=e.target.files[0];if(!f)return;const pm=$('pm');pm.textContent="Fayl o'qilmoqda...";
+     let buf;try{buf=await f.arrayBuffer()}catch(x){pm.textContent="Faylni o'qib bo'lmadi: "+(x.message||x);return}
+     try{await idbPut('book',buf)}catch(x){pm.textContent="Diqqat: faylni telefonda saqlab bo'lmadi, keyingi safar yana tanlashingiz kerak bo'ladi. ("+(x&&x.message||x)+")"}
+     pm.textContent="Kitob ochilmoqda...";
+     try{await openPdf(buf);pdfErr='';vKitob()}catch(x){bookBuf=buf;pm.innerHTML="Kitobni sayt ichida ochib bo'lmadi ("+esc(x&&x.message||x)+"). <button class='tiny' id='raw'>PDF'ni alohida oynada ochish</button>";$('raw').onclick=rawOpen}};return}
   const N=PDF.numPages;kPage=Math.min(Math.max(1,kPage),N);const B=BOOK.find(b=>kPage>=b[3]&&kPage<=b[4]);
   kb.innerHTML=`<div class="pbar"><button id="kp" aria-label="Oldingi sahifa">‹</button><input id="kn" type="number" min="1" max="${N}" value="${kPage}" aria-label="Sahifa"><span class="muted">/ ${N}</span><button id="kx" aria-label="Keyingi sahifa">›</button><select id="ku" style="width:auto;flex:1;min-width:180px"><option value="">Bobga o'tish...</option>${BOOK.slice().sort((a,b)=>a[3]-b[3]).map(b=>`<option value="${b[3]}">${b[0]}. ${esc(b[1])}</option>`).join('')}</select></div>
-   ${B?`<p class="muted small" style="margin:0 0 10px">${B[0]}-bob: ${esc(B[1])} · ${esc(B[2])}</p>`:''}<div id="pdfv"><canvas id="pc"></canvas></div>`;
-  const draw=async()=>{const pg=await PDF.getPage(kPage),cv=$('pc');if(!cv)return;const w=$('pdfv').clientWidth-20,vp0=pg.getViewport({scale:1}),sc=Math.min(2.2,w/vp0.width),dpr=window.devicePixelRatio||1,vp=pg.getViewport({scale:sc*dpr});cv.width=vp.width;cv.height=vp.height;cv.style.width=(vp.width/dpr)+'px';await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise};
+   ${B?`<p class="muted small" style="margin:0 0 10px">${B[0]}-bob: ${esc(B[1])} · ${esc(B[2])}</p>`:''}<div id="pdfv"><canvas id="pc"></canvas></div><div class="row"><button class="tiny" id="raw">Alohida oynada ochish</button></div>`;
+  const draw=async()=>{try{const pg=await PDF.getPage(kPage),cv=$('pc');if(!cv)return;const w=Math.max(280,$('pdfv').clientWidth-20),vp0=pg.getViewport({scale:1}),sc=Math.min(2.2,w/vp0.width),dpr=Math.min(2,window.devicePixelRatio||1),vp=pg.getViewport({scale:sc*dpr});cv.width=Math.floor(vp.width);cv.height=Math.floor(vp.height);cv.style.width=Math.floor(vp.width/dpr)+'px';await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise}catch(e){$('pdfv').innerHTML=`<p style="color:#fff">Sahifani chizib bo'lmadi (${esc(e&&e.message||e)}). "Alohida oynada ochish" tugmasini bosing.</p>`}};
   const goP=n=>{kPage=Math.min(Math.max(1,n),N);vKitob()};
-  $('kp').onclick=()=>goP(kPage-1);$('kx').onclick=()=>goP(kPage+1);$('kn').onchange=e=>goP(+e.target.value);$('ku').onchange=e=>{if(e.target.value)goP(+e.target.value)};
+  $('kp').onclick=()=>goP(kPage-1);$('kx').onclick=()=>goP(kPage+1);$('kn').onchange=e=>goP(+e.target.value);$('ku').onchange=e=>{if(e.target.value)goP(+e.target.value)};$('raw').onclick=rawOpen;
   draw()}
 /* ---------- GRAMMATIKA ---------- */
 let gSel=0;
@@ -949,7 +963,7 @@ function vSet(){v.innerHTML=`<h2>Sozlamalar</h2><div class="cols"><div class="ca
   <h3 style="margin-top:20px">Kitob</h3><p class="muted small">Kitob PDF fayli shu qurilmada saqlangan bo'lsa, uni almashtirish mumkin.</p><div class="row"><button id="rb">Kitob faylini almashtirish</button></div></div></div>`;
   $('ss').onclick=()=>{const d=$('sd').value;if(d)S.start=d;S.newPer=Math.max(0,Math.min(60,+$('sn').value||0));S.newFb=Math.max(0,Math.min(60,+$('sf').value||0));save();toast("Saqlandi")};
   $('dl').onclick=()=>{S.backup=Date.now();save();const b=new Blob([JSON.stringify(S)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='famed-yoli-'+iso(today())+'.json';document.body.appendChild(a);a.click();a.remove();toast("Fayl saqlandi")};
-  $('rb').onclick=async()=>{try{await idbPut('book',null)}catch(e){}PDF=null;location.hash='kitob'};
+  $('rb').onclick=async()=>{try{await idbPut('book',null)}catch(e){}PDF=null;bookBuf=null;location.hash='kitob'};
   $('fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let o;try{o=JSON.parse(r.result)}catch(x){$('im2').textContent="Fayl noto'g'ri.";return}
    if(!o||typeof o.prog!=='object'){$('im2').textContent="Bu FaMed yo'li fayli emas.";return}
    $('im2').innerHTML=`Fayldagi taraqqiyot: ${Object.keys(o.prog).length} ta o'rganilgan karta. Hozirgi ma'lumot almashtiriladi. <button class="tiny" id="ok2">Tasdiqlash</button>`;
