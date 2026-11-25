@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="FSP / FaMed va Kenntnisprüfung'ga 2 yillik tayyorgarlik">
+<meta name="theme-color" content="#13244f">
+<title>FaMed yo'li</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;
+--bg:light-dark(#f3f5fa,#0a1020);--sf:light-dark(#ffffff,#121b31);--sf2:light-dark(#eef2fb,#18233d);
+--ink:light-dark(#0f1a2e,#eef2fa);--mut:light-dark(#5b6880,#97a5c0);--line:light-dark(#e2e7f1,#23304b);
+--pri:light-dark(#2f5bea,#86a2ff);--pri2:light-dark(#e8eeff,#1c2a52);--acc:light-dark(#f2543a,#ff8a6e);--sun:#ffc53d;--ok:light-dark(#12804a,#5fd394);
+--sh:0 1px 2px rgba(15,26,46,.06),0 12px 32px -16px rgba(15,26,46,.25);--r:18px}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+h1,h2,h3,.ff{font-family:Outfit,system-ui,sans-serif;letter-spacing:-.01em}
+h1,h2,h3{margin:0;line-height:1.12;text-wrap:balance;font-weight:700}
+h2{font-size:clamp(24px,3.6vw,32px)}h3{font-size:18px;font-weight:600}
+a{color:var(--pri)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 max(4vw,16px)}
+/* top bar */
+.bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.bar .wrap{display:flex;align-items:center;gap:16px;height:62px}
+.logo{display:flex;align-items:center;gap:10px;font:700 19px Outfit,system-ui,sans-serif;text-decoration:none;color:var(--ink)}
+.logo i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--pri),#13244f);display:grid;place-items:center;color:#fff;font-style:normal;font-size:15px}
+.tabs{display:flex;gap:4px;margin-inline-start:auto}
+.tabs a{font:600 15px Outfit,system-ui,sans-serif;color:var(--mut);text-decoration:none;padding:9px 14px;border-radius:999px;display:flex;align-items:center;gap:7px}
+.tabs a[aria-current]{background:var(--pri2);color:var(--pri)}
+.tabs svg{width:20px;height:20px}
+@media(max-width:760px){.bar{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}.tabs{position:fixed;inset:auto 0 0 0;margin:0;justify-content:space-around;background:var(--sf);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:20}
+ .tabs a{flex-direction:column;gap:2px;font-size:11.5px;padding:6px 8px;border-radius:12px;min-width:56px}}
+main{padding:22px 0 40px}
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:26px;background:radial-gradient(120% 140% at 100% 0%,#3a6af0 0%,#1b3478 45%,#0f1a3a 100%);color:#fff;padding:clamp(22px,3.4vw,36px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;box-shadow:var(--sh)}
+.hero::after{content:"";position:absolute;inset:auto -60px -90px auto;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,197,61,.35),transparent 65%)}
+.hero .k{font:600 14px Outfit,system-ui,sans-serif;opacity:.8}.hero h2{font-size:clamp(26px,4.4vw,40px);margin:6px 0 10px;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{font:600 13.5px Outfit,system-ui,sans-serif;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14);white-space:nowrap}
+.chip.sun{background:var(--sun);color:#1a1300}
+.ring{position:relative;width:150px;height:150px;z-index:1}.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}.ring b{font:700 34px/1 Outfit,system-ui,sans-serif}.ring span{font-size:12.5px;opacity:.8}
+@media(max-width:560px){.hero{grid-template-columns:minmax(0,1fr)}.ring{width:120px;height:120px;position:absolute;right:14px;top:14px;opacity:.95}.ring b{font-size:26px}.hero h2{padding-right:120px}}
+/* layout */
+.cols{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;margin-top:22px;align-items:start}
+@media(max-width:900px){.cols{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:clamp(16px,2.4vw,24px)}
+.hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px}.hd span{color:var(--mut);font-size:14px;white-space:nowrap}
+.task{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
+.task:first-of-type{border-top:0}
+.min{font:700 15px Outfit,system-ui,sans-serif;background:var(--pri2);color:var(--pri);border-radius:12px;padding:8px 0;width:54px;text-align:center;white-space:nowrap}
+.task h3{font-size:16.5px}.task p{margin:3px 0 0;color:var(--mut);font-size:14.5px}
+.task.done h3{color:var(--mut);text-decoration:line-through}.task.done .min{background:var(--sf2);color:var(--mut)}
+.tick{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--sf);display:grid;place-items:center;cursor:pointer;padding:0;color:transparent}
+.tick[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#fff}.tick svg{width:22px;height:22px}
+.tl{font:600 13px Outfit,system-ui,sans-serif;color:var(--pri);background:none;border:0;padding:4px 0;cursor:pointer;min-height:auto}
+.sec+.sec{margin-top:18px}
+/* buttons, inputs */
+button,.btn{font:600 15.5px Outfit,sans-serif;min-height:46px;padding:10px 18px;border-radius:14px;border:1px solid var(--line);background:var(--sf);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button.pri,.btn.pri{background:var(--pri);border-color:var(--pri);color:light-dark(#fff,#0a1020)}
+button.big{min-height:54px;font-size:17px;padding:12px 24px;width:100%}
+button:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+input,select,textarea{font:16px "Atkinson Hyperlegible",sans-serif;width:100%;min-height:48px;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:var(--sf);color:var(--ink)}
+label{display:block;font:600 13.5px Outfit,system-ui,sans-serif;color:var(--mut);margin:14px 0 6px}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.muted{color:var(--mut)}.small{font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.stats div{background:var(--sf2);border-radius:14px;padding:12px}.stats b{display:block;font:700 26px/1.1 Outfit,system-ui,sans-serif}.stats span{font-size:12.5px;color:var(--mut)}
+.note{border-radius:14px;padding:12px 14px;background:light-dark(#fff6df,#2a2410);color:light-dark(#6b4b00,#ffd77a);font-size:14.5px;margin-top:14px}
+/* flash card */
+.fc{position:relative;border-radius:24px;background:var(--sf);border:1px solid var(--line);box-shadow:var(--sh);padding:26px clamp(18px,3vw,30px);min-height:340px;display:flex;flex-direction:column}
+.fc::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;border-radius:24px 24px 0 0;background:linear-gradient(90deg,var(--pri),var(--acc))}
+.fc .meta{display:flex;justify-content:space-between;gap:10px;font:600 13px Outfit,system-ui,sans-serif;color:var(--mut)}
+.fc .q{font:600 clamp(22px,3.4vw,30px)/1.25 Outfit,system-ui,sans-serif;margin:24px 0 16px}
+.fc .a{font:700 clamp(23px,3.6vw,32px)/1.25 Outfit,system-ui,sans-serif;color:var(--pri)}
+.fc .f{margin-top:8px}.fc .n{margin-top:6px;color:var(--mut);font-size:14.5px}
+.fc .grow{flex:1}
+.rate{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:18px}
+.rate button{flex-direction:column;gap:0;padding:8px 4px;min-height:58px}.rate small{font:400 11.5px "Atkinson Hyperlegible";color:var(--mut)}
+.rate button:nth-child(1){border-color:color-mix(in srgb,var(--acc) 50%,var(--line))}.rate button:nth-child(3){border-color:color-mix(in srgb,var(--pri) 50%,var(--line))}
+.prog{height:8px;border-radius:99px;background:var(--sf2);overflow:hidden;margin-top:14px}.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--acc));border-radius:99px}
+.verd{margin-top:12px;font-weight:700}.ok{color:var(--ok)}.bad{color:var(--acc)}
+.spk{width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;flex:none}.spk svg{width:20px;height:20px}
+/* week view */
+.ex{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}.ex:first-child{border-top:0}
+.ex b{font-family:Outfit,system-ui,sans-serif;font-weight:600;display:block}.ex span{color:var(--mut);font-size:14.5px}
+.rule{font-size:16.5px;background:var(--pri2);border-radius:14px;padding:14px 16px;margin:12px 0 4px}
+table{width:100%;border-collapse:collapse;font-size:15px}td,th{text-align:start;padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--mut);font:600 13px Outfit,system-ui,sans-serif}
+.scroll{overflow-x:auto}
+.weeknav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* plan */
+.month{margin-top:26px}.month>h3{margin-bottom:10px;color:var(--mut);font-size:15px}
+.wk{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:12px}
+.wk a{display:block;text-decoration:none;color:var(--ink);background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:14px 16px;position:relative}
+.wk a.cur{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri2)}.wk a.past{opacity:.75}
+.wk small{font:600 12.5px Outfit,system-ui,sans-serif;color:var(--pri)}.wk b{display:block;font:600 16px Outfit,system-ui,sans-serif;margin:3px 0}.wk span{font-size:13.5px;color:var(--mut)}
+.badge{position:absolute;top:12px;right:12px;font:700 12px Outfit,system-ui,sans-serif;padding:3px 8px;border-radius:99px;background:var(--sf2);color:var(--mut)}.badge.g{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.phase{border-left:4px solid var(--pri);padding:4px 0 4px 14px;margin-top:14px}.phase p{margin:4px 0;color:var(--mut);font-size:14.5px}
+/* timer */
+#timer{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));display:none;align-items:center;gap:14px;padding:10px 12px 10px 20px;border-radius:999px;background:#0f1a3a;color:#fff;box-shadow:0 18px 40px -12px rgba(0,0,0,.5);z-index:30;max-width:calc(100% - 24px)}
+@media(min-width:761px){#timer{bottom:24px}}
+#timer b{font:700 24px Outfit,system-ui,sans-serif;font-variant-numeric:tabular-nums}#timer span{font-size:14px;opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:40vw}
+#timer button{background:rgba(255,255,255,.14);border:0;color:#fff;min-height:40px;border-radius:999px}
+.toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font:600 14px Outfit,system-ui,sans-serif;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media(prefers-reduced-motion:no-preference){.fc{animation:pop .28s ease}@keyframes pop{from{transform:translateY(6px);opacity:.6}to{transform:none;opacity:1}}}
+.gear{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;color:var(--mut);margin-inline-start:4px}.gear svg{width:22px;height:22px}
+@media(max-width:760px){.gear{margin-inline-start:auto}}
+.num{font:700 15px Outfit,system-ui,sans-serif;background:var(--pri2);color:var(--pri);border-radius:12px;width:38px;height:38px;display:grid;place-items:center}
+.task.done .num{background:var(--sf2);color:var(--mut)}
+.pills{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:thin}
+.pills button{flex:none;min-height:40px;padding:8px 14px;border-radius:999px;font-size:14px;background:var(--sf)}
+.pills button[aria-selected=true]{background:var(--pri);border-color:var(--pri);color:light-dark(#fff,#0a1020)}
+.pills.main button[aria-selected=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.pills:not(.main){margin-bottom:10px}
+.lnk{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.lnk a{font:600 13px Outfit,system-ui,sans-serif;text-decoration:none;padding:6px 12px;border-radius:999px;background:var(--pri2);color:var(--pri)}
+.dz{padding:16px 0;border-top:1px solid var(--line)}.dz:first-of-type{border-top:0}.dzh{display:flex;gap:12px;align-items:center}.dzh b{font:600 17px Outfit,system-ui,sans-serif}
+dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:12px 0 0;font-size:15px}dt{font:600 13px Outfit,system-ui,sans-serif;color:var(--mut);padding-top:2px}dd{margin:0}
+dl.auf dd{display:block}dl.auf .spk{float:left;margin-right:8px}
+@media(max-width:560px){dl{grid-template-columns:minmax(0,1fr)}dt{margin-top:6px}}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}@media(max-width:560px){.opts{grid-template-columns:minmax(0,1fr)}}
+.opts button{justify-content:flex-start;text-align:start;min-height:54px}.opts button.right{background:color-mix(in srgb,var(--ok) 18%,var(--sf));border-color:var(--ok)}.opts button.wrong{opacity:.55}
+.phase.now{border-left-color:var(--acc);background:var(--sf2);border-radius:0 12px 12px 0}
+.stack td{vertical-align:top}
+@media(max-width:600px){.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{border:0;padding:3px 0}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <a class="logo" href="#bugun"><i>F</i>FaMed yo'li</a>
+  <nav class="tabs" id="tabs">
+    <a href="#bugun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Bugun</a>
+    <a href="#hafta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16v15H4zM4 10h16M9 3v4M15 3v4"/></svg>Hafta</a>
+    <a href="#kartalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 2h12a2 2 0 0 1 2 2v12"/></svg>Kartalar</a>
+    <a href="#bilim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7"/></svg>Bilim</a>
+    <a href="#reja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Reja</a>
+  </nav>
+  <a class="gear" href="#sozlama" aria-label="Sozlamalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></a>
+</div></header>
+<main class="wrap" id="v"></main>
+<div id="timer"><b id="tt">00:00</b><span id="tn"></span><button id="tp">Pauza</button><button id="ts">Yopish</button></div>
+<div class="toast" id="toast"></div>
+<script>
+// 26 haftalik reja (6 oy). Karta formati: "o'zbekcha|nemischa|shifokor tili|eslatma"
+const W=[
+{t:"Tanishuv va gap tartibi",g:"Präsens va fe'l 2-o'rinda (V2)",
+gx:"Nemis gapida tuslangan fe'l doim 2-o'rinda turadi. Gap boshida vaqt yoki joy so'zi tursa ham, fe'l joyidan siljimaydi, ega fe'ldan keyin keladi. Savol so'zisiz savolda (ha/yo'q) fe'l 1-o'ringa chiqadi.",
+ex:[["Ich arbeite heute im Krankenhaus.","Men bugun kasalxonada ishlayman."],["Heute arbeite ich im Krankenhaus.","Bugun men kasalxonada ishlayman (fe'l yana 2-o'rinda)."],["Arbeiten Sie heute?","Siz bugun ishlaysizmi? (fe'l 1-o'rinda)"],["Wo wohnen Sie?","Qayerda yashaysiz?"]],
+m:"Bosh va yuz qismlari",lis:"DW \"Nicos Weg\" A2 kursidan 1 ta epizod (learngerman.dw.com, bepul)",spk:"O'zingizni tanishtiring: ism, yosh, qayerdansiz, kasb, oila. 1 daqiqa.",wr:"O'zingiz haqingizda 8 ta gap yozing. Har gapda fe'l 2-o'rinda ekanini tekshiring.",
+c:["Mening ismim Behzod.|Ich heiße Behzod.||","Men O'zbekistondanman.|Ich komme aus Usbekistan.||","Men shifokorman.|Ich bin Arzt.||kasb oldidan artikl qo'yilmaydi","Men uylanganman, ikki farzandim bor.|Ich bin verheiratet und habe zwei Kinder.||","Men Toshkentda yashayman.|Ich wohne in Taschkent.||","Bugun men kasalxonada ishlayman.|Heute arbeite ich im Krankenhaus.||V2: fe'l 2-o'rinda","Bosh|der Kopf|Caput|","Ko'z|das Auge|Oculus · okulär|ko'plik: die Augen","Quloq|das Ohr|Auris|","Burun|die Nase|Nasus · nasal|","Og'iz|der Mund|oral|","Tish|der Zahn|Dens · dental|ko'plik: die Zähne","Bo'yin|der Hals|Collum · zervikal|'Hals' tomoq ma'nosida ham","Tomoq (halqum)|der Rachen|Pharynx|"]},
+{t:"O'tgan zamon: Perfekt",g:"Perfekt (haben / sein + Partizip II)",
+gx:"Og'zaki nutqda o'tgan zamon Perfekt bilan aytiladi: haben yoki sein fe'li 2-o'rinda, Partizip II gap oxirida. Harakat va holat o'zgarishini bildiruvchi fe'llar (gehen, kommen, fahren, aufstehen) sein bilan, qolganlari haben bilan.",
+ex:[["Ich habe gefrühstückt.","Men nonushta qildim."],["Ich bin gestern zum Arzt gegangen.","Men kecha shifokorga bordim."],["Wann sind Sie gekommen?","Siz qachon keldingiz?"],["Er hat viel gearbeitet.","U ko'p ishladi."]],
+m:"Ichki a'zolar va tana",lis:"Nicos Weg A2: keyingi epizod, matnini o'qib chiqing",spk:"Kechagi kuningizni Perfekt bilan aytib bering: nima qildingiz, qayerga bordingiz.",wr:"Kechagi kuningiz haqida 8 ta Perfekt gap yozing.",
+c:["Men nonushta qildim.|Ich habe gefrühstückt.||haben + Partizip II","Men kecha shifokorga bordim.|Ich bin gestern zum Arzt gegangen.||gehen → sein","Siz qachon keldingiz?|Wann sind Sie gekommen?||kommen → sein","U ko'p ishladi.|Er hat viel gearbeitet.||","Yurak|das Herz|Cor · kardial|","O'pka|die Lunge|Pulmo · pulmonal|","Jigar|die Leber|Hepar · hepatisch|","Buyrak|die Niere|Ren · renal|","Oshqozon|der Magen|Gaster · gastral|","Ichak|der Darm|Intestinum · intestinal|","Qorin|der Bauch|Abdomen · abdominal|","Ko'krak qafasi|der Brustkorb|Thorax · thorakal|","Orqa|der Rücken|Dorsum|","Qo'l (yelkadan)|der Arm||","Kaft (qo'l panjasi)|die Hand||","Oyoq|das Bein||","Oyoq panjasi|der Fuß||"]},
+{t:"Präteritum va birinchi simptomlar",g:"Präteritum: war, hatte, konnte",
+gx:"sein, haben va modal fe'llar og'zaki nutqda ham Präteritum shaklida ishlatiladi: war, hatte, konnte, musste, wollte. Bular Perfektdan ko'ra qisqa va tabiiy eshitiladi.",
+ex:[["Ich war müde.","Men charchagan edim."],["Er hatte Fieber.","Uning isitmasi bor edi."],["Ich konnte nicht kommen.","Men kela olmadim."],["Wir mussten warten.","Biz kutishimizga to'g'ri keldi."]],
+m:"Simptomlar 1",lis:"Nicos Weg A2: 1 epizod. Har gapni pauza qilib takrorlang (shadowing)",spk:"Oxirgi marta kasal bo'lganingizni aytib bering: nima og'ridi, isitma bormidi.",wr:"Oxirgi kasalligingiz haqida war/hatte/konnte bilan 6 ta gap.",
+c:["Men charchagan edim.|Ich war müde.||sein → war","Uning isitmasi bor edi.|Er hatte Fieber.||haben → hatte","Men kela olmadim.|Ich konnte nicht kommen.||können → konnte","Og'riq|der Schmerz|Dolor|ko'pincha ko'plikda: die Schmerzen","Bosh og'rig'i|die Kopfschmerzen|Zephalgie|","Isitma|das Fieber|Pyrexie|","Yo'tal|der Husten|Tussis|","Tumov|der Schnupfen|Rhinitis|","Tomoq og'rig'i|die Halsschmerzen||","Hansirash (nafas qisishi)|die Atemnot|Dyspnoe|","Charchoq|die Müdigkeit|Fatigue|","Bosh aylanishi|der Schwindel|Vertigo|","Kvartira|die Wohnung||"]},
+{t:"Modal fe'llar",g:"Modalverben: müssen, können, dürfen, sollen, wollen, möchten",
+gx:"Modal fe'l 2-o'rinda tuslanadi, asosiy fe'l esa gap oxirida infinitiv holida turadi. sollten - maslahat (shifokor bemorga ko'p ishlatadi), dürfen nicht - mumkin emas.",
+ex:[["Ich muss Deutsch lernen.","Men nemis tilini o'rganishim kerak."],["Hier darf man nicht rauchen.","Bu yerda chekish mumkin emas."],["Sie sollten mehr Wasser trinken.","Siz ko'proq suv ichishingiz kerak (maslahat)."],["Kann ich Ihnen helfen?","Sizga yordam bera olamanmi?"]],
+m:"Simptomlar 2 va kasblar",lis:"Nicos Weg A2: 1 epizod + shadowing",spk:"Germaniyada nima qilmoqchisiz va nima qilishingiz kerak? (möchte, muss, kann)",wr:"Bemorga 6 ta maslahat yozing: Sie sollten.../Sie dürfen nicht...",
+c:["Men nemis tilini o'rganishim kerak.|Ich muss Deutsch lernen.||modal fe'l + oxirida infinitiv","Bu yerda chekish mumkin emas.|Hier darf man nicht rauchen.||","Sizga yordam bera olamanmi?|Kann ich Ihnen helfen?||","Men Germaniyada ishlamoqchiman.|Ich möchte in Deutschland arbeiten.||","Siz ko'proq suv ichishingiz kerak.|Sie sollten mehr Wasser trinken.||sollten = maslahat","Ko'ngil aynishi|die Übelkeit|Nausea|","Qusish|das Erbrechen|Emesis|","Ich ketishi|der Durchfall|Diarrhö|","Ich qotishi|die Verstopfung|Obstipation|","Qorin og'rig'i|die Bauchschmerzen|abdominelle Schmerzen|","Ishtaha yo'qligi|die Appetitlosigkeit|Inappetenz|","Terlash|das Schwitzen|Hyperhidrose|","Hamshira|die Pflegekraft||eski so'z: Krankenschwester","Assistent shifokor|der Assistenzarzt||"]},
+{t:"Akkusativ",g:"Akkusativ: den, einen, keinen",
+gx:"To'g'ri to'ldiruvchi (kimni? nimani?) Akkusativda bo'ladi. Faqat erkak rodda o'zgaradi: der → den, ein → einen, kein → keinen. Ayol (die) va o'rta (das) rod o'zgarmaydi.",
+ex:[["Ich sehe den Arzt.","Men shifokorni ko'ryapman."],["Der Patient braucht einen Termin.","Bemorga qabul vaqti kerak."],["Ich habe kein Fieber.","Menda isitma yo'q."],["Haben Sie einen Stift?","Sizda ruchka bormi?"]],
+m:"Ovqat hazm qilish a'zolari",lis:"Nicos Weg A2: 1 epizod + shadowing",spk:"Kecha nima yedingiz va ichdingiz? Akkusativ bilan.",wr:"Akkusativ bilan 8 ta gap: ich brauche / ich habe / ich sehe...",
+c:["Men shifokorni ko'ryapman.|Ich sehe den Arzt.||der → den","Bemorga qabul vaqti kerak.|Der Patient braucht einen Termin.||ein → einen","Menda isitma yo'q.|Ich habe kein Fieber.||","Ovqat|das Essen||","Non|das Brot||","Go'sht|das Fleisch||","Sabzavot|das Gemüse||","Meva|das Obst||","Qizilo'ngach|die Speiseröhre|Ösophagus|","O't pufagi|die Gallenblase|Vesica biliaris|","Oshqozon osti bezi|die Bauchspeicheldrüse|Pankreas|","Ko'richak|der Blinddarm|Appendix|bemor 'Blinddarm' deydi; aslida Appendix = Wurmfortsatz","Yutish qiyinligi|die Schluckbeschwerden|Dysphagie|","Jig'ildon qaynashi|das Sodbrennen|Pyrosis|"]},
+{t:"Dativ",g:"Dativ va Dativ predloglari (mit, nach, bei, von, zu, aus, seit)",
+gx:"Dativ - kimga? kimda? savoliga javob. der/das → dem, die → der, ko'plik → den (+n). mit, nach, bei, von, zu, aus, seit predloglaridan keyin doim Dativ. zu + dem = zum, von + dem = vom.",
+ex:[["Ich helfe dem Patienten.","Men bemorga yordam beraman."],["Ich fahre mit dem Bus.","Avtobusda boraman."],["Nach der Arbeit gehe ich nach Hause.","Ishdan keyin uyga boraman."],["Ich komme vom Arzt.","Men shifokordan kelyapman."]],
+m:"Shifoxona joylari",lis:"Nicos Weg A2: 1 epizod + shadowing",spk:"Ishga qanday borasiz? mit dem Bus, zu Fuß... va kasalxonaning qaysi bo'limida ishlagansiz?",wr:"Dativ predloglari bilan 8 ta gap.",
+c:["Men bemorga yordam beraman.|Ich helfe dem Patienten.||helfen + Dativ","Avtobusda boraman.|Ich fahre mit dem Bus.||mit + Dativ","Ishdan keyin uyga boraman.|Nach der Arbeit gehe ich nach Hause.||","Men shifokordan kelyapman.|Ich komme vom Arzt.||von + dem = vom","Kasalxona|das Krankenhaus|Klinik|","Bo'lim (statsionar)|die Station||","Reanimatsiya|die Intensivstation||","Shoshilinch yordam bo'limi|die Notaufnahme||","Operatsiya xonasi|der Operationssaal|OP|","Shifokor qabulxonasi|die Praxis||","Qabul vaqti|der Termin||","Tez yordam mashinasi|der Krankenwagen||"]},
+{t:"Joy predloglari",g:"Wechselpräpositionen: in, an, auf, unter, über, vor, hinter, neben, zwischen",
+gx:"Bu predloglar 'qayerda?' (wo?) savolida Dativ, 'qayerga?' (wohin?) savolida Akkusativ talab qiladi. liegen/stehen/sitzen - Dativ; legen/stellen/setzen - Akkusativ.",
+ex:[["Der Patient liegt im Bett.","Bemor karavotda yotibdi (wo? → Dativ)."],["Legen Sie den Patienten ins Bett.","Bemorni karavotga yotqizing (wohin? → Akk)."],["Das Medikament liegt auf dem Tisch.","Dori stol ustida."],["Der Arzt geht ins Zimmer.","Shifokor xonaga kiradi."]],
+m:"Shifoxona xodimlari",lis:"Nicos Weg A2: 1 epizod + shadowing",spk:"Xonangizni tasvirlang: nima qayerda turibdi.",wr:"Palata tasviri: 8 ta gap (wo? va wohin?).",
+c:["Bemor karavotda yotibdi.|Der Patient liegt im Bett.||wo? → Dativ","Bemorni karavotga yotqizing.|Legen Sie den Patienten ins Bett.||wohin? → Akkusativ","Dori stol ustida.|Das Medikament liegt auf dem Tisch.||","Shifokor xonaga kiradi.|Der Arzt geht ins Zimmer.||in + das = ins","Bo'lim boshlig'i|der Chefarzt||","Katta shifokor|der Oberarzt||FaMed'da bemorni shunga taqdim etasiz","Bemor (erkak / ayol)|der Patient / die Patientin||","Karavot|das Bett||","Palata|das Patientenzimmer||","Hamkasb|der Kollege / die Kollegin||"]},
+{t:"Ergash gaplar 1",g:"Nebensätze: weil, dass, wenn",
+gx:"weil (chunki), dass (-ki), wenn (agar / -ganda) bilan boshlangan ergash gapda tuslangan fe'l gap OXIRIGA o'tadi. Ergash gap oldin kelsa, bosh gap fe'l bilan boshlanadi.",
+ex:[["Ich kann heute nicht kommen, weil ich krank bin.","Bugun kela olmayman, chunki kasalman."],["Er sagt, dass er seit drei Tagen Fieber hat.","U uch kundan beri isitmasi borligini aytadi."],["Wenn die Schmerzen stärker werden, kommen Sie bitte wieder.","Og'riq kuchaysa, qaytib keling."]],
+m:"Anamnez savollari 1",lis:"Nicos Weg A2 yoki B1: 1 epizod + shadowing",spk:"Nega Germaniyaga ketmoqchisiz? weil bilan 5 ta sabab.",wr:"weil, dass, wenn bilan 3 tadan gap (jami 9).",
+c:["Bugun kela olmayman, chunki kasalman.|Ich kann heute nicht kommen, weil ich krank bin.||weil: fe'l oxirga","U uch kundan beri isitmasi borligini aytadi.|Er sagt, dass er seit drei Tagen Fieber hat.||dass: fe'l oxirga","Og'riq kuchaysa, qaytib keling.|Wenn die Schmerzen stärker werden, kommen Sie bitte wieder.||","Sizni nima bezovta qilyapti? (nima sabab bilan keldingiz)|Was führt Sie zu uns?||anamnezning birinchi savoli","Ismingiz nima?|Wie heißen Sie?||","Necha yoshdasiz?|Wie alt sind Sie?||","Aniq qayeringiz og'riyapti?|Wo genau tut es weh?||","Shikoyatlar qachondan beri?|Seit wann haben Sie die Beschwerden?||","Og'riqni qanday tasvirlaysiz?|Wie würden Sie die Schmerzen beschreiben?||","0 dan 10 gacha og'riq qanchalik kuchli?|Wie stark sind die Schmerzen auf einer Skala von 0 bis 10?||","Og'riq biror joyga tarqaladimi?|Strahlen die Schmerzen irgendwohin aus?||"]},
+{t:"Ajraladigan fe'llar",g:"Trennbare Verben: aufstehen, einnehmen, anrufen, anfangen",
+gx:"Old qo'shimchali fe'llarda (auf-, ein-, an-, ab-, aus-, mit-) old qo'shimcha gap oxiriga ajraladi. Perfektda -ge- o'rtaga kiradi: aufgestanden, eingenommen, angefangen.",
+ex:[["Ich stehe um sechs Uhr auf.","Men soat oltida turaman."],["Nehmen Sie das Medikament zweimal täglich ein.","Dorini kuniga ikki marta iching."],["Wann haben die Schmerzen angefangen?","Og'riq qachon boshlandi?"],["Ich rufe den Oberarzt an.","Men katta shifokorga qo'ng'iroq qilaman."]],
+m:"Anamnez savollari 2",lis:"Nicos Weg B1: 1 epizod + shadowing",spk:"Kun tartibingizni aytib bering (aufstehen, anfangen, aufhören...).",wr:"Kun tartibingiz: 8 ta gap, kamida 5 ta ajraladigan fe'l.",
+c:["Men soat oltida turaman.|Ich stehe um sechs Uhr auf.||aufstehen","Dorini kuniga ikki marta iching.|Nehmen Sie das Medikament zweimal täglich ein.||einnehmen","Og'riq qachon boshlandi?|Wann haben die Schmerzen angefangen?||anfangen → angefangen","Doimiy dori ichasizmi?|Nehmen Sie regelmäßig Medikamente ein?||","Allergiyangiz bormi?|Haben Sie Allergien?||","Ilgari operatsiya qilinganmisiz?|Wurden Sie schon einmal operiert?||","Ilgari qanday kasalliklaringiz bo'lgan?|Haben Sie Vorerkrankungen?||","Chekasizmi?|Rauchen Sie?||","Spirtli ichimlik ichasizmi?|Trinken Sie Alkohol?||","Oilangizda qanday kasalliklar bor?|Gibt es Erkrankungen in Ihrer Familie?||","Kasbingiz nima?|Was sind Sie von Beruf?||","Kim bilan yashaysiz?|Mit wem wohnen Sie zusammen?||"]},
+{t:"O'zlik fe'llari va og'riq tavsifi",g:"Reflexive Verben: sich fühlen, sich setzen, sich Sorgen machen",
+gx:"O'zlik fe'llari sich bilan keladi: ich → mich, du → dich, er/sie/Sie → sich, wir → uns. Bemorga murojaat: Setzen Sie sich bitte.",
+ex:[["Ich fühle mich schlecht.","O'zimni yomon his qilyapman."],["Setzen Sie sich bitte.","O'tiring, iltimos."],["Machen Sie sich keine Sorgen.","Xavotir olmang."]],
+m:"Og'riq turlari",lis:"Nicos Weg B1: 1 epizod + shadowing",spk:"Turli og'riqlarni tasvirlang: bosh, qorin, ko'krak (stechend, drückend...).",wr:"3 xil bemorning og'rig'ini 3 gapdan tasvirlang.",
+c:["O'zimni yomon his qilyapman.|Ich fühle mich schlecht.||sich fühlen","O'tiring, iltimos.|Setzen Sie sich bitte.||","Xavotir olmang.|Machen Sie sich keine Sorgen.||","Tezroq tuzalib keting!|Gute Besserung!||","Sanchiqli (og'riq)|stechend||","Siquvchi, bosuvchi|drückend||","Achishtiruvchi|brennend||","To'lg'oqsimon|kolikartig||","Simillagan (to'mtoq)|dumpf||","Uruvchi (pulsatsiyali)|pochend||","Og'riq chap qo'lga tarqaladi.|Die Schmerzen strahlen in den linken Arm aus.||"]},
+{t:"Sifatlar va bemor tasviri",g:"Adjektivdeklination (sifat qo'shimchalari)",
+gx:"Ot oldidagi sifat qo'shimcha oladi: ein starker Schmerz, eine ältere Frau, hohes Fieber. Qoidani yodlash o'rniga tayyor birikmalarni yodlang, ular imtihonda ko'p qaytariladi.",
+ex:[["eine ältere Patientin","keksa bemor ayol"],["ein 60-jähriger Patient","60 yoshli bemor"],["Der Patient ist in gutem Allgemeinzustand.","Bemorning umumiy holati yaxshi."]],
+m:"Bemorni tasvirlash",lis:"Nicos Weg B1: 1 epizod + shadowing",spk:"Oilangizdagi bir kishini tasvirlang (yosh, ko'rinish, xarakter).",wr:"Kasalxonadagi bir bemorni tasvirlang: 8 ta gap, sifatlar bilan.",
+c:["Keksa ayol|eine ältere Frau||","60 yoshli bemor|ein 60-jähriger Patient||","Kuchli og'riq|starke Schmerzen||","Yuqori isitma|hohes Fieber||","Quruq yo'tal|trockener Husten||","Balg'amli yo'tal|Husten mit Auswurf||","O'tkir og'riq|akute Schmerzen||","Surunkali kasallik|eine chronische Erkrankung||","Bemorning umumiy holati yaxshi.|Der Patient ist in gutem Allgemeinzustand.|AZ|","Shishgan oyoq|ein geschwollenes Bein||"]},
+{t:"Taqqoslash va vaqt ifodalari",g:"Komparativ va Superlativ",
+gx:"Taqqoslash: -er + als (besser als), eng yuqori daraja: am -sten (am schlimmsten). Tartibsizlari: gut → besser → am besten, viel → mehr → am meisten. Anamnezda vaqt ifodalari juda muhim: seit, vor, täglich.",
+ex:[["Die Schmerzen werden stärker.","Og'riq kuchayib boryapti."],["Heute geht es mir besser als gestern.","Bugun kechagidan yaxshiroqman."],["Nachts ist es am schlimmsten.","Kechasi eng yomon bo'ladi."]],
+m:"Vaqt va chastota",lis:"Nicos Weg B1: 1 epizod + shadowing",spk:"Toshkent va Andijonni taqqoslang (katta, issiq, qimmat...).",wr:"Bemor shikoyatlari vaqti haqida 8 ta gap (seit, vor, täglich, plötzlich).",
+c:["Og'riq kuchayib boryapti.|Die Schmerzen werden stärker.||","Bugun kechagidan yaxshiroqman.|Heute geht es mir besser als gestern.||","Kechasi eng yomon bo'ladi.|Nachts ist es am schlimmsten.||","Uch kundan beri|seit drei Tagen||seit + Dativ","Ikki hafta oldin|vor zwei Wochen||","Kuniga bir marta|einmal täglich||","Ertalab / kechqurun / kechasi|morgens / abends / nachts||","Vaqti-vaqti bilan|ab und zu||","Doimiy|ständig||","Birdaniga|plötzlich||","Asta-sekin|allmählich||"]},
+{t:"Bemorga ko'rsatma berish",g:"Imperativ (Sie-shakli)",
+gx:"Bemorga hurmat bilan buyruq: fe'l + Sie + bitte. Ajraladigan fe'lda old qo'shimcha oxirga: Atmen Sie bitte tief ein. Bu hafta 1-3 oylarni ham takrorlaysiz.",
+ex:[["Atmen Sie bitte tief ein.","Chuqur nafas oling."],["Öffnen Sie bitte den Mund.","Og'zingizni oching."],["Legen Sie sich bitte auf den Rücken.","Chalqancha yoting."]],
+m:"Tekshiruv paytidagi gaplar",lis:"Nicos Weg B1: 1 epizod + shadowing",spk:"Bemorni tekshirayotgandek gapiring: 8 ta ko'rsatma ketma-ket.",wr:"Tekshiruv jarayonini 10 ta Imperativ gap bilan yozing.",
+c:["Chuqur nafas oling.|Atmen Sie bitte tief ein.||","Nafasni ushlab turing.|Halten Sie bitte die Luft an.||","Og'zingizni oching.|Öffnen Sie bitte den Mund.||","Chalqancha yoting.|Legen Sie sich bitte auf den Rücken.||","Bu yer og'riyaptimi?|Tut das hier weh?||","Belgacha yechining, iltimos.|Machen Sie bitte den Oberkörper frei.||","Qoningizni olamiz.|Wir nehmen Ihnen Blut ab.||","Ko'p suv iching.|Trinken Sie viel Wasser.||"]},
+{t:"Shart mayli va yurak 1",g:"Konjunktiv II (würde, hätte, wäre, könnte) va Futur I",
+gx:"Konjunktiv II xushmuomalalik va shart uchun: Könnten Sie...? Ich würde... Wenn ich Zeit hätte... Kelasi zamon: werden + infinitiv (oxirida).",
+ex:[["Könnten Sie mir bitte helfen?","Menga yordam bera olasizmi? (xushmuomala)"],["Wenn ich Zeit hätte, würde ich mehr lernen.","Vaqtim bo'lsa, ko'proq o'qir edim."],["Nächstes Jahr werde ich nach Deutschland gehen.","Kelasi yil Germaniyaga boraman."]],
+m:"Yurak-qon tomir tizimi 1",lis:"DW \"Top-Thema\" (B1): 1 ta matn va audio",spk:"Yurak qanday ishlashini oddiy nemis tilida 2 daqiqa tushuntiring.",wr:"Yurak haqida 8 ta oddiy gap (Das Herz pumpt Blut...).",
+c:["Menga yordam bera olasizmi?|Könnten Sie mir bitte helfen?||xushmuomala so'rov","Vaqtim bo'lsa, ko'proq o'qir edim.|Wenn ich Zeit hätte, würde ich mehr lernen.||","Kelasi yil Germaniyaga boraman.|Nächstes Jahr werde ich nach Deutschland gehen.||Futur I","Yurak qonni butun tanaga haydaydi.|Das Herz pumpt Blut durch den ganzen Körper.||","Qon bosimi|der Blutdruck|RR|","Yuqori qon bosimi|der Bluthochdruck|arterielle Hypertonie|","Puls|der Puls||","Arteriya|die Schlagader|Arterie|","Vena|die Vene||","Yurak tez urishi|das Herzrasen|Tachykardie|","Yurak notekis urishi|das Herzstolpern|Herzrhythmusstörung|","Ko'krakdagi og'riq|die Brustschmerzen|Thoraxschmerz|"]},
+{t:"Nisbiy gaplar va yurak 2",g:"Relativsätze (der, die, das, den, dem)",
+gx:"Nisbiy gap otni aniqlaydi. Nisbiy olmosh rodi otga, kelishigi esa ergash gapdagi vazifaga qarab tanlanadi. Fe'l oxirga o'tadi.",
+ex:[["Der Patient, der seit drei Tagen Schmerzen hat, liegt in Zimmer 5.","Uch kundan beri og'riyotgan bemor 5-xonada."],["Das ist der Patient, den ich gestern behandelt habe.","Bu men kecha davolagan bemor."]],
+m:"Yurak kasalliklari",lis:"DW Top-Thema (B1) + YouTube: \"Herzinfarkt einfach erklärt\"",spk:"Infarktni bemorga oddiy so'zlar bilan tushuntiring.",wr:"3 ta yurak kasalligini 3 gapdan tasvirlang (nima u, simptom, davolash).",
+c:["Uch kundan beri og'riyotgan bemor 5-xonada.|Der Patient, der seit drei Tagen Schmerzen hat, liegt in Zimmer 5.||","Bu men kecha davolagan bemor.|Das ist der Patient, den ich gestern behandelt habe.||","Yurak xuruji|der Herzinfarkt|Myokardinfarkt|","Yurak yetishmovchiligi|die Herzschwäche|Herzinsuffizienz|","Bo'lmachalar titrashi|das Vorhofflimmern|VHF|","Toj tomirlar kasalligi|die Verengung der Herzkranzgefäße|koronare Herzkrankheit (KHK)|","Oyoq venalari trombozi|die Beinvenenthrombose|tiefe Venenthrombose (TVT)|","Qon suyultiruvchi dori|der Blutverdünner|Antikoagulans|","Oyoqlar shishi|geschwollene Beine|Beinödeme|","EKG olmoq|ein EKG schreiben||"]},
+{t:"Majhul nisbat va nafas 1",g:"Passiv Präsens (wird + Partizip II)",
+gx:"Ish-harakat bajaruvchisi muhim bo'lmasa, Passiv ishlatiladi: werden 2-o'rinda, Partizip II oxirida. Arztbrief va Patientenvorstellung'da juda ko'p uchraydi.",
+ex:[["Der Patient wird untersucht.","Bemor tekshiriladi."],["Blut wird abgenommen.","Qon olinadi."],["Ein Röntgenbild wird gemacht.","Rentgen surati olinadi."]],
+m:"Nafas tizimi 1",lis:"DW Top-Thema (B1): 1 matn",spk:"Nafas olish jarayonini oddiy nemis tilida tushuntiring.",wr:"Shifoxonada nima qilinadi? 8 ta Passiv gap.",
+c:["Bemor tekshiriladi.|Der Patient wird untersucht.||Passiv: wird + Partizip II","Qon olinadi.|Blut wird abgenommen.||","Rentgen surati olinadi.|Ein Röntgenbild wird gemacht.||","Nafas olmoq|einatmen||","Nafas chiqarmoq|ausatmen||","Bronxlar|die Bronchien||","Balg'am|der Auswurf|Sputum|","Nafas olganda xirillash|das Pfeifen beim Atmen|Giemen|","Nafas yo'llari|die Atemwege||","Ko'krak qafasini eshitmoq|die Lunge abhören|Auskultation|"]},
+{t:"Passiv o'tgan zamon va nafas 2",g:"Passiv Präteritum (wurde) va Perfekt (ist ... worden)",
+gx:"O'tgan zamonda: wurde + Partizip II (yozma), ist + Partizip II + worden (og'zaki). Arztbriefda asosan wurde ishlatiladi.",
+ex:[["Der Patient wurde operiert.","Bemor operatsiya qilindi."],["Der Patient wurde stationär aufgenommen.","Bemor statsionarga yotqizildi."],["Ein Antibiotikum wurde verordnet.","Antibiotik buyurildi."]],
+m:"O'pka kasalliklari",lis:"DW Top-Thema + YouTube: \"Lungenentzündung einfach erklärt\"",spk:"Pnevmoniya bilan kelgan bemorni katta shifokorga qisqa taqdim eting (3 gap).",wr:"Bitta pnevmoniya holatini wurde bilan 8 gapda yozing.",
+c:["Bemor operatsiya qilindi.|Der Patient wurde operiert.||Passiv Präteritum","Bemor statsionarga yotqizildi.|Der Patient wurde stationär aufgenommen.||","Antibiotik buyurildi.|Ein Antibiotikum wurde verordnet.||","O'pka yallig'lanishi|die Lungenentzündung|Pneumonie|","Bronxial astma|das Asthma|Asthma bronchiale|","Surunkali obstruktiv o'pka kasalligi|die Raucherlunge|COPD|","O'pka arteriyasi emboliyasi|die Lungenembolie|LE|","Sil|die Tuberkulose|Tbc|","Gripp|die Grippe|Influenza|"]},
+{t:"zu va um...zu; ovqat hazm 1",g:"Infinitiv mit zu, um ... zu",
+gx:"Ba'zi fe'l va iboralardan keyin zu + infinitiv keladi: vergessen, versuchen, es fällt mir schwer. Maqsad: um ... zu (-ish uchun). Ajraladigan fe'lda zu o'rtaga kiradi: einzunehmen.",
+ex:[["Ich lerne Deutsch, um in Deutschland als Arzt zu arbeiten.","Germaniyada shifokor bo'lib ishlash uchun nemis tilini o'rganyapman."],["Vergessen Sie nicht, das Medikament vor dem Essen einzunehmen.","Dorini ovqatdan oldin ichishni unutmang."],["Es fällt mir schwer zu schlucken.","Yutish menga qiyin."]],
+m:"Ovqat hazm tizimi 1",lis:"DW Top-Thema (B1): 1 matn",spk:"Ovqat qanday hazm bo'lishini 2 daqiqa tushuntiring.",wr:"um...zu bilan 6 ta, zu bilan 4 ta gap.",
+c:["Germaniyada shifokor bo'lib ishlash uchun nemis tilini o'rganyapman.|Ich lerne Deutsch, um in Deutschland als Arzt zu arbeiten.||um ... zu","Dorini ovqatdan oldin ichishni unutmang.|Vergessen Sie nicht, das Medikament vor dem Essen einzunehmen.||ein-zu-nehmen","Yutish menga qiyin.|Es fällt mir schwer zu schlucken.||","Oshqozon yarasi|das Magengeschwür|Ulcus ventriculi|","Oshqozon shilliq qavati yallig'lanishi|die Magenschleimhautentzündung|Gastritis|","Oshqozon-ichakdan qon ketishi|die Magen-Darm-Blutung|gastrointestinale Blutung|","Qora axlat|schwarzer Stuhl|Teerstuhl · Meläna|","Axlat (najas)|der Stuhl||","Siydik|der Urin||"]},
+{t:"Vaqt ergash gaplari; ovqat hazm 2",g:"als, wenn, nachdem, bevor, während",
+gx:"als - o'tmishda bir marta bo'lgan voqea; wenn - takrorlanuvchi yoki kelajakdagi. nachdem - -gandan keyin (Plusquamperfekt bilan), bevor - -ishdan oldin. Hammasida fe'l oxirga.",
+ex:[["Als ich Kind war, hatte ich Asthma.","Bolaligimda astmam bor edi."],["Nachdem ich gegessen hatte, begannen die Schmerzen.","Ovqatlanganimdan keyin og'riq boshlandi."],["Bevor Sie schlafen gehen, nehmen Sie die Tablette.","Uxlashdan oldin tabletkani iching."]],
+m:"Ovqat hazm kasalliklari",lis:"YouTube: \"Blinddarmentzündung einfach erklärt\" yoki \"Gallensteine\"",spk:"Appenditsitli bemorning anamnezini o'ynang (savol va javob).",wr:"als/nachdem/bevor bilan bemor hikoyasi: 8 gap.",
+c:["Bolaligimda astmam bor edi.|Als ich Kind war, hatte ich Asthma.||als = o'tmishda bir marta","Ovqatlanganimdan keyin og'riq boshlandi.|Nachdem ich gegessen hatte, begannen die Schmerzen.||","Uxlashdan oldin tabletkani iching.|Bevor Sie schlafen gehen, nehmen Sie die Tablette.||","Appenditsit|die Blinddarmentzündung|Appendizitis|","O't-tosh kasalligi|die Gallensteine|Cholezystolithiasis|","O't pufagi yallig'lanishi|die Gallenblasenentzündung|Cholezystitis|","Oshqozon osti bezi yallig'lanishi|die Bauchspeicheldrüsenentzündung|Pankreatitis|","Jigar sirrozi|die Leberzirrhose||","Sariqlik|die Gelbsucht|Ikterus|","Gepatit|die Leberentzündung|Hepatitis|"]},
+{t:"Qaratqich kelishigi; buyrak",g:"Genitiv va wegen, während, trotz",
+gx:"Genitiv tegishlilikni bildiradi: der Blutdruck des Patienten. der/das → des (+s), die → der. wegen (tufayli), während (davomida), trotz (qaramay) yozma nutqda Genitiv bilan keladi.",
+ex:[["Wegen der Schmerzen kann ich nicht schlafen.","Og'riq tufayli uxlay olmayman."],["während der Nacht","tun davomida"],["der Blutdruck des Patienten","bemorning qon bosimi"]],
+m:"Buyrak va siydik yo'llari",lis:"DW Top-Thema (B1) + YouTube: \"Harnwegsinfekt\"",spk:"Siydik yo'li infeksiyasi bilan kelgan ayolga savollar bering (8 ta savol).",wr:"Genitiv bilan 6 ta gap.",
+c:["Og'riq tufayli uxlay olmayman.|Wegen der Schmerzen kann ich nicht schlafen.||wegen + Genitiv","Tun davomida|während der Nacht||","Bemorning qon bosimi|der Blutdruck des Patienten||","Siydik pufagi|die Harnblase|Vesica urinaria|","Siydik yo'li infeksiyasi|der Harnwegsinfekt|HWI|","Siyishda achishish|das Brennen beim Wasserlassen|Dysurie|","Tez-tez siyish|häufiges Wasserlassen|Pollakisurie|","Buyrak toshi|der Nierenstein|Nephrolithiasis|","Buyrak jomi yallig'lanishi|die Nierenbeckenentzündung|Pyelonephritis|","Siydikda qon|Blut im Urin|Hämaturie|"]},
+{t:"Turg'un iboralar; nerv tizimi",g:"Nomen-Verb-Verbindungen",
+gx:"Ot + fe'l birikmalari tayyor holda yodlanadi: eine Entscheidung treffen, eine Frage stellen, eine Untersuchung durchführen. Ular B2 va tibbiy nutqni tabiiy qiladi.",
+ex:[["eine Untersuchung durchführen","tekshiruv o'tkazmoq"],["eine Frage stellen","savol bermoq"],["Darf ich Ihnen eine Frage stellen?","Sizga bir savol bersam maylimi?"]],
+m:"Nerv tizimi",lis:"YouTube: \"Schlaganfall erkennen\" (FAST testi)",spk:"Insult belgilarini bemorning qarindoshiga tushuntiring.",wr:"5 ta Nomen-Verb birikmasi bilan 5 ta gap.",
+c:["Qaror qabul qilmoq|eine Entscheidung treffen||","Savol bermoq|eine Frage stellen||","Tekshiruv o'tkazmoq|eine Untersuchung durchführen||","Biror narsaga e'tibor bermoq|auf etwas achten||","Insult|der Schlaganfall|Apoplex|","Vaqtinchalik ishemik xuruj|die Durchblutungsstörung im Gehirn|TIA|","Uvishish|das Taubheitsgefühl|Hypästhesie|","Falaj|die Lähmung|Parese|","Tutqanoq|der Krampfanfall|epileptischer Anfall|","Hushdan ketish|die Ohnmacht|Synkope|","Migren|die Migräne||"]},
+{t:"Ko'chirma gap; endokrin tizim",g:"Konjunktiv I (Arztbrief tili)",
+gx:"Arztbriefda bemor so'zlari Konjunktiv I bilan yoziladi: er habe, er sei, er nehme. Qoidasi: fe'l o'zagi + -e (3-shaxs birlik). sein → sei, haben → habe. FaMed yozma qismining kaliti shu.",
+ex:[["Der Patient gibt an, er habe seit drei Tagen Fieber.","Bemorning aytishicha, uch kundan beri isitmasi bor."],["Übelkeit sei nicht aufgetreten.","Ko'ngil aynishi bo'lmagan."],["Er nehme keine Medikamente ein.","U hech qanday dori ichmaydi."]],
+m:"Endokrin tizim",lis:"YouTube: \"Diabetes einfach erklärt\"",spk:"Diabet bilan kasallangan bemorga ovqatlanishni tushuntiring.",wr:"8-haftadagi anamnez javoblarini Konjunktiv I ga aylantiring (8 gap).",
+c:["Bemorning aytishicha, uch kundan beri isitmasi bor.|Der Patient gibt an, er habe seit drei Tagen Fieber.||Konjunktiv I: haben → habe","Ko'ngil aynishi bo'lmagan.|Übelkeit sei nicht aufgetreten.||sein → sei","U hech qanday dori ichmaydi (Arztbrief).|Er nehme keine Medikamente ein.||nehmen → nehme","U yiqilganini aytadi (Arztbrief).|Sie berichtet, sie sei gestürzt.||","Qandli diabet|die Zuckerkrankheit|Diabetes mellitus|","Qonda qand kamayishi|die Unterzuckerung|Hypoglykämie|","Qalqonsimon bez|die Schilddrüse|Glandula thyreoidea|","Qalqonsimon bez faolligining oshishi|die Schilddrüsenüberfunktion|Hyperthyreose|","Qalqonsimon bez faolligining pasayishi|die Schilddrüsenunterfunktion|Hypothyreose|","Kuchli chanqoq|starker Durst|Polydipsie|"]},
+{t:"Bog'lovchilar; suyak va bo'g'imlar",g:"obwohl, trotzdem, deshalb, deswegen",
+gx:"obwohl (-sa ham) ergash gap: fe'l oxirga. trotzdem (shunga qaramay), deshalb (shuning uchun) esa bosh gapda 1-o'rinda turadi, fe'l darrov keyin keladi.",
+ex:[["Obwohl er Schmerzen hatte, ging er zur Arbeit.","Og'rig'i bo'lsa ham, ishga bordi."],["Er ist krank, deshalb bleibt er zu Hause.","U kasal, shuning uchun uyda qoladi."]],
+m:"Tayanch-harakat tizimi",lis:"YouTube: \"Bandscheibenvorfall einfach erklärt\"",spk:"Yiqilib, sonini sindirgan keksa bemorni katta shifokorga taqdim eting.",wr:"obwohl, trotzdem, deshalb bilan 3 tadan gap.",
+c:["Og'rig'i bo'lsa ham, ishga bordi.|Obwohl er Schmerzen hatte, ging er zur Arbeit.||obwohl: fe'l oxirga","U kasal, shuning uchun uyda qoladi.|Er ist krank, deshalb bleibt er zu Hause.||deshalb + fe'l","Suyak|der Knochen|Os · ossär|","Bo'g'im|das Gelenk|Articulatio|","Suyak sinishi|der Knochenbruch|Fraktur|","Son suyagi bo'yni sinishi|der Oberschenkelhalsbruch|Schenkelhalsfraktur|","Umurtqalararo disk churrasi|der Bandscheibenvorfall|Diskusprolaps|","Bo'g'im og'rig'i|die Gelenkschmerzen|Arthralgie|","Yiqilmoq|stürzen||"]},
+{t:"Sifatdoshlar; teri va infeksiyalar",g:"Partizip I va II sifat sifatida",
+gx:"Partizip sifat bo'lib ham keladi: das geschwollene Gelenk (shishgan), die schmerzende Stelle (og'riyotgan). Bemorni tasvirlashda va Arztbriefda ko'p ishlatiladi.",
+ex:[["das geschwollene Gelenk","shishgan bo'g'im"],["die schmerzende Stelle","og'riyotgan joy"]],
+m:"Teri va yuqumli kasalliklar",lis:"YouTube: \"Windpocken\" yoki \"Masern\" (oddiy tushuntirish)",spk:"Yuqumli kasallik haqida ota-onaga tushuntiring: qancha yuqumli, nima qilish kerak.",wr:"Toshmali bemorni 8 gapda tasvirlang.",
+c:["Shishgan bo'g'im|das geschwollene Gelenk||Partizip II sifat","Og'riyotgan joy|die schmerzende Stelle||Partizip I sifat","Teri|die Haut|Cutis · kutan|","Toshma|der Ausschlag|Exanthem|","Qichishish|der Juckreiz|Pruritus|","Infeksiya|die Infektion||","Yuqumli|ansteckend||","Emlash|die Impfung||","Qizamiq|die Masern||","Suvchechak|die Windpocken|Varizellen|"]},
+{t:"Bilvosita savollar; diagnostika",g:"Indirekte Fragen: ob, wo, wann, wie",
+gx:"Xushmuomala savolda w-so'z yoki ob (-mi) bilan ergash gap tuziladi, fe'l oxirga o'tadi: Können Sie mir sagen, wo es wehtut?",
+ex:[["Können Sie mir sagen, wo es wehtut?","Qayeringiz og'riyotganini ayta olasizmi?"],["Ich weiß nicht, ob ich allergisch bin.","Allergiyam bor-yo'qligini bilmayman."]],
+m:"Tekshiruv usullari",lis:"YouTube: \"Magenspiegelung Ablauf\" (Gastroskopiya qanday o'tadi)",spk:"Bemorga UTT va qon tahlili nima uchun kerakligini tushuntiring.",wr:"Bilvosita savollar bilan 8 ta anamnez savoli.",
+c:["Qayeringiz og'riyotganini ayta olasizmi?|Können Sie mir sagen, wo es wehtut?||bilvosita savol: fe'l oxirga","Allergiyam bor-yo'qligini bilmayman.|Ich weiß nicht, ob ich allergisch bin.||ob = -mi","Qon tahlili|die Blutuntersuchung|Laborwerte|","Qon olish|die Blutabnahme||","Rentgen|das Röntgen||","UTT|der Ultraschall|Sonografie|","Kompyuter tomografiya|die Computertomografie|CT|","Magnit-rezonans tomografiya|die Kernspintomografie|MRT|","Oshqozon endoskopiyasi|die Magenspiegelung|Gastroskopie|","Ichak endoskopiyasi|die Darmspiegelung|Koloskopie|"]},
+{t:"Takrorlash; dorilar va davolash",g:"6 oylik grammatika takrorlanadi",
+gx:"Bu hafta yangi qoida yo'q. Har kuni 4 ta eski haftaning grammatikasini 'Hafta' bo'limidan ochib, misollarini ovoz chiqarib o'qing. Oxirida katta test.",
+ex:[["Nehmen Sie die Tablette auf nüchternen Magen ein.","Tabletkani och qoringa iching."],["Haben Sie Nebenwirkungen bemerkt?","Nojo'ya ta'sirlarni sezdingizmi?"]],
+m:"Dorilar va davolash",lis:"DW \"Langsam gesprochene Nachrichten\" (sekin o'qilgan yangiliklar) - B2 ga tayyorgarlik",spk:"Bemorga yangi dorini qanday ichishni tushuntiring (doza, vaqt, nojo'ya ta'sir).",wr:"6 oyda o'rgangan narsalaringiz haqida 12 gaplik matn.",
+c:["Tabletka|die Tablette||","Ukol|die Spritze|Injektion|","Tomchi (infuziya)|die Infusion||","Retsept|das Rezept||","Nojo'ya ta'sir|die Nebenwirkung||","Og'riq qoldiruvchi dori|das Schmerzmittel|Analgetikum|","Antibiotik|das Antibiotikum||","Dozasi|die Dosis||","Och qoringa|auf nüchternen Magen||","Ovqat bilan birga|zum Essen||","Dorini ichishni to'xtatmoq|das Medikament absetzen||","Tabletkani och qoringa iching.|Nehmen Sie die Tablette auf nüchternen Magen ein.||","Nojo'ya ta'sirlarni sezdingizmi?|Haben Sie Nebenwirkungen bemerkt?||"]}
+];
+
+// 7-12 oylar: organ tizimlari. Karta: "o'zbekcha|nemischa|lotin/fach|eslatma". Kasallik: [nemischa, o'zbekcha, fach, "Leitsymptome; Diagnostik; Therapie"]
+const SYS=[
+{de:"Herz-Kreislauf-System",uz:"Yurak-qon tomir tizimi",
+ph:"Yurak 4 kameradan iborat: 2 ta bo'lmacha (Vorhof) va 2 ta qorincha (Kammer). O'ng yurak qonni o'pkaga, chap yurak esa aorta orqali butun tanaga haydaydi. Yurak mushagi toj tomirlar (Herzkranzgefäße) orqali oziqlanadi: ular berkilsa infarkt bo'ladi. Ritmni sinus tuguni (Sinusknoten) boshqaradi.",
+key:["Das Herz pumpt sauerstoffreiches Blut über die Aorta in den Körper.","Die rechte Herzhälfte pumpt das Blut in die Lunge.","Der Sinusknoten ist der natürliche Taktgeber des Herzens.","Die Herzkranzgefäße versorgen den Herzmuskel mit Sauerstoff."],
+ana:["Yurak bo'lmachasi|der Vorhof|Atrium|","Yurak qorinchasi|die Herzkammer|Ventrikel|","Yurak klapani|die Herzklappe||","Ikki tavaqali klapan|die Mitralklappe|Valva mitralis|","Aorta klapani|die Aortenklappe||","Toj tomirlar|die Herzkranzgefäße|Koronararterien|","Aorta (bosh arteriya)|die Hauptschlagader|Aorta|","Yurak mushagi|der Herzmuskel|Myokard|","Yurak xaltasi|der Herzbeutel|Perikard|","Sinus tuguni|der Sinusknoten||ritm boshqaruvchisi","Qon aylanishi|der Blutkreislauf||","Kovak vena|die Hohlvene|Vena cava|"],
+dis:[["der Herzinfarkt","Miokard infarkti","Myokardinfarkt","drückender Brustschmerz > 20 Min., Ausstrahlung in linken Arm oder Kiefer, Kaltschweißigkeit; EKG, Troponin; Herzkatheter (PCI), ASS, Heparin"],
+["die Angina pectoris","Stenokardiya","KHK","Brustschmerz bei Belastung, Besserung in Ruhe oder durch Nitro; Belastungs-EKG, Echo; ASS, Statin, Nitrat, Betablocker"],
+["die Herzinsuffizienz","Yurak yetishmovchiligi","Herzschwäche","Belastungsdyspnoe, Orthopnoe, Beinödeme, Nykturie; Echokardiografie, BNP; ACE-Hemmer, Betablocker, Diuretika"],
+["das Vorhofflimmern","Bo'lmachalar fibrillyatsiyasi","VHF","unregelmäßiger Puls, Herzrasen, Schwindel; EKG (absolute Arrhythmie); Frequenzkontrolle, Antikoagulation"],
+["die arterielle Hypertonie","Arterial gipertenziya","Bluthochdruck","oft symptomlos, evtl. Kopfschmerzen; RR ≥ 140/90 mmHg; Lebensstil, ACE-Hemmer, Kalziumantagonisten"],
+["die tiefe Venenthrombose","Chuqur venalar trombozi","TVT","einseitige Beinschwellung, Schmerz, Überwärmung; D-Dimere, Kompressionssonografie; Antikoagulation"],
+["die pAVK","Periferik arteriyalar kasalligi","Schaufensterkrankheit","Wadenschmerz beim Gehen, Besserung im Stehen; Knöchel-Arm-Index; Gehtraining, ASS, Statin"]]},
+{de:"Atmungssystem",uz:"Nafas tizimi",
+ph:"Havo burun, halqum, hiqildoq, traxeya va bronxlar orqali alveolalarga keladi. Alveolalarda kislorod qonga o'tadi, karbonat angidrid chiqariladi. Asosiy nafas mushagi diafragma (Zwerchfell). O'pkani plevra (Rippenfell) o'rab turadi.",
+key:["In den Alveolen wird Sauerstoff ins Blut aufgenommen.","Das Zwerchfell ist der wichtigste Atemmuskel.","Die Sauerstoffsättigung liegt normalerweise über 95 Prozent."],
+ana:["Traxeya|die Luftröhre|Trachea|","Bronxlar|die Bronchien||","Alveolalar|die Lungenbläschen|Alveolen|","Plevra|das Rippenfell|Pleura|","Diafragma|das Zwerchfell|Diaphragma|","Hiqildoq|der Kehlkopf|Larynx|","O'pka bo'lagi|der Lungenlappen||o'ngda 3, chapda 2","Nafas soni|die Atemfrequenz||","Kislorod saturatsiyasi|die Sauerstoffsättigung|SpO2|","O'pkani eshitish|die Auskultation der Lunge||"],
+dis:[["die Lungenentzündung","Pnevmoniya","Pneumonie","Fieber, Husten mit Auswurf, Dyspnoe, atemabhängiger Schmerz; Röntgen-Thorax, CRP; Antibiotika"],
+["das Asthma bronchiale","Bronxial astma","","anfallsartige Atemnot, Giemen, oft nachts, Allergien; Lungenfunktion; inhalative Kortikosteroide, Beta-2-Sympathomimetika"],
+["die COPD","SOO'K","chronisch obstruktive Lungenerkrankung","chronischer Husten mit Auswurf, Belastungsdyspnoe, Raucher; Spirometrie; Rauchstopp, Bronchodilatatoren"],
+["die Lungenembolie","O'pka arteriyasi tromboemboliyasi","LE","plötzliche Dyspnoe, atemabhängiger Thoraxschmerz, Tachykardie, nach OP oder Immobilisation; D-Dimere, CT-Angiografie; Antikoagulation"],
+["der Pneumothorax","Pnevmotoraks","","plötzlicher einseitiger Thoraxschmerz, Dyspnoe, abgeschwächtes Atemgeräusch, oft junge schlanke Männer; Röntgen; Thoraxdrainage"],
+["das Lungenkarzinom","O'pka saratoni","Bronchialkarzinom","Husten, Bluthusten (Hämoptyse), Gewichtsverlust, Raucher; CT, Bronchoskopie mit Biopsie"]]},
+{de:"Verdauungssystem",uz:"Ovqat hazm qilish tizimi",
+ph:"Ovqat og'iz, qizilo'ngach, oshqozon, o'n ikki barmoq ichak, ingichka va yo'g'on ichak orqali o'tadi. Oshqozonda kislota va fermentlar ishlaydi, ingichka ichakda oziq moddalar so'riladi, yo'g'on ichakda suv so'riladi. Qorin bo'shlig'ini qorin parda (Bauchfell) qoplaydi.",
+key:["Im Dünndarm werden die Nährstoffe aufgenommen.","Der Dickdarm entzieht dem Stuhl Wasser.","Die Magensäure tötet Bakterien ab."],
+ana:["O'n ikki barmoq ichak|der Zwölffingerdarm|Duodenum|","Ingichka ichak|der Dünndarm||","Yo'g'on ichak|der Dickdarm|Kolon|","To'g'ri ichak|der Mastdarm|Rektum|","Anus|der After|Anus|","Oshqozon shilliq qavati|die Magenschleimhaut|Mukosa|","Ichak peristaltikasi|die Darmbewegung|Peristaltik|","Qorin parda|das Bauchfell|Peritoneum|","Najas|der Stuhlgang||","Ichak gazlari|die Blähungen|Meteorismus|"],
+dis:[["die Refluxkrankheit","Gastroezofageal reflyuks","GERD","Sodbrennen, saures Aufstoßen, schlimmer im Liegen; Gastroskopie; Protonenpumpenhemmer (PPI)"],
+["das Magengeschwür","Oshqozon yarasi","Ulcus ventriculi","Oberbauchschmerz nach dem Essen, NSAR, Helicobacter pylori; Gastroskopie; PPI, Eradikation"],
+["die Blinddarmentzündung","Appenditsit","Appendizitis","Schmerz erst um den Nabel, dann rechter Unterbauch, Fieber, Übelkeit; Sonografie, Leukozyten, CRP; Appendektomie"],
+["die Divertikulitis","Divertikulit","","Schmerz im linken Unterbauch, Fieber, ältere Patienten; CT; Antibiotika, ggf. OP"],
+["der Darmverschluss","Ichak tutilishi","Ileus","kolikartige Bauchschmerzen, Erbrechen, kein Stuhl und keine Winde; Röntgen, CT; Magensonde, oft OP"],
+["der Darmkrebs","Yo'g'on ichak saratoni","kolorektales Karzinom","Blut im Stuhl, veränderte Stuhlgewohnheiten, Gewichtsverlust, Anämie; Koloskopie mit Biopsie; OP, Chemotherapie"],
+["die Magen-Darm-Grippe","O'tkir gastroenterit","Gastroenteritis","Durchfall, Erbrechen, Bauchkrämpfe; Anamnese; Flüssigkeit und Elektrolyte"]]},
+{de:"Leber, Galle und Bauchspeicheldrüse",uz:"Jigar, o't yo'llari va oshqozon osti bezi",
+ph:"Jigar zaharli moddalarni zararsizlantiradi, oqsil va o't ishlab chiqaradi. O't pufakda yig'iladi va umumiy o't yo'li (Gallengang) orqali o'n ikki barmoq ichakka tushadi. Oshqozon osti bezi hazm fermentlari va insulin ishlab chiqaradi. Bilirubin oshsa sariqlik (Ikterus) bo'ladi.",
+key:["Die Leber entgiftet das Blut.","Die Galle hilft bei der Verdauung von Fett.","Die Bauchspeicheldrüse produziert Insulin und Verdauungsenzyme."],
+ana:["Umumiy o't yo'li|der Gallengang|Ductus choledochus|","Darvoza venasi|die Pfortader|Vena portae|","Taloq|die Milz|Lien|","Bilirubin|das Bilirubin||","Jigar ko'rsatkichlari|die Leberwerte|Transaminasen|","Qorin bo'shlig'ida suyuqlik|das Bauchwasser|Aszites|","O't toshi|der Gallenstein||","Insulin|das Insulin||"],
+dis:[["die Gallenkolik","O't sanchig'i","Cholezystolithiasis","kolikartiger Schmerz im rechten Oberbauch nach fettem Essen; Sonografie; Cholezystektomie"],
+["die Gallenblasenentzündung","Xoletsistit","Cholezystitis","Dauerschmerz rechter Oberbauch, Fieber, Murphy-Zeichen positiv; Sonografie, Labor; Antibiotika, Cholezystektomie"],
+["die akute Pankreatitis","O'tkir pankreatit","","gürtelförmiger Oberbauchschmerz, Erbrechen, Alkohol oder Gallensteine; Lipase, Sonografie; Flüssigkeit, Schmerztherapie"],
+["die Leberzirrhose","Jigar sirrozi","","Ikterus, Aszites, Spider naevi, Ösophagusvarizen, oft Alkohol; Sonografie, Labor; Alkoholkarenz, Behandlung der Komplikationen"],
+["die Hepatitis A","Gepatit A","","fäkal-oral, Prodromi, Ikterus, dunkler Urin, heller Stuhl; Anti-HAV-IgM, Transaminasen; symptomatisch, Impfung als Prophylaxe"],
+["die Hepatitis B und C","Gepatit B va C","","über Blut und sexuell, oft chronisch, Risiko Zirrhose und Leberkrebs; Serologie, PCR; antivirale Therapie"]]},
+{de:"Niere und Harnwege",uz:"Buyrak va siydik yo'llari",
+ph:"Buyraklar qonni filtrlaydi va siydik hosil qiladi; asosiy birligi nefron. Siydik buyrak jomidan siydik nayi orqali qovuqqa, keyin siydik chiqarish kanali orqali tashqariga chiqadi. Buyrak funksiyasi kreatinin bilan baholanadi.",
+key:["Die Nieren filtern das Blut und bilden den Urin.","Der Kreatininwert zeigt, wie gut die Nieren arbeiten.","Der Harnleiter verbindet die Niere mit der Harnblase."],
+ana:["Buyrak jomi|das Nierenbecken|Pyelon|","Siydik nayi|der Harnleiter|Ureter|","Siydik chiqarish kanali|die Harnröhre|Urethra|","Prostata|die Vorsteherdrüse|Prostata|","Nefron|das Nephron||","Kreatinin|das Kreatinin||","Siydik tahlili|der Urinstatus|Urinstix|","Siydik miqdori kamayishi|verminderte Urinmenge|Oligurie|"],
+dis:[["die Blasenentzündung","Sistit","Zystitis","Brennen beim Wasserlassen, häufiger Harndrang, meist Frauen, kein Fieber; Urinstix; Antibiotika"],
+["die Nierenbeckenentzündung","Pielonefrit","Pyelonephritis","Fieber, Flankenschmerz, klopfschmerzhaftes Nierenlager; Urin, Sonografie; Antibiotika"],
+["die Nierenkolik","Buyrak sanchig'i","Urolithiasis","kolikartiger Flankenschmerz mit Ausstrahlung in die Leiste, Hämaturie, Unruhe; Sonografie, CT; Schmerzmittel, viel trinken"],
+["das akute Nierenversagen","O'tkir buyrak yetishmovchiligi","","Oligurie, steigendes Kreatinin; Labor, Sonografie; Ursache behandeln, ggf. Dialyse"],
+["die chronische Niereninsuffizienz","Surunkali buyrak yetishmovchiligi","","meist durch Diabetes oder Hypertonie; Kreatinin, GFR; Blutdruckeinstellung, später Dialyse"],
+["die gutartige Prostatavergrößerung","Prostata adenomasi","BPH","schwacher Harnstrahl, Nykturie, Restharn, ältere Männer; Sonografie, PSA; Medikamente oder OP"]]},
+{de:"Hormone und Stoffwechsel",uz:"Endokrin tizim va modda almashinuvi",
+ph:"Gormonlar bezlar ishlab chiqaradigan 'xabarchilar'. Gipofiz boshqa bezlarni boshqaradi. Qalqonsimon bez metabolizm tezligini, insulin qondagi qandni boshqaradi. Uzoq muddatli qand nazorati HbA1c bilan baholanadi.",
+key:["Insulin senkt den Blutzucker.","Die Schilddrüse steuert den Stoffwechsel.","Der HbA1c-Wert zeigt den Blutzucker der letzten drei Monate."],
+ana:["Gipofiz|die Hirnanhangdrüse|Hypophyse|","Buyrak usti bezi|die Nebenniere||","Gormon|das Hormon||","Qondagi qand|der Blutzucker||","Glikirlangan gemoglobin|der Langzeitzucker|HbA1c|","Siydik ko'payishi|vermehrtes Wasserlassen|Polyurie|","Siydik kislotasi|die Harnsäure||"],
+dis:[["der Diabetes mellitus Typ 2","2-tur qandli diabet","","oft lange symptomlos, Polyurie, Polydipsie, Übergewicht; Nüchternblutzucker, HbA1c ≥ 6,5 %; Lebensstil, Metformin"],
+["der Diabetes mellitus Typ 1","1-tur qandli diabet","","junge Patienten, Gewichtsverlust, Polyurie, Ketoazidose; Blutzucker, Antikörper; Insulin"],
+["die Unterzuckerung","Gipoglikemiya","Hypoglykämie","Schwitzen, Zittern, Heißhunger, Verwirrtheit; Blutzucker < 70 mg/dl; Glukose oral oder i. v."],
+["die Schilddrüsenüberfunktion","Gipertireoz","Hyperthyreose","Gewichtsverlust, Herzrasen, Unruhe, Wärmeintoleranz; TSH erniedrigt; Thyreostatika"],
+["die Schilddrüsenunterfunktion","Gipotireoz","Hypothyreose","Müdigkeit, Gewichtszunahme, Kälteempfindlichkeit, Verstopfung; TSH erhöht; L-Thyroxin"],
+["die Gicht","Podagra","","akuter Schmerz und Rötung im Großzehengrundgelenk, oft nachts; Harnsäure; NSAR, Colchicin, später Allopurinol"]]},
+{de:"Blut, Immunsystem und Infektionen",uz:"Qon, immunitet va infeksiyalar",
+ph:"Qonda eritrotsitlar (kislorod tashiydi), leykotsitlar (himoya qiladi) va trombotsitlar (qon ivishi) bor. Yallig'lanishda CRP va leykotsitlar oshadi. Sepsis - infeksiyaga tananing hayot uchun xavfli javobi, darhol davolanadi.",
+key:["Die Erythrozyten transportieren Sauerstoff.","Bei einer Entzündung steigt der CRP-Wert.","Eine Sepsis ist ein lebensbedrohlicher Notfall."],
+ana:["Eritrotsitlar|die roten Blutkörperchen|Erythrozyten|","Leykotsitlar|die weißen Blutkörperchen|Leukozyten|","Trombotsitlar|die Blutplättchen|Thrombozyten|","Gemoglobin|der Blutfarbstoff|Hämoglobin|","Limfa tuguni|der Lymphknoten||","Qon ivishi|die Blutgerinnung||","Yallig'lanish ko'rsatkichlari|die Entzündungswerte|CRP|","Qo'zg'atuvchi|der Erreger||","Antitana|der Antikörper||","Qon ekish|die Blutkultur||"],
+dis:[["die Eisenmangelanämie","Temir tanqisligi anemiyasi","","Müdigkeit, Blässe, Belastungsdyspnoe; Hb und Ferritin niedrig; Eisen, Ursache suchen (Blutung?)"],
+["die Sepsis","Sepsis","","Fieber oder Untertemperatur, Tachykardie, Hypotonie, Verwirrtheit; Blutkulturen, Laktat; sofort Antibiotika und Flüssigkeit"],
+["die Tuberkulose","Sil","Tbc","chronischer Husten, Nachtschweiß, Gewichtsverlust, Fieber; Röntgen, Sputum; Kombinationstherapie über Monate"],
+["die Leukämie","Leykoz","","Infekte, Blutungen, Anämie, Lymphknotenschwellung; Blutbild, Knochenmarkpunktion; Chemotherapie"],
+["die HIV-Infektion","OIV infeksiyasi","","lange symptomlos, später Immunschwäche und opportunistische Infektionen; HIV-Test; antiretrovirale Therapie"],
+["die Malaria","Bezgak","","Fieber nach Tropenreise, Schüttelfrost; dicker Tropfen, Blutausstrich; Antimalariamittel"]]},
+{de:"Nervensystem",uz:"Nerv tizimi",
+ph:"Markaziy nerv tizimi bosh miya va orqa miyadan iborat. Bosh miyani miya pardalari (Hirnhäute) o'rab turadi. Insultda miyaning bir qismi qonsiz qoladi: 'vaqt - bu miya', shuning uchun darhol KT/MRT kerak. Hush darajasi Glasgow shkalasi bilan baholanadi.",
+key:["Beim Schlaganfall zählt jede Minute.","Das Rückenmark leitet Signale zwischen Gehirn und Körper.","Die Hirnhäute umgeben das Gehirn."],
+ana:["Orqa miya|das Rückenmark||","Nerv|der Nerv||","Katta yarim sharlar|das Großhirn|Cerebrum|","Miyacha|das Kleinhirn|Cerebellum|","Miya pardalari|die Hirnhäute|Meningen|","Hush|das Bewusstsein||","Refleks|der Reflex||","Ensa mushaklari rigidligi|die Nackensteifigkeit|Meningismus|","Nutq buzilishi|die Sprachstörung|Aphasie|"],
+dis:[["der Schlaganfall","Insult","Apoplex","plötzliche Halbseitenlähmung, Sprachstörung, hängender Mundwinkel; sofort CT oder MRT; Lyse innerhalb von 4,5 Stunden, Thrombektomie"],
+["die TIA","Tranzitor ishemik ataka","transitorische ischämische Attacke","Symptome wie Schlaganfall, die sich innerhalb von 24 Stunden zurückbilden; Warnzeichen! Abklärung wie Schlaganfall"],
+["die Hirnhautentzündung","Meningit","Meningitis","Fieber, starke Kopfschmerzen, Nackensteifigkeit, Lichtscheu; Lumbalpunktion; sofort Antibiotika"],
+["die Subarachnoidalblutung","Subaraxnoidal qon quyilishi","SAB","plötzlicher stärkster Kopfschmerz des Lebens; CT, ggf. Lumbalpunktion; neurochirurgische Behandlung"],
+["die Epilepsie","Epilepsiya","","Krampfanfälle, Zungenbiss, Bewusstlosigkeit; EEG, MRT; Antiepileptika"],
+["die Migräne","Migren","","einseitiger pulsierender Kopfschmerz, Übelkeit, Licht- und Lärmempfindlichkeit; Anamnese; Triptane, NSAR"]]},
+{de:"Bewegungsapparat",uz:"Tayanch-harakat tizimi",
+ph:"Umurtqa pog'onasi umurtqalar va ular orasidagi disklardan (Bandscheibe) tuziladi. Bo'g'imlarni boylamlar mustahkamlaydi, mushaklar paylar orqali suyakka birikadi. Keksalarda yiqilish ko'pincha son bo'yni sinishiga olib keladi.",
+key:["Die Wirbelsäule besteht aus Wirbeln und Bandscheiben.","Sehnen verbinden Muskeln mit Knochen.","Bei älteren Menschen führt ein Sturz oft zu einem Oberschenkelhalsbruch."],
+ana:["Umurtqa pog'onasi|die Wirbelsäule||","Umurtqa|der Wirbel||","Umurtqalararo disk|die Bandscheibe||","Yelka|die Schulter||","Son-chanoq bo'g'imi|das Hüftgelenk||","Tizza|das Knie||","Pay|die Sehne||","Boylam|das Band||","Son suyagi|der Oberschenkel|Femur|","Bilak suyagi|die Speiche|Radius|"],
+dis:[["der Oberschenkelhalsbruch","Son suyagi bo'yni sinishi","Schenkelhalsfraktur","Sturz, Bein verkürzt und außenrotiert, Schmerzen in der Hüfte; Röntgen; OP (Hüftprothese oder Osteosynthese)"],
+["der Speichenbruch","Bilak suyagining tipik sinishi","distale Radiusfraktur","Sturz auf die ausgestreckte Hand; Röntgen; Gips oder OP"],
+["der Bandscheibenvorfall","Disk churrasi","Diskusprolaps","Rückenschmerz mit Ausstrahlung ins Bein, Taubheit; MRT; konservativ, OP bei Lähmung"],
+["die Arthrose","Artroz","","Anlaufschmerz, Belastungsschmerz, ältere Patienten; Röntgen; Bewegung, Schmerzmittel, Gelenkersatz"],
+["die rheumatoide Arthritis","Revmatoid artrit","","Morgensteifigkeit > 30 Min., symmetrisch, Fingergelenke; Rheumafaktor, Anti-CCP; Methotrexat"],
+["die Osteoporose","Osteoporoz","","Knochenschwund, Frakturen nach geringem Trauma; Knochendichtemessung; Kalzium, Vitamin D, Bisphosphonate"]]},
+{de:"Allgemeine Chirurgie und Haut",uz:"Umumiy jarrohlik va teri",
+ph:"Jarrohlikda asosiy tushunchalar: yara bitishi, infeksiya, sterillik, chandiq va churralar. Churra (Hernie) - qorin devoridagi zaif joydan a'zoning chiqishi. Abssess yiringli bo'shliq bo'lib, kesib ochiladi.",
+key:["Ein Abszess muss eröffnet werden.","Ein Leistenbruch wird beim Husten größer.","Die Wunde heilt ohne Entzündungszeichen."],
+ana:["Yara|die Wunde||","Chok|die Naht||","Bog'lam|der Verband||","Abssess|der Abszess||","Chandiq|die Narbe||","Chov sohasi|die Leiste||","Churra|der Bruch|Hernie|","Yara bitishi|die Wundheilung||","Steril|steril||","Yallig'lanish belgilari|die Entzündungszeichen|Rötung, Schwellung, Wärme, Schmerz|"],
+dis:[["der Leistenbruch","Chov churrasi","Leistenhernie","Schwellung in der Leiste, beim Husten größer; Untersuchung, Sonografie; OP mit Netz. Notfall: Einklemmung"],
+["der Abszess","Abssess","","rote, warme, schmerzhafte Schwellung mit Fluktuation; Untersuchung, Sonografie; Inzision und Drainage"],
+["die Wundrose","Saramas","Erysipel","scharf begrenzte Rötung, Fieber, oft am Unterschenkel; klinisch; Penicillin"],
+["die Verbrennung","Kuyish","","Grad 1: Rötung; Grad 2: Blasen; Grad 3: weiß, schmerzlos; Kühlen, Wundversorgung, ggf. Verbrennungszentrum"],
+["das akute Abdomen","O'tkir qorin","","starke Bauchschmerzen, Abwehrspannung, Kreislauf instabil; Labor, Sonografie, CT; oft Notfall-OP"],
+["die Wundinfektion","Yara infeksiyasi","","Rötung, Schwellung, Eiter, Fieber nach OP; Abstrich; Wunde öffnen, ggf. Antibiotika"]]},
+{de:"Notfallmedizin",uz:"Shoshilinch tibbiy yordam",
+ph:"Har qanday og'ir bemor ABCDE tartibida baholanadi: nafas yo'li, nafas, qon aylanishi, nevrologiya, tana ko'rigi. Yurak to'xtasa: 30 ta ko'krak bosish va 2 ta nafas, daqiqasiga 100-120 marta. Anafilaksiyada birinchi dori - mushak ichiga adrenalin.",
+key:["Wir untersuchen nach dem ABCDE-Schema.","Bei Herzstillstand beginnen wir sofort mit der Herzdruckmassage.","Bei Anaphylaxie geben wir Adrenalin intramuskulär."],
+ana:["Hushsizlik|die Bewusstlosigkeit||","Yurak to'xtashi|der Herzstillstand||","Reanimatsiya|die Wiederbelebung|Reanimation|","Defibrillyator|der Defibrillator||","Yonboshga barqaror yotqizish|die stabile Seitenlage||","Shok|der Schock||","Ko'krakni bosish (yurak massaji)|die Herzdruckmassage||","Nafas yo'lini ochish|die Atemwege freimachen||","Shoshilinch shifokor|der Notarzt||"],
+dis:[["das ABCDE-Schema","ABCDE tartibi","","Airway, Breathing, Circulation, Disability, Exposure: lebensbedrohliche Probleme zuerst erkennen und behandeln"],
+["die Reanimation","Reanimatsiya","CPR","30 Herzdruckmassagen : 2 Beatmungen, Frequenz 100 bis 120 pro Minute, Tiefe 5 bis 6 cm, früh defibrillieren"],
+["der anaphylaktische Schock","Anafilaktik shok","","Atemnot, Nesselsucht, Blutdruckabfall nach Allergen; klinisch; Adrenalin i. m., Flüssigkeit, Kortison, Antihistaminikum"],
+["der Volumenmangelschock","Gipovolemik shok","hypovolämischer Schock","Blutverlust, Tachykardie, Hypotonie, kalte Haut; klinisch; Blutung stoppen, Volumen"],
+["die hypertensive Krise","Gipertonik kriz","","RR > 180/120 mmHg mit Organschäden (Brustschmerz, Atemnot, neurologische Ausfälle); RR-Senkung unter Überwachung"]]},
+{de:"Pharmakologie, Bildgebung und Recht",uz:"Farmakologiya, tasviriy tekshiruvlar va huquq",
+ph:"KP'da dorilar, rentgen va radiatsiyadan himoya, shuningdek shifokor huquqi so'raladi. Har bir dori uchun bilish kerak: ta'siri, nojo'ya ta'siri, qarshi ko'rsatmalari. Bemor rozilik berishidan oldin tushunarli tilda va o'z vaqtida ogohlantirilishi (Aufklärung) shart. Shifokor sirini saqlash qonun bilan himoyalangan.",
+key:["Vor jeder Behandlung muss der Patient aufgeklärt werden.","Ärzte unterliegen der Schweigepflicht.","Vor einer Röntgenuntersuchung fragen wir nach einer Schwangerschaft."],
+ana:["Ta'sir etuvchi modda|der Wirkstoff||","Nojo'ya ta'sir|die Nebenwirkung||","Dorilarning o'zaro ta'siri|die Wechselwirkung||","Qarshi ko'rsatma|die Gegenanzeige|Kontraindikation|","Dozalash|die Dosierung||","Radiatsiyadan himoya|der Strahlenschutz||","Shifokor siri|die Schweigepflicht||","Rozilik|die Einwilligung||","Bemorni ogohlantirish|die Aufklärung||","Ishonchnoma (vakil)|die Vorsorgevollmacht||"],
+dis:[["ASS","Atsetilsalitsil kislota","Acetylsalicylsäure","hemmt die Thrombozyten; NW: Blutungen, Magengeschwür; Einsatz: Herzinfarkt, KHK, Schlaganfallprophylaxe"],
+["Metformin","Metformin","","Diabetes Typ 2; NW: Magen-Darm-Beschwerden, selten Laktatazidose; vor Kontrastmittel und OP pausieren"],
+["Betablocker","Beta-blokatorlar","z. B. Metoprolol","Hypertonie, KHK, Herzinsuffizienz, Vorhofflimmern; NW: Bradykardie, Müdigkeit; Vorsicht bei Asthma"],
+["ACE-Hemmer","AAF ingibitorlari","z. B. Ramipril","Hypertonie, Herzinsuffizienz; NW: Reizhusten, Hyperkaliämie, Angioödem"],
+["Antikoagulanzien","Antikoagulyantlar","Heparin, Phenprocoumon, DOAK","Thromboseprophylaxe und Therapie, Vorhofflimmern; NW: Blutungen; INR-Kontrolle bei Phenprocoumon"],
+["die Aufklärung (Recht)","Ogohlantirish (huquqiy)","","mündlich, verständlich, rechtzeitig vor dem Eingriff; Risiken und Alternativen; Unterschrift; bei Notfall mutmaßliche Einwilligung"],
+["der Strahlenschutz","Radiatsiyadan himoya","","rechtfertigende Indikation, Schwangerschaft ausschließen, Bleischutz, Dosis so niedrig wie möglich"]]}
+];
+// 13-17 oylar: yetakchi simptomlar va differensial diagnostika. ddx: [tashxis, farqlovchi belgi (de), o'zbekcha izoh]
+const LS=[
+{de:"Brustschmerz",uz:"Ko'krak og'rig'i",q:["Seit wann haben Sie die Schmerzen?","Wo genau? Strahlen sie aus?","Wie fühlen sie sich an: drückend, stechend, brennend?","Sind sie belastungsabhängig oder atemabhängig?","Haben Sie geschwitzt oder Atemnot?"],red:"Kaltschweißigkeit, Blutdruckabfall, Bewusstseinsstörung, Atemnot",
+ddx:[["Herzinfarkt","drückend, länger als 20 Minuten, Ausstrahlung in den linken Arm, Kaltschweißigkeit","EKG va troponin"],["Angina pectoris","bei Belastung, Besserung in Ruhe oder durch Nitro","zo'riqishda"],["Lungenembolie","plötzlich, atemabhängig, Atemnot, nach OP oder langer Reise","D-dimer, KT"],["Pneumothorax","plötzlich, einseitig, abgeschwächtes Atemgeräusch, junger schlanker Mann","rentgen"],["Aortendissektion","reißender Schmerz mit Ausstrahlung in den Rücken, Blutdruckdifferenz an den Armen","juda xavfli"],["Refluxkrankheit","brennend hinter dem Brustbein, nach dem Essen und im Liegen","jig'ildon"],["muskuloskelettaler Schmerz","druckschmerzhaft, abhängig von Bewegung","bosganda og'riydi"]]},
+{de:"Atemnot",uz:"Hansirash",q:["Seit wann haben Sie Atemnot?","Kam sie plötzlich oder langsam?","In Ruhe oder nur bei Belastung?","Können Sie flach liegen? Wie viele Kissen brauchen Sie?","Haben Sie Husten, Fieber oder geschwollene Beine?"],red:"SpO2 unter 90 %, Zyanose, Sprechen nur in kurzen Sätzen",
+ddx:[["Herzinsuffizienz","Belastungsdyspnoe, nachts mehrere Kissen, Beinödeme","yurak"],["Asthma bronchiale","anfallsartig, Giemen, Allergien, junger Patient","astma"],["COPD","Raucher, chronischer Husten mit Auswurf, langsam zunehmend","chekuvchi"],["Pneumonie","Fieber, Husten mit Auswurf, Rasselgeräusche","pnevmoniya"],["Lungenembolie","plötzlich, Tachykardie, Thrombose oder Immobilisation","TELA"],["Anämie","Blässe, Müdigkeit, langsam zunehmend","kamqonlik"]]},
+{de:"Oberbauchschmerz",uz:"Qorinning yuqori qismidagi og'riq",q:["Wo genau ist der Schmerz: rechts, links, in der Mitte?","Ist er kolikartig oder dauerhaft?","Hängt er mit dem Essen zusammen?","Trinken Sie Alkohol? Nehmen Sie Schmerzmittel?","Ist Ihre Haut oder sind Ihre Augen gelb geworden?"],red:"Abwehrspannung, Kreislaufinstabilität, Bluterbrechen",
+ddx:[["Gallenkolik","rechts, kolikartig, nach fettem Essen, kein Fieber","o't sanchig'i"],["Cholezystitis","rechts, Dauerschmerz, Fieber, Murphy-Zeichen positiv","xoletsistit"],["akute Pankreatitis","gürtelförmig, Ausstrahlung in den Rücken, Alkohol, Lipase erhöht","pankreatit"],["Ulkuskrankheit","epigastrisch, Zusammenhang mit dem Essen, Einnahme von NSAR","yara"],["Hinterwandinfarkt","Oberbauchschmerz mit Übelkeit bei Risikopatient, EKG verändert","EKGni unutmang!"]]},
+{de:"Unterbauchschmerz",uz:"Qorinning pastki qismidagi og'riq",q:["Wo hat der Schmerz angefangen?","Rechts oder links?","Haben Sie Fieber, Übelkeit, Erbrechen?","Brennen beim Wasserlassen?","Wann war Ihre letzte Regelblutung?"],red:"Abwehrspannung, Schock, positiver Schwangerschaftstest mit Schmerz",
+ddx:[["Appendizitis","Beginn um den Nabel, dann rechter Unterbauch, Fieber, Loslassschmerz","appenditsit"],["Divertikulitis","linker Unterbauch, älterer Patient, Fieber","divertikulit"],["Zystitis","über dem Schambein, Brennen beim Wasserlassen, kein Fieber","sistit"],["Nierenkolik","Flanke mit Ausstrahlung in die Leiste, kolikartig, Blut im Urin","buyrak toshi"],["Eileiterschwangerschaft","Frau, Regelblutung ausgeblieben, Schwangerschaftstest positiv","bachadondan tashqari homiladorlik"],["eingeklemmte Leistenhernie","schmerzhafte, nicht reponierbare Schwellung in der Leiste","qisilgan churra"]]},
+{de:"Fieber",uz:"Isitma",q:["Wie hoch war das Fieber?","Seit wann?","Haben Sie Schüttelfrost?","Waren Sie im Ausland?","Haben Sie Husten, Brennen beim Wasserlassen oder Kopfschmerzen?"],red:"Hypotonie, Verwirrtheit, Nackensteifigkeit, Hautblutungen",
+ddx:[["Pneumonie","Husten mit Auswurf, Atemnot, Rasselgeräusche","pnevmoniya"],["Pyelonephritis","Flankenschmerz, Brennen beim Wasserlassen","pielonefrit"],["Sepsis","Tachykardie, Hypotonie, Verwirrtheit","sepsis"],["Meningitis","Kopfschmerz, Nackensteifigkeit, Lichtscheu","meningit"],["Endokarditis","neues Herzgeräusch, Drogenkonsum oder künstliche Herzklappe","endokardit"],["Malaria","Fieber nach Reise in die Tropen, Schüttelfrost","bezgak"]]},
+{de:"Kopfschmerz",uz:"Bosh og'rig'i",q:["Kamen die Kopfschmerzen plötzlich oder langsam?","Einseitig oder beidseitig?","Wie fühlen sie sich an: pulsierend, drückend?","Haben Sie Übelkeit, Fieber, Sehstörungen?","Hatten Sie so etwas schon einmal?"],red:"plötzlicher stärkster Kopfschmerz, Fieber mit Nackensteifigkeit, neurologische Ausfälle",
+ddx:[["Migräne","einseitig, pulsierend, Übelkeit, Licht- und Lärmempfindlichkeit","migren"],["Spannungskopfschmerz","beidseitig, drückend, wie ein Band um den Kopf","zo'riqish og'rig'i"],["Subarachnoidalblutung","plötzlich, stärkster Kopfschmerz des Lebens","SAQ"],["Meningitis","Fieber, Nackensteifigkeit, Lichtscheu","meningit"],["hypertensive Krise","sehr hoher Blutdruck, Schwindel, Sehstörungen","gipertonik kriz"],["Arteriitis temporalis","über 50 Jahre, Schläfenschmerz, Kauschmerz, Sehstörung, BSG erhöht","temporal arteriit"]]},
+{de:"Schwindel und Synkope",uz:"Bosh aylanishi va hushdan ketish",q:["Was genau meinen Sie mit Schwindel: Drehen oder Schwanken?","Wann tritt er auf: beim Aufstehen, bei Kopfbewegung?","Waren Sie bewusstlos? Wie lange?","Hatten Sie vorher Übelkeit oder Schwitzen?","Haben Sie Herzklopfen bemerkt?"],red:"Synkope bei Belastung, Brustschmerz, neurologische Ausfälle",
+ddx:[["orthostatische Hypotonie","beim schnellen Aufstehen, ältere Patienten, Blutdruckmittel","tik turganda"],["Herzrhythmusstörung","ohne Vorwarnung, bei Belastung, Herzklopfen","aritmiya"],["vasovagale Synkope","nach langem Stehen oder Schmerz, vorher Übelkeit und Schwitzen","vazovagal"],["Hypoglykämie","Diabetiker, Schwitzen, Zittern, Heißhunger","gipoglikemiya"],["Schlaganfall oder TIA","zusätzlich Lähmung, Sprachstörung, Sehstörung","insult"],["gutartiger Lagerungsschwindel","Drehschwindel für Sekunden bei Kopfbewegung","BPPV"]]},
+{de:"Beinschwellung",uz:"Oyoq shishi",q:["Ist ein Bein oder sind beide Beine geschwollen?","Seit wann?","Haben Sie Schmerzen oder Rötung?","Haben Sie Atemnot?","Welche Medikamente nehmen Sie?"],red:"einseitige Schwellung mit Atemnot (Lungenembolie?)",
+ddx:[["tiefe Venenthrombose","einseitig, Schmerz, Überwärmung, nach Immobilisation","TVT"],["Herzinsuffizienz","beidseitig, Atemnot, Nykturie","yurak"],["nephrotisches Syndrom","beidseitig, Lidödeme, schäumender Urin","nefrotik"],["Leberzirrhose","Aszites, Ikterus, Alkohol","sirroz"],["Erysipel","Rötung, scharf begrenzt, Fieber","saramas"],["Medikamente","Kalziumantagonisten wie Amlodipin","dori"]]},
+{de:"Gelbsucht",uz:"Sariqlik",q:["Seit wann ist Ihre Haut gelb?","Ist Ihr Urin dunkel, Ihr Stuhl hell?","Haben Sie Bauchschmerzen oder Fieber?","Haben Sie abgenommen?","Trinken Sie Alkohol? Waren Sie im Ausland?"],red:"Fieber mit Schüttelfrost und Ikterus (Cholangitis), Verwirrtheit",
+ddx:[["virale Hepatitis","Prodromi, Müdigkeit, Transaminasen stark erhöht","gepatit"],["Choledocholithiasis","Kolik, Ikterus, evtl. Fieber (Cholangitis)","o't yo'li toshi"],["Pankreaskopfkarzinom","schmerzloser Ikterus, Gewichtsverlust, tastbare Gallenblase","saraton"],["Leberzirrhose","Aszites, Spider naevi, Alkohol","sirroz"],["Hämolyse","Anämie, indirektes Bilirubin erhöht, Urin nicht dunkel","gemoliz"]]},
+{de:"Blutung im Magen-Darm-Trakt",uz:"Oshqozon-ichakdan qon ketishi",q:["Haben Sie Blut erbrochen? Wie sah es aus?","Ist Ihr Stuhl schwarz oder rot?","Nehmen Sie Blutverdünner oder Schmerzmittel?","Trinken Sie Alkohol? Haben Sie eine Lebererkrankung?","Haben Sie abgenommen?"],red:"Tachykardie, Hypotonie, Hb-Abfall",
+ddx:[["Ulkusblutung","Teerstuhl, Einnahme von NSAR oder ASS","yara qon ketishi"],["Ösophagusvarizenblutung","massives Bluterbrechen, Leberzirrhose","varikoz"],["Darmkrebs","Blut im Stuhl, Gewichtsverlust, Anämie, älter","saraton"],["Divertikelblutung","schmerzlose hellrote Blutung, ältere Patienten","divertikul"],["Hämorrhoiden","hellrotes Blut auf dem Stuhl, Juckreiz","gemorroy"]]},
+{de:"Husten",uz:"Yo'tal",q:["Seit wann husten Sie?","Mit oder ohne Auswurf? Welche Farbe?","Haben Sie Blut gehustet?","Rauchen Sie? Wie viel und wie lange?","Haben Sie Fieber, Nachtschweiß, Gewichtsverlust?"],red:"Bluthusten, Gewichtsverlust, Atemnot",
+ddx:[["akute Bronchitis","nach Erkältung, kurz, wenig Fieber","bronxit"],["Pneumonie","Fieber, eitriger Auswurf, Atemnot","pnevmoniya"],["Asthma","trocken, nachts, Giemen","astma"],["COPD","Raucher, morgens Auswurf, chronisch","SOO'K"],["Lungenkarzinom","Raucher, Bluthusten, Gewichtsverlust","saraton"],["Tuberkulose","Nachtschweiß, Gewichtsverlust, länger als 3 Wochen","sil"],["ACE-Hemmer-Husten","trockener Reizhusten nach Beginn eines ACE-Hemmers","dori"]]},
+{de:"Flankenschmerz und Brennen beim Wasserlassen",uz:"Bel yonbosh og'rig'i va siyishda achishish",q:["Wo genau sind die Schmerzen? Strahlen sie aus?","Brennt es beim Wasserlassen? Müssen Sie oft?","Haben Sie Blut im Urin bemerkt?","Haben Sie Fieber?","Hatten Sie so etwas schon einmal?"],red:"Fieber mit Harnstau, Sepsiszeichen",
+ddx:[["Zystitis","Brennen, häufiger Harndrang, kein Fieber","sistit"],["Pyelonephritis","Fieber, Flankenschmerz, Nierenlager klopfschmerzhaft","pielonefrit"],["Nierenkolik","kolikartig, Ausstrahlung in die Leiste, Unruhe, Hämaturie","tosh"],["Prostatitis","Mann, Fieber, Schmerzen im Damm, Probleme beim Wasserlassen","prostatit"]]},
+{de:"Rückenschmerz",uz:"Bel og'rig'i",q:["Seit wann haben Sie Rückenschmerzen?","Strahlen sie ins Bein aus?","Haben Sie Taubheit, Schwäche oder Probleme beim Wasserlassen?","Gab es einen Sturz oder Unfall?","Haben Sie Fieber oder abgenommen?"],red:"Blasen- und Mastdarmstörung, Lähmung, Fieber, Tumor in der Vorgeschichte",
+ddx:[["unspezifischer Rückenschmerz","nach Heben, keine neurologischen Ausfälle","oddiy"],["Bandscheibenvorfall","Ausstrahlung ins Bein, Taubheit, Lasègue positiv","disk churrasi"],["rupturiertes Aortenaneurysma","plötzlich, pulsierender Tumor im Bauch, Schock","aorta yorilishi"],["Wirbelkörperfraktur","ältere Frau mit Osteoporose, geringes Trauma","osteoporoz"],["Pyelonephritis","Fieber, Flankenschmerz, Urin auffällig","pielonefrit"]]},
+{de:"Gelenkschmerz",uz:"Bo'g'im og'rig'i",q:["Welche Gelenke tun weh?","Seit wann?","Sind sie geschwollen, rot, warm?","Sind sie morgens steif? Wie lange?","Haben Sie Fieber?"],red:"ein heißes, geschwollenes Gelenk mit Fieber (septische Arthritis)",
+ddx:[["Gicht","plötzlich, Großzehe, sehr schmerzhaft, nachts, nach Alkohol oder Fleisch","podagra"],["Arthrose","Anlaufschmerz, Belastungsschmerz, Knie und Hüfte, älter","artroz"],["rheumatoide Arthritis","symmetrisch, Fingergelenke, Morgensteifigkeit über 30 Minuten","revmatoid"],["septische Arthritis","ein Gelenk, Fieber, rot und heiß, Notfall","septik"],["reaktive Arthritis","nach Darm- oder Harnwegsinfekt, junge Patienten","reaktiv"]]},
+{de:"Bewusstseinsstörung",uz:"Hush buzilishi",q:["(Fremdanamnese) Wann haben Sie ihn so gefunden?","Hat er Diabetes? Nimmt er Medikamente?","Gab es einen Krampfanfall?","Trinkt er Alkohol oder nimmt er Drogen?","Hatte er Fieber oder Kopfschmerzen?"],red:"GCS unter 9, fehlende Schutzreflexe",
+ddx:[["Hypoglykämie","Diabetiker, Schwitzen, Blutzucker niedrig","gipoglikemiya"],["Schlaganfall","Halbseitensymptomatik, plötzlich","insult"],["Intoxikation","Alkohol, Drogen oder Medikamente, Pupillen auffällig","zaharlanish"],["Sepsis","Fieber, Hypotonie, Tachykardie","sepsis"],["postiktaler Zustand","nach Krampfanfall, Zungenbiss, Einnässen","tutqanoqdan keyin"],["hepatische Enzephalopathie","Leberzirrhose, Flattertremor","jigar ensefalopatiyasi"]]},
+{de:"Herzklopfen",uz:"Yurak tez urishi",q:["Ist der Herzschlag regelmäßig oder unregelmäßig?","Seit wann? Plötzlich?","Haben Sie Brustschmerz, Atemnot, Schwindel?","Haben Sie abgenommen oder schwitzen Sie viel?","Trinken Sie viel Kaffee oder Alkohol?"],red:"Synkope, Brustschmerz, Hypotonie",
+ddx:[["Vorhofflimmern","unregelmäßig, ältere Patienten, Schlaganfallrisiko","bo'lmachalar fibrillyatsiyasi"],["Hyperthyreose","Gewichtsverlust, Schwitzen, Unruhe, Zittern","gipertireoz"],["Panikattacke","Angst, Atemnot, junge Patienten, Ausschluss organischer Ursachen","vahima"],["Anämie","Blässe, Müdigkeit, Belastungsdyspnoe","anemiya"],["Sinustachykardie bei Fieber oder Volumenmangel","regelmäßig, Ursache behandeln","sababi bor"]]},
+{de:"Durchfall",uz:"Ich ketishi",q:["Seit wann? Wie oft am Tag?","Ist Blut oder Schleim dabei?","Haben andere Personen dasselbe?","Haben Sie kürzlich Antibiotika genommen?","Waren Sie im Ausland?"],red:"Exsikkose, blutiger Durchfall mit Fieber",
+ddx:[["infektiöse Gastroenteritis","akut, Erbrechen, andere Personen betroffen","gastroenterit"],["Clostridioides difficile","nach Antibiotikatherapie, wässrig","antibiotikdan keyin"],["chronisch-entzündliche Darmerkrankung","junger Patient, chronisch, blutig, Gewichtsverlust","Kron/YaK"],["Reizdarmsyndrom","chronisch, Stress, keine Alarmzeichen","ta'sirlangan ichak"],["Darmkrebs","älter, Wechsel von Durchfall und Verstopfung, Blut","saraton"]]},
+{de:"Gewichtsverlust",uz:"Vazn yo'qotish",q:["Wie viel haben Sie abgenommen? In welcher Zeit?","Haben Sie Nachtschweiß oder Fieber?","Wie ist Ihr Appetit?","Haben Sie viel Durst?","Wie ist Ihre Stimmung?"],red:"B-Symptomatik: Fieber, Nachtschweiß, Gewichtsverlust > 10 % in 6 Monaten",
+ddx:[["Tumorerkrankung","B-Symptomatik, älter, Raucher","o'sma"],["Hyperthyreose","guter Appetit, Herzrasen, Schwitzen","gipertireoz"],["Diabetes Typ 1","Durst, viel Wasserlassen, junger Patient","diabet"],["Tuberkulose","Husten, Nachtschweiß, Herkunft oder Kontakt","sil"],["Depression","Appetitlosigkeit, Antriebslosigkeit, Schlafstörung","depressiya"]]},
+{de:"Übelkeit und Erbrechen",uz:"Ko'ngil aynishi va qusish",q:["Seit wann? Wie oft?","Wie sieht das Erbrochene aus?","Haben Sie Bauchschmerzen, Stuhlgang, Winde?","Haben Sie Kopfschmerzen?","Könnten Sie schwanger sein?"],red:"Bluterbrechen, galliges Erbrechen mit Stuhlverhalt, Kopfschmerz mit Bewusstseinsstörung",
+ddx:[["Gastroenteritis","mit Durchfall, akut","gastroenterit"],["Ileus","kein Stuhl und keine Winde, geblähter Bauch, kolikartiger Schmerz","ichak tutilishi"],["Schwangerschaft","junge Frau, Regel ausgeblieben, morgens","homiladorlik"],["erhöhter Hirndruck","Kopfschmerz morgens, Erbrechen im Schwall","bosh miya bosimi"],["Myokardinfarkt","Risikopatient, Brust- oder Oberbauchschmerz","infarkt"]]},
+{de:"Müdigkeit",uz:"Charchoq",q:["Seit wann sind Sie müde?","Schlafen Sie gut?","Haben Sie abgenommen oder zugenommen?","Haben Sie Atemnot bei Belastung?","Wie ist Ihre Stimmung?"],red:"B-Symptomatik, Blutungszeichen",
+ddx:[["Anämie","Blässe, Belastungsdyspnoe","anemiya"],["Hypothyreose","Gewichtszunahme, Kälteempfindlichkeit, Verstopfung","gipotireoz"],["Depression","Freudlosigkeit, Schlafstörung, Antriebslosigkeit","depressiya"],["Diabetes mellitus","Durst, viel Wasserlassen","diabet"],["Schlafapnoe","Schnarchen, Atempausen, Tagesmüdigkeit, Übergewicht","uyqu apnoesi"]]}
+];
+// Aufklärung: [nomi de, uz, nima (de, bemor tilida), xavflar, muqobil, tayyorgarlik]
+const AUF=[
+["Appendektomie","Appendektomiya","Wir entfernen den entzündeten Wurmfortsatz. Meist machen wir das minimal-invasiv mit drei kleinen Schnitten am Bauch.","Blutung, Wundinfektion, Verletzung von Darm oder Blase, Thrombose und Embolie, Narbenbruch, Wechsel zur offenen Operation","bei leichter Entzündung Antibiotika, aber Risiko eines Rückfalls","6 Stunden vorher nichts essen"],
+["Cholezystektomie","Xoletsistektomiya","Wir entfernen die Gallenblase mit den Steinen, meist minimal-invasiv. Man kann ohne Gallenblase normal leben.","Blutung, Infektion, Verletzung des Gallengangs, Galleleck, Wechsel zur offenen Operation","keine dauerhafte Alternative; Steine im Gallengang per ERCP","nüchtern; nach der OP zunächst fettarm essen"],
+["Gastroskopie","Gastroskopiya","Ein dünner, biegsamer Schlauch mit Kamera wird über den Mund in Speiseröhre, Magen und Zwölffingerdarm geführt. Wir können Gewebeproben nehmen. Sie bekommen ein Beruhigungsmittel.","Halsschmerzen, Blutung nach Probenentnahme, sehr selten Verletzung der Wand (Perforation), Reaktion auf das Beruhigungsmittel","Röntgen mit Kontrastmittel, aber ohne Gewebeprobe","6 Stunden nüchtern; nach dem Beruhigungsmittel 24 Stunden nicht Auto fahren"],
+["Koloskopie","Kolonoskopiya","Ein biegsamer Schlauch mit Kamera wird über den After in den Dickdarm geführt. Polypen können wir sofort entfernen.","Blähungen, Bauchschmerzen, Blutung nach Polypenentfernung, sehr selten Perforation","Stuhltest oder CT, aber weniger genau","am Vortag Abführlösung trinken; nach Sedierung nicht Auto fahren"],
+["Herzkatheteruntersuchung","Yurak kateterizatsiyasi","Über eine Arterie am Handgelenk oder in der Leiste schieben wir einen dünnen Katheter zum Herzen und machen die Herzkranzgefäße mit Kontrastmittel sichtbar. Eine Engstelle können wir sofort mit einem Stent behandeln.","Bluterguss oder Blutung an der Einstichstelle, Kontrastmittelallergie, Nierenschädigung, Herzrhythmusstörungen, selten Herzinfarkt oder Schlaganfall","CT der Herzkranzgefäße, nur Medikamente","Allergien, Nierenwerte und Blutverdünner klären; Metformin pausieren"],
+["Hüftprothese","Son-chanoq bo'g'imi endoprotezi (Hüft-TEP)","Wir ersetzen das zerstörte oder gebrochene Hüftgelenk durch ein künstliches Gelenk.","Infektion, Thrombose und Embolie, Ausrenken der Prothese (Luxation), unterschiedliche Beinlänge, Nervenverletzung, Lockerung","bei Arthrose Schmerzmittel und Physiotherapie; bei Bruch meist keine","Blutverdünner absprechen; nach der OP Physiotherapie"],
+["Leistenbruch-Operation","Chov churrasini operatsiya qilish","Wir verlagern den Bruchinhalt zurück und verstärken die Bauchwand mit einem Kunststoffnetz.","Bluterguss, Infektion, chronische Leistenschmerzen, erneuter Bruch (Rezidiv), Schwellung des Hodens","Abwarten bei kleinem, beschwerdefreiem Bruch; Gefahr der Einklemmung","nüchtern; danach 2 bis 4 Wochen nicht schwer heben"],
+["Bluttransfusion","Qon quyish","Sie bekommen fremdes Blut über eine Vene, weil Ihr Blutwert sehr niedrig ist. Vorher prüfen wir am Bett noch einmal die Blutgruppe.","Fieber, allergische Reaktion, Verwechslung (deshalb Bedside-Test), Kreislaufüberlastung, sehr selten Infektionen","Eisen oder Medikamente, wenn Zeit bleibt","Blutgruppenbestimmung und Kreuzprobe"],
+["CT mit Kontrastmittel","Kontrast bilan KT","Sie liegen auf einer Liege, die durch einen Ring fährt. Über die Vene bekommen Sie ein Kontrastmittel, dabei kann Ihnen kurz warm werden.","Kontrastmittelallergie, Nierenschädigung, Schilddrüsenüberfunktion durch Jod, Strahlenbelastung","MRT oder Ultraschall, je nach Frage","Fragen: Allergien, Nieren, Schilddrüse, Metformin, Schwangerschaft"],
+["Lumbalpunktion","Lyumbal punksiya","Wir stechen mit einer dünnen Nadel zwischen zwei Lendenwirbeln ein und nehmen etwas Nervenwasser ab. Das Rückenmark liegt höher und wird nicht berührt.","Kopfschmerzen nach der Punktion, Blutung, Infektion, kurzer Nervenschmerz ins Bein","keine gleichwertige Alternative bei Verdacht auf Meningitis","vorher Gerinnung prüfen, Blutverdünner klären"],
+["Vollnarkose","Umumiy narkoz","Sie schlafen während der Operation tief und spüren nichts. Ein Narkosearzt überwacht Sie die ganze Zeit.","Übelkeit, Halsschmerzen und Heiserkeit durch den Beatmungsschlauch, Zahnschäden, Einatmen von Mageninhalt (Aspiration), allergische Reaktionen","Regionalanästhesie, je nach Eingriff","6 Stunden vorher nicht essen, klare Flüssigkeit bis 2 Stunden vorher"],
+["Schilddrüsenoperation","Qalqonsimon bez operatsiyasi","Wir entfernen die Schilddrüse ganz oder teilweise über einen kleinen Schnitt am Hals.","Heiserkeit durch Verletzung des Stimmbandnervs, Kalziummangel mit Kribbeln (Nebenschilddrüsen), Blutung, lebenslange Einnahme von Schilddrüsenhormon","Radiojodtherapie oder Medikamente, je nach Erkrankung","vorher Stimmbänder untersuchen lassen"]
+];
+// Imtihon qoliplari
+const TPL=[
+{n:"Anamnez tartibi",d:"Har bir bemorda shu tartibda so'raysiz. Tartibni yodlasangiz, hech narsa esdan chiqmaydi.",s:[
+["Begrüßung","Guten Tag, mein Name ist Kimsanboyev, ich bin Assistenzarzt hier auf der Station. Ich möchte Ihnen ein paar Fragen stellen."],
+["Persönliche Daten","Wie heißen Sie? Wie alt sind Sie? Wie groß sind Sie und wie viel wiegen Sie?"],
+["Aktuelle Beschwerden","Was führt Sie zu uns? Seit wann? Wo genau? Wie fühlt es sich an? Wie stark von 0 bis 10? Strahlt es aus? Was macht es besser oder schlechter?"],
+["Begleitsymptome","Haben Sie Fieber, Übelkeit, Erbrechen, Atemnot?"],
+["Vegetative Anamnese","Wie ist Ihr Appetit? Haben Sie ab- oder zugenommen? Haben Sie Nachtschweiß? Wie ist Ihr Stuhlgang und Wasserlassen? Wie schlafen Sie?"],
+["Vorerkrankungen und Operationen","Haben Sie Vorerkrankungen, z. B. Bluthochdruck oder Diabetes? Wurden Sie schon einmal operiert?"],
+["Medikamente","Welche Medikamente nehmen Sie regelmäßig ein? In welcher Dosierung?"],
+["Allergien","Haben Sie Allergien gegen Medikamente oder Lebensmittel?"],
+["Noxen","Rauchen Sie? Wie viele Zigaretten am Tag und seit wie vielen Jahren? Trinken Sie Alkohol? Nehmen Sie Drogen?"],
+["Familienanamnese","Gibt es Erkrankungen in Ihrer Familie, z. B. Herzinfarkt, Krebs, Diabetes?"],
+["Sozialanamnese","Was sind Sie von Beruf? Sind Sie verheiratet? Haben Sie Kinder? Wie wohnen Sie?"],
+["Abschluss","Vielen Dank. Haben Sie noch Fragen? Ich bespreche Ihren Fall jetzt mit dem Oberarzt."]]},
+{n:"Arztbrief (Konjunktiv I)",d:"Yozma qismda bemor aytganlari Konjunktiv I bilan yoziladi: habe, sei, nehme. Har bo'limni to'liq gaplar bilan yozing.",s:[
+["Einleitung","Herr Max Muster, 58 Jahre alt, stellte sich am 12.03. in unserer Notaufnahme mit seit drei Tagen bestehenden Bauchschmerzen vor."],
+["Aktuelle Anamnese","Der Patient berichtete, die Schmerzen hätten plötzlich begonnen und seien im rechten Oberbauch lokalisiert. Sie seien kolikartig und strahlten in die rechte Schulter aus. Die Schmerzintensität gab er mit 8 von 10 an."],
+["Begleitsymptome","Zudem habe er Übelkeit und zweimal erbrochen. Fieber sei nicht aufgetreten."],
+["Vegetative Anamnese","Appetit, Schlaf, Stuhlgang und Miktion seien unauffällig. Eine Gewichtsabnahme habe er nicht bemerkt."],
+["Vorerkrankungen und Medikation","An Vorerkrankungen seien eine arterielle Hypertonie und ein Diabetes mellitus Typ 2 bekannt. Er nehme Ramipril 5 mg 1-0-0 und Metformin 1000 mg 1-0-1 ein."],
+["Allergien und Noxen","Eine Allergie gegen Penicillin sei bekannt. Er rauche seit 30 Jahren eine Schachtel Zigaretten pro Tag (30 pack years) und trinke gelegentlich Alkohol."],
+["Familien- und Sozialanamnese","Der Vater sei an einem Herzinfarkt verstorben. Der Patient sei verheiratet, habe zwei Kinder und arbeite als Busfahrer."],
+["Verdachtsdiagnose","Aufgrund der Anamnese besteht der Verdacht auf eine akute Cholezystitis."],
+["Differenzialdiagnosen","Differenzialdiagnostisch kommen eine Gallenkolik, eine akute Pankreatitis und ein Hinterwandinfarkt in Betracht."],
+["Weiteres Vorgehen","Zur weiteren Abklärung empfehlen wir eine körperliche Untersuchung, Labor (Blutbild, CRP, Leberwerte, Lipase), ein EKG und eine Sonografie des Abdomens."]]},
+{n:"Bemorni katta shifokorga taqdim etish (Patientenvorstellung)",d:"Qisqa, tartibli, aniq. Avval asosiy shikoyat, keyin muhim ma'lumotlar, oxirida taxminiy tashxis va reja.",s:[
+["Einleitung","Ich möchte Ihnen Herrn Muster vorstellen, einen 58-jährigen Patienten, der sich heute mit seit drei Tagen bestehenden kolikartigen Schmerzen im rechten Oberbauch vorgestellt hat."],
+["Wichtigste Details","Die Schmerzen strahlen in die rechte Schulter aus und traten nach einer fettreichen Mahlzeit auf. Begleitend bestehen Übelkeit und Erbrechen."],
+["Vorgeschichte","An Vorerkrankungen sind eine Hypertonie und ein Diabetes Typ 2 bekannt. Er nimmt Ramipril und Metformin ein. Es besteht eine Penicillinallergie."],
+["Verdachtsdiagnose","Aufgrund der Anamnese gehe ich von einer akuten Cholezystitis aus."],
+["Differenzialdiagnosen","Differenzialdiagnostisch denke ich an eine Gallenkolik, eine Pankreatitis und einen Hinterwandinfarkt."],
+["Vorgehen","Ich würde gerne Blut abnehmen, ein EKG schreiben und eine Sonografie des Abdomens durchführen. Bis dahin würde ich dem Patienten ein Schmerzmittel geben."],
+["Rückfrage","Wenn Sie einverstanden sind, würde ich so vorgehen. Haben Sie noch Fragen?"]]},
+{n:"Aufklärung tartibi",d:"Bemorga oddiy tilda, Fachsprache'siz tushuntirasiz. Har bosqichdan keyin: 'Haben Sie das verstanden?'",s:[
+["Einleitung","Ich möchte mit Ihnen über die geplante Untersuchung sprechen. Haben Sie kurz Zeit?"],
+["Diagnose erklären","Wir vermuten, dass Ihre Gallenblase entzündet ist. Deshalb empfehlen wir eine Operation."],
+["Ablauf","Die Operation findet in Vollnarkose statt. Wir machen drei kleine Schnitte am Bauch und entfernen die Gallenblase mit einer Kamera."],
+["Risiken","Wie bei jeder Operation gibt es Risiken: zum Beispiel Blutungen, Infektionen oder Verletzungen von Nachbarorganen. Diese Komplikationen sind aber selten."],
+["Alternativen","Eine Alternative wäre zunächst eine Behandlung mit Antibiotika, aber die Beschwerden können wiederkommen."],
+["Vorbereitung und danach","Bitte essen Sie ab Mitternacht nichts mehr. Nach der Operation bleiben Sie etwa zwei bis drei Tage im Krankenhaus."],
+["Abschluss","Haben Sie noch Fragen? Sie können sich das in Ruhe überlegen. Wenn Sie einverstanden sind, unterschreiben Sie bitte hier."]]},
+{n:"Konjunktiv I: tayyor shakllar",d:"Arztbriefda eng ko'p kerak bo'ladigan shakllar. Ko'plikda Konjunktiv I indikativga o'xshasa, Konjunktiv II ishlatiladi (hätten, würden).",s:[
+["haben","er/sie habe · sie (ko'plik) hätten — Er habe Fieber. Die Schmerzen hätten gestern begonnen."],
+["sein","er/sie sei · sie (ko'plik) seien — Er sei gestürzt. Die Schmerzen seien stechend."],
+["nehmen","er/sie nehme — Sie nehme Metformin ein."],
+["können","er/sie könne — Er könne nicht schlafen."],
+["müssen","er/sie müsse — Sie müsse oft Wasser lassen."],
+["strahlen aus","sie strahlten aus (ko'plik, K2) — Die Schmerzen strahlten in den Rücken aus."],
+["treten auf","sei aufgetreten — Erbrechen sei nicht aufgetreten."],
+["verneinen","Er verneinte Fieber. (indikativ: bemor 'yo'q' dedi)"]]}
+];
+// 5 yillik yo'l xaritasi
+const ROAD=[
+["1-yil · 1-6 oy","Til poydevori","B1 dan mustahkam B2 ga. Kundalik va asosiy tibbiy so'zlar. Saytdagi 1-26 haftalar."],
+["1-yil · 7-12 oy","Tibbiyot asoslari nemis tilida","12 ta organ tizimi: anatomiya, fiziologiya va asosiy kasalliklar. B2 grammatika davom etadi. Saytdagi 27-52 haftalar."],
+["2-yil · 13-17 oy","Simptomdan tashxisga","20 ta yetakchi simptom bo'yicha differensial diagnostika va 12 ta Aufklärung. Hujjatlarni (diplom, ilovalar, tarjimalar) tayyorlashni boshlang. Saytdagi 53-72 haftalar."],
+["2-yil · 18-24 oy","FSP / FaMed imtihon rejimi","Anamnez, Arztbrief, Patientenvorstellung va Aufklärung qoliplari. Haftasiga 2 marta to'liq simulyatsiya. Approbation arizasini topshirish va imtihonga yozilish. Saytdagi 73-104 haftalar."],
+["3-yil","FSP / FaMed va Germaniyaga ko'chish","Til imtihonini topshirish. Saksoniyada FSP'dan keyin 2 yillik Berufserlaubnis beriladi: shifokor nazorati ostida ishlash mumkin. Ish joyida KP'ga tayyorgarlikni boshlash."],
+["4-yil","KP'ga intensiv tayyorgarlik","Innere Medizin (6 oy), Chirurgie (4 oy), Notfall, Pharmakologie, Bildgebung, Strahlenschutz va huquq (2 oy). AMBOSS'ning KP o'quv rejasi va Herold 'Innere Medizin' kitobi. Mock-KP mashg'ulotlari."],
+["5-yil","Kenntnisprüfung va Approbation","KP'ni topshirish (3 ta urinish bor, shoshilmang). Keyin Approbation olinadi va mustaqil Assistenzarzt sifatida ishlash boshlanadi."]];
+// Manbalar
+const RES=[
+["Til","DW Learn German (Nicos Weg, Top-Thema, sekin yangiliklar)","https://learngerman.dw.com/de/","Bepul. A1 dan C1 gacha, audio va matn bilan"],
+["Til","Easy German (YouTube)","https://www.youtube.com/@EasyGerman","Ko'chadagi jonli nemis nutqi, subtitrlar bilan"],
+["Anatomiya","Kenhub (nemischa)","https://www.kenhub.com/de","Anatomiya atlasi va videolar; bepul hisob bor"],
+["Tibbiyot","Wikipedia (nemischa)","https://de.wikipedia.org/","Har bir kasallik maqolasi rasmlar bilan. Bilim bo'limidagi havolalar shu yerga olib boradi"],
+["Tibbiyot","DocCheck Flexikon","https://flexikon.doccheck.com/de/","Tibbiy ensiklopediya, shifokorlar tilida"],
+["Bemor tili","gesundheitsinformation.de","https://www.gesundheitsinformation.de/","Kasalliklar bemorga tushunarli oddiy nemis tilida: Aufklärung uchun eng yaxshi manba"],
+["KP","AMBOSS: Kenntnisprüfung o'quv rejasi","https://www.amboss.com/de/kenntnispruefung","Pullik. KP uchun asosiy platforma; Marburger Bund orqali chegirma bor"],
+["Kitob","Rogoveanu: Fachsprachprüfung Medizin (Elsevier)","https://shop.elsevier.de/","FSP uchun: kommunikatsiya, Aufklärung, Fallvorstellung"],
+["Kitob","Gréser: Kenntnisprüfung Medizin erfolgreich bestehen (Elsevier)","https://shop.elsevier.com/books/kenntnisprufung-medizin-erfolgreich-bestehen/grosser/978-3-437-15056-2","KP uchun: Innere, Chirurgie, Notfall, Pharmakologie, huquq"],
+["Kitob","Herold: Innere Medizin","https://de.wikipedia.org/wiki/Gerd_Herold","KP uchun ichki kasalliklar bo'yicha klassik kitob, har yili yangilanadi"],
+["Rasmiy","Saksoniya shifokorlar palatasi (SLÄK): chet ellik shifokorlar","https://www.slaek.de/","Saksoniyada FSP shu yerda topshiriladi"],
+["Rasmiy","Anerkennung in Deutschland: shifokor","https://www.anerkennung-in-deutschland.de/","Approbation arizasi va hujjatlar ro'yxati"]];
+
+</script>
+<script>
+{
+const $=id=>document.getElementById(id),v=$('v');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const enc=encodeURIComponent;
+const dnum=(d=new Date())=>Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);
+const fromISO=s=>{const[y,m,d]=String(s).split('-').map(Number);return Math.floor(Date.UTC(y,(m||1)-1,d||1)/864e5)};
+const iso=n=>new Date(n*864e5).toISOString().slice(0,10);
+const WD=["Yakshanba","Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba"];
+const fmtDate=n=>{const d=new Date(n*864e5);return d.getUTCDate()+'.'+String(d.getUTCMonth()+1).padStart(2,'0')+'.'+d.getUTCFullYear()};
+const ICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const ISP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9H4zM16 8.5a5 5 0 0 1 0 7M19 5.5a9 9 0 0 1 0 13"/></svg>';
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1800)}
+const bare=s=>String(s).replace(/^(der|die|das)\s+/,'');
+const L_WIKI=q=>'https://de.wikipedia.org/w/index.php?search='+enc(q);
+const L_YT=q=>'https://www.youtube.com/results?search_query='+enc(q);
+const L_IMG=q=>'https://www.google.com/search?tbm=isch&q='+enc(q);
+const L_DC=q=>'https://www.google.com/search?q='+enc(q+' site:flexikon.doccheck.com');
+const L_GI=q=>'https://www.google.com/search?q='+enc(q+' site:gesundheitsinformation.de');
+const links=(q,yt)=>`<div class="lnk"><a href="${L_WIKI(q)}" target="_blank" rel="noopener">Wikipedia</a><a href="${L_IMG(q+' Anatomie Schema')}" target="_blank" rel="noopener">Rasmlar</a><a href="${L_YT(yt||q+' einfach erklärt')}" target="_blank" rel="noopener">YouTube</a><a href="${L_DC(q)}" target="_blank" rel="noopener">DocCheck</a><a href="${L_GI(q)}" target="_blank" rel="noopener">Bemor tili</a></div>`;
+/* ---------- holat ---------- */
+const today=()=>dnum();
+const def=()=>({v:3,start:iso(dnum()),newPer:15,prog:{},custom:[],log:{},tests:{},ddx:{ok:0,all:0},backup:0});
+const LK='famed-yoli-v2';let S=def();
+try{const r=localStorage.getItem(LK);if(r)S=Object.assign(def(),JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem(LK,JSON.stringify(S))}catch(e){toast("Saqlab bo'lmadi: brauzer xotirasi to'la")}}
+const split=(s,o)=>{const[uz,de,fach,note]=s.split('|');return Object.assign({uz,de,fach:fach||'',note:note||''},o)};
+const CARDS=[
+ ...W.flatMap((w,wi)=>w.c.map((s,ci)=>split(s,{id:'w'+(wi+1)+'_'+ci,wk:wi+1,deck:(wi+1)+'-hafta'}))),
+ ...SYS.flatMap((m,i)=>m.ana.map((s,j)=>split(s,{id:'s'+i+'a'+j,wk:27+2*i,deck:m.uz}))),
+ ...SYS.flatMap((m,i)=>m.dis.map((d,j)=>({id:'s'+i+'d'+j,wk:28+2*i,deck:m.uz,uz:d[1],de:d[0],fach:d[2],note:d[3]})))];
+const dayNo=()=>Math.max(1,today()-fromISO(S.start)+1);
+const notStarted=()=>today()<fromISO(S.start);
+const curWk=()=>Math.ceil(dayNo()/7);
+const dow=()=>(dayNo()-1)%7;
+const unlocked=()=>[...CARDS.filter(c=>c.wk<=curWk()),...S.custom];
+const allCards=()=>[...CARDS,...S.custom];
+const L=(d=today())=>S.log[d]||(S.log[d]={b:[],rev:0,neu:0});
+const dueList=()=>{const t=today();return unlocked().filter(c=>S.prog[c.id]&&S.prog[c.id].due<=t)};
+const newList=()=>unlocked().filter(c=>!S.prog[c.id]);
+const newLeft=()=>Math.max(0,Math.min(S.newPer-(L().neu||0),newList().length));
+/* ---------- hafta turi ---------- */
+const GB2=["Passiv mit Modalverben: Der Patient muss untersucht werden.","Konjunktiv II der Vergangenheit: Er hätte früher kommen sollen.","Relativsätze mit Präpositionen: der Patient, mit dem ich gesprochen habe","Partizipialattribute: die seit drei Tagen bestehenden Schmerzen","Nominalisierung: untersuchen → die Untersuchung des Patienten","Zweiteilige Konnektoren: sowohl ... als auch, weder ... noch","Vermutungen: Er wird Fieber haben. Er dürfte krank sein.","Passiversatz: Das lässt sich behandeln. Die Tablette ist zu nehmen.","Präpositionen mit Genitiv: aufgrund, infolge, bezüglich","Verben mit Präpositionen: leiden an, klagen über, sich erkundigen nach","Indirekte Rede komplett: Konjunktiv I und II","Satzverbindungen im Arztbrief: zudem, darüber hinaus, jedoch","B2-Wiederholung"];
+const TPLW=["Anamnez tartibi","Arztbrief (Konjunktiv I)","Bemorni katta shifokorga taqdim etish (Patientenvorstellung)","Aufklärung tartibi","Konjunktiv I: tayyor shakllar","Birinchi to'liq simulyatsiya"];
+function kind(wk){
+  if(wk<=26)return{k:'lang',i:wk-1,t:W[wk-1].t,ph:wk<=13?"Til poydevori":"Til va tibbiy so'zlar"};
+  if(wk<=50){const i=Math.floor((wk-27)/2),p=(wk-27)%2;return{k:p?'sysD':'sysA',i,t:SYS[i].uz+(p?": kasalliklar":": anatomiya va fiziologiya"),ph:"Tibbiyot asoslari nemis tilida"}}
+  if(wk<=52)return{k:'rev',i:wk-51,t:"Takrorlash: barcha organ tizimlari",ph:"Tibbiyot asoslari nemis tilida"};
+  if(wk<=72){const i=wk-53;return{k:'ls',i,j:i<12?i:-1,t:LS[i].uz+" ("+LS[i].de+")",ph:"Simptomdan tashxisga"}}
+  if(wk<=78){const i=wk-73;return{k:'tpl',i,t:TPLW[i],ph:"FSP / FaMed qoliplari"}}
+  if(wk<=104){const i=(wk-79)%20;return{k:'sim',i,t:"Simulyatsiya: "+LS[i].uz,ph:"FSP / FaMed imtihon rejimi"}}
+  return{k:'kp',i:wk-105,t:"Kenntnisprüfung'ga tayyorgarlik",ph:"KP bosqichi"}}
+/* ---------- kunlik vazifalar (vaqtsiz) ---------- */
+const GR=["Qoidani diqqat bilan o'qing, har bir misolni ovoz chiqarib 3 marta o'qing.","Har bir misolga o'xshatib o'zingiz 5 ta gap tuzing va daftarga yozing.","Qoidani o'zbekcha o'z so'zlaringiz bilan yozib, o'zingizga tushuntiring.","10 ta gap tuzing va har birida fe'l o'rnini belgilang.","Misollarni o'zbekchadan nemischaga og'zaki tarjima qiling (nemischasini yopib turing).","Shu qoida bilan 8-10 gaplik kichik matn yozing."];
+const LS_=["Avval matnsiz tinglang, nima tushunganingizni yozing.","Matn bilan qayta tinglang, notanish so'zlarni kartaga qo'shing.","Shadowing: har gapdan keyin pauza qilib, ortidan takrorlang.","Yangi qismni tinglang: avval matnsiz, keyin matn bilan.","Shadowing: matnga qaramay, tezroq takrorlang.","Eng yoqqan 5 ta gapni yod oling."];
+const SA=["O'zbekcha tushuntirishni o'qing va o'z darsligingizdan shu tizim anatomiyasini takrorlang.","Wikipedia'da (nemischa) shu tizim maqolasini oching: rasmlarni ko'rib, a'zolarning nemischa nomlarini ovoz chiqarib ayting.","YouTube'dan shu mavzudagi nemischa videoni ko'ring (Hafta bo'limidagi havola), 10 ta yangi so'zni kartaga qo'shing.","Kenhub'da (nemischa) shu tizim rasmlarida a'zolarni toping va nomlang.","Tizim qanday ishlashini 3 daqiqa nemischa gapirib, telefonga yozib oling va eshiting.","Shu tizim haqida 10 gaplik nemischa matn yozing."];
+const SD=["1-2-kasallik: Hafta bo'limidagi ma'lumotni o'qing va Wikipedia'dan (nemischa) qo'shimcha o'qing.","3-4-kasallik: xuddi shunday o'qing va asosiy belgilarini daftarga yozing.","Qolgan kasalliklar: xuddi shunday.","Har kasallikni bemorga oddiy tilda 1 daqiqada tushuntiring (Aufklärung uslubida).","Har kasallik uchun 3 gapli taqdimot ayting: yosh, shikoyat, taxminiy tashxis.","Kasalliklarni bir-biridan qanday farqlashni jadval qilib daftarga yozing."];
+const ADMIN=["Diplom va ilovasining (fanlar va soatlar ro'yxati) notarial tarjimasini rejalashtiring.","Ish tajribasi haqidagi ma'lumotnomani (Arbeitszeugnis) tayyorlang.","Tug'ilganlik haqidagi guvohnoma, nikoh guvohnomasi va pasport nusxalarini tayyorlang.","Sudlanmaganlik haqidagi ma'lumotnoma (Führungszeugnis) olish tartibini aniqlang.","Tibbiy ma'lumotnoma (ärztliches Attest) shartlarini o'rganing.","Approbation arizasini anerkennung-in-deutschland.de orqali tekshiring.","Leipzig klinikalariga Hospitation yoki ish bo'yicha xat yozing (Absichtserklärung)."];
+function tasks(wk,d){
+  const K=kind(wk),eveStd=[["Kartalar takrori","Kunduzi 'Bilmadim' yoki 'Qiyin' bo'lgan kartalar. Yangi karta qo'shmang."],["Kun xulosasi","Bugun nima o'rganganingizni nemischa 5 gapda yozing."]];
+  const card=["Kartalar","Bugungi takrorlash va yangi kartalar."];
+  if(d===6&&K.k!=='kp'){const big=[13,26,52].includes(wk);return{day:[card,[big?"Katta test":"Haftalik test",big?"Shu vaqtgacha bo'lgan barcha haftalar aralash. Maqsad: 80%.":"Shu haftaning testi. Maqsad: 10 dan 8."],["Hafta takrori","Hafta bo'limini qayta o'qing, xatolaringizni daftarga yozing."],["Erkin gapirish","Hafta mavzusida 5 daqiqa to'xtamay gapiring va yozib oling."],["Zavq uchun","Yoqqan nemischa video, film yoki qo'shiq."]],eve:[["Kartalar takrori","Bilmagan kartalar"],["Keyingi haftaga qarash","Keyingi haftaning mavzusini Hafta bo'limida bir marta ko'rib chiqing."]],test:true}}
+  if(K.k==='lang'){const w=W[K.i];return{day:wk<=13?[card,["Grammatika: "+w.g,GR[d]],["Yangi so'zlar","Hafta bo'limidagi so'zlarni o'qing, har birini ovoz chiqarib 3 marta ayting."],["Tinglash",w.lis+". "+LS_[d]],["Gapirish",w.spk+" Yozib oling va eshiting."]]
+     :[card,["Grammatika: "+w.g,GR[d]],["Tibbiyot: "+w.m,["Hafta bo'limidagi tibbiy so'zlarni o'qing, har biriga bitta gap tuzing.","Har bir so'zni ovoz chiqarib ayting va Wikipedia'dan rasmini toping.","Tinglash vazifasidagi videoni ko'ring, yangi so'zlarni kartaga qo'shing.","Mavzuni 3 daqiqa nemischa gapirib, yozib oling.","Mavzu bo'yicha 8 gaplik matn yozing.","So'zlarni nemischadan o'zbekchaga va aksincha og'zaki tarjima qiling."][d]],["Tinglash",w.lis+". "+LS_[d]],["Gapirish",w.spk]],eve:[eveStd[0],["Yozma mashq",w.wr],eveStd[1]]}}
+  if(K.k==='sysA'||K.k==='sysD'){const m=SYS[K.i];return{day:[card,[(K.k==='sysA'?"Anatomiya: ":"Kasalliklar: ")+m.uz,(K.k==='sysA'?SA:SD)[d]],["B2 grammatika",GB2[K.i]+" — B2 darslikdan (masalan, Aspekte neu B2 yoki Sicher! B2) shu mavzuni o'qing va 10 gap tuzing."],["Tinglash","DW Top-Thema yoki Langsam gesprochene Nachrichten: bitta matn."],["Gapirish","Hafta bo'limidagi asosiy gaplarni yoddan ayting."]],eve:eveStd}}
+  if(K.k==='rev'){const a=K.i*6;return{day:[card,["Tizimlar takrori","Bugun "+SYS[(a+d)%12].uz+": Bilim bo'limidan anatomiya va kasalliklarni qayta o'qing."],["Gapirish","Shu tizimdagi 3 ta kasallikni bemorga tushuntiring."],["Yozish","Bitta kasallik bo'yicha qisqa matn: nima u, belgilari, davosi."]],eve:eveStd}}
+  if(K.k==='ls'){const x=LS[K.i];return{day:[card,["Simptom: "+x.uz,["Hafta bo'limida anamnez savollarini o'qing va yod oling.","Differensial tashxislarni o'qing: har birining farqlovchi belgisini daftarga yozing.","Bilim → DDx o'yini: shu simptom bo'yicha 90% ga yetguncha mashq qiling.","Bemor rolida o'zingizga shu simptom bilan anamnez yig'ing, ovozingizni yozib oling.",K.j>=0?"Aufklärung: "+AUF[K.j][0]+" — matnni o'qing va bemorga tushuntirayotgandek 3 marta ayting.":"Bitta tashxis bo'yicha qisqa Arztbrief yozing.","Bitta tashxisni tanlab, Patientenvorstellung qiling (Qoliplar tartibida)."][d]],["Grammatika","Konjunktiv I: shu simptom bo'yicha 5 ta bemor gapini Arztbrief tiliga aylantiring."],["Tinglash","YouTube: \""+x.de+" Differenzialdiagnose\" yoki \""+x.de+" Anamnese\""]],eve:eveStd}}
+  if(K.k==='tpl'){return{day:[card,["Qolip: "+TPLW[K.i],["Bilim → Qoliplar: qolipni o'qing va har bir gapni ovoz chiqarib 3 marta ayting.","Qolipni yopib, yoddan yozing; keyin solishtiring.","Qolipni yangi bemor (Bilim → Simptomlar) uchun moslab ayting.","Ovozingizni yozib oling, eshiting va xatolarni yozing.","Boshqa simptom bilan qaytadan bajaring.","Butun qolipni taymer bilan, to'xtamay bajaring."][d]],["Grammatika","Konjunktiv I va Passiv: 10 ta gap."],["Tinglash","YouTube: \"Fachsprachprüfung Simulation\" videolaridan bittasi."]],eve:eveStd}}
+  if(K.k==='sim'){const x=LS[K.i];return{day:[card,...[[["1-stansiya: Anamnez va Aufklärung","Bemor: "+x.de+". Anamnez yig'ing va bitta muolajani tushuntiring. Yozib oling.",23]],[["2-stansiya: Patientenvorstellung","Shu simptomdan 2 ta turli tashxisli bemorni Oberarztga taqdim eting.",23]],[["3-stansiya: Arztbrief","Kechagi bemorning anamnez qismini Konjunktiv I bilan to'liq gaplarda yozing.",22]],[["Zaif joylar","Yozuvlaringizni eshiting: eng ko'p xato qilgan 5 ta joyni qayta mashq qiling."]],[["To'liq simulyatsiya","Uchala stansiyani ketma-ket bajaring: 23 + 23 + 22 daqiqa.",68]],[["Hujjatlar",ADMIN[(wk-79)%7]],["DDx o'yini","Bilim → DDx o'yini: aralash 20 ta savol."]]][d]],eve:eveStd}}
+  return{day:[card,["KP: Innere Medizin / Chirurgie","AMBOSS KP o'quv rejasidan (yoki Herold kitobidan) bugungi bitta mavzu."],["Holat","Bitta kasallikni Patientenvorstellung shaklida taqdim eting: anamnez, tekshiruv, differensial, davolash."],["Savol-javob","O'qigan mavzu bo'yicha 10 ta savol tuzib, ularga nemischa javob bering."]],eve:eveStd}}
+const dayDone=n=>{const g=S.log[n];if(!g)return false;const dn=n-fromISO(S.start)+1;if(dn<1)return false;const t=tasks(Math.ceil(dn/7),(dn-1)%7);return t.day.every((_,i)=>g.b.includes('d'+i))};
+function streak(){let d=today(),n=0;if(!dayDone(d))d--;while(dayDone(d)){n++;d--}return n}
+/* ---------- taymer ---------- */
+let tI=null,tLeft=0,tRun=false;
+function startTimer(min,name){tLeft=min*60;tRun=true;$('tn').textContent=name;$('timer').style.display='flex';$('tp').textContent='Pauza';clearInterval(tI);tI=setInterval(tick,1000);drawT0()}
+function drawT0(){$('tt').textContent=String(Math.floor(tLeft/60)).padStart(2,'0')+':'+String(tLeft%60).padStart(2,'0')}
+function tick(){if(!tRun)return;tLeft=Math.max(0,tLeft-1);drawT0();if(!tLeft){tRun=false;clearInterval(tI);$('tn').textContent="Vaqt tugadi";try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}}
+$('tp').onclick=()=>{tRun=!tRun;$('tp').textContent=tRun?'Pauza':'Davom'};
+$('ts').onclick=()=>{clearInterval(tI);$('timer').style.display='none'};
+/* ---------- nutq ---------- */
+function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='de-DE';u.rate=.9;const vs=speechSynthesis.getVoices().filter(x=>x.lang&&x.lang.startsWith('de'));if(vs.length)u.voice=vs[0];speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){toast("Bu brauzerda ovoz yo'q")}}
+try{speechSynthesis.getVoices()}catch(e){}
+const spk=t=>`<button class="spk" data-s="${esc(t)}" aria-label="Tinglash">${ISP}</button>`;
+function bindSpk(root){root.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>say(b.dataset.s))}
+/* ---------- kontent bloklari ---------- */
+function blkSys(i,part){const m=SYS[i];let h=`<div class="card"><div class="muted small ff">Organ tizimi ${i+1}/12</div><h3 style="font-size:22px;margin:4px 0">${esc(m.uz)}</h3><div class="muted" lang="de">${esc(m.de)}</div><div class="rule">${esc(m.ph)}</div>${links(m.de,m.de+' einfach erklärt Medizin')}
+  <h3 style="margin-top:18px">Asosiy gaplar</h3>${m.key.map(k=>`<div class="ex">${spk(k)}<div><b lang="de">${esc(k)}</b></div></div>`).join('')}</div>`;
+  if(part!=='dis')h+=`<div class="card sec"><div class="hd"><h3>Anatomiya so'zlari</h3><span>${m.ana.length} ta</span></div><div class="scroll"><table><tbody>${m.ana.map(s=>{const c=split(s);return `<tr><td>${spk(c.de)}</td><td><b lang="de">${esc(c.de)}</b>${c.fach?`<div class="muted small">${esc(c.fach)}</div>`:''}</td><td>${esc(c.uz)}${c.note?`<div class="muted small">${esc(c.note)}</div>`:''}</td></tr>`}).join('')}</tbody></table></div></div>`;
+  if(part!=='ana')h+=`<div class="card sec"><div class="hd"><h3>Kasalliklar</h3><span>${m.dis.length} ta</span></div>${m.dis.map(d=>{const p=d[3].split(';');return `<div class="dz"><div class="dzh">${spk(d[0])}<div><b lang="de">${esc(d[0])}</b><span class="muted"> · ${esc(d[1])}${d[2]?' · '+esc(d[2]):''}</span></div></div>
+   <dl><dt>Belgilari</dt><dd lang="de">${esc(p[0]||'')}</dd>${p[1]?`<dt>Tekshiruv</dt><dd lang="de">${esc(p[1])}</dd>`:''}${p[2]?`<dt>Davolash</dt><dd lang="de">${esc(p.slice(2).join(';'))}</dd>`:''}</dl>${links(bare(d[2]&&!/^z\. B\./.test(d[2])&&d[2].length<30?d[2]:d[0]))}</div>`}).join('')}</div>`;
+  return h}
+function blkLS(i,showAuf){const x=LS[i];return `<div class="card"><div class="muted small ff">Yetakchi simptom ${i+1}/20</div><h3 style="font-size:22px;margin:4px 0">${esc(x.uz)}</h3><div class="muted" lang="de">${esc(x.de)}</div>
+  <h3 style="margin-top:16px">Anamnez savollari</h3>${x.q.map(q=>`<div class="ex">${spk(q)}<div><b lang="de">${esc(q)}</b></div></div>`).join('')}
+  <div class="note"><b>Xavfli belgilar (Red Flags):</b> <span lang="de">${esc(x.red)}</span></div></div>
+  <div class="card sec"><div class="hd"><h3>Differensial tashxis</h3><span>${x.ddx.length} ta</span></div><div class="scroll"><table class="stack"><thead><tr><th>Tashxis</th><th>Farqlovchi belgi</th></tr></thead><tbody>${x.ddx.map(d=>`<tr><td><b lang="de">${esc(d[0])}</b><div class="muted small">${esc(d[2])}</div></td><td lang="de">${esc(d[1])}</td></tr>`).join('')}</tbody></table></div>
+  ${links(x.de+' Differenzialdiagnose',x.de+' Differenzialdiagnose')}<div class="row"><a class="btn pri" href="#bilim" data-ddx="${i}">Shu simptom bo'yicha DDx o'yini</a></div></div>${showAuf>=0?blkAuf(showAuf):''}`}
+function blkAuf(j){const a=AUF[j];return `<div class="card sec"><div class="muted small ff">Aufklärung ${j+1}/12</div><h3 style="font-size:20px;margin:4px 0" lang="de">${esc(a[0])}</h3><div class="muted">${esc(a[1])}</div>
+  <dl class="auf"><dt>Nima qilinadi</dt><dd lang="de">${spk(a[2])} ${esc(a[2])}</dd><dt>Xavflar</dt><dd lang="de">${esc(a[3])}</dd><dt>Muqobil</dt><dd lang="de">${esc(a[4])}</dd><dt>Tayyorgarlik</dt><dd lang="de">${esc(a[5])}</dd></dl>${links(a[0],a[0]+' Aufklärung Ablauf')}</div>`}
+function blkTpl(k){const t=TPL[k];return `<div class="card"><h3 style="font-size:21px">${esc(t.n)}</h3><p class="muted">${esc(t.d)}</p>${t.s.map((s,i)=>`<div class="ex">${spk(s[1])}<div><span class="ff small" style="color:var(--pri);font-weight:600">${i+1}. ${esc(s[0])}</span><b lang="de" style="font-weight:500">${esc(s[1])}</b></div></div>`).join('')}</div>`}
+/* ---------- BUGUN ---------- */
+function vToday(){
+  const wk=curWk(),d=dow(),K=kind(wk),T=tasks(wk,d),g=L();
+  const tot=T.day.length+T.eve.length,done=g.b.filter(x=>/^[de]\d+$/.test(x)&&(x[0]==='d'?+x.slice(1)<T.day.length:+x.slice(1)<T.eve.length)).length,pct=Math.round(done/tot*100),C=2*Math.PI*62;
+  const row=(b,id)=>{const on=g.b.includes(id);return `<div class="task${on?' done':''}"><div class="num">${+id.slice(1)+1}</div><div><h3>${esc(b[0])}</h3>${b[1]?`<p>${esc(b[1])}</p>`:''}${b[2]?`<button class="tl" data-t="${b[2]}" data-n="${esc(b[0])}">Taymer: ${b[2]} daqiqa</button>`:''}</div><button class="tick" data-b="${id}" aria-pressed="${on}" aria-label="${esc(b[0])}: bajarildi">${ICK}</button></div>`};
+  const old=S.backup?Math.floor((Date.now()-S.backup)/864e5):null;
+  v.innerHTML=`<section class="hero"><div><div class="k">${notStarted()?"Reja "+fmtDate(fromISO(S.start))+" kuni boshlanadi":WD[new Date().getDay()]+" · "+dayNo()+"-kun · "+wk+"-hafta"}</div>
+   <h2>${esc(K.t)}</h2>
+   <div class="chips"><span class="chip">${d+1}/7-kun</span><span class="chip">${esc(K.ph)}</span><span class="chip sun">Ketma-ket ${streak()} kun</span></div></div>
+   <div class="ring"><svg viewBox="0 0 140 140"><circle cx="70" cy="70" r="62" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="12"/><circle cx="70" cy="70" r="62" fill="none" stroke="#ffc53d" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}"/></svg><div><b>${pct}%</b><span>bugun</span></div></div></section>
+  <div class="cols"><div>
+   <div class="card sec"><div class="hd"><h3>Asosiy mashg'ulot</h3><span>${T.day.length} ta vazifa</span></div>${T.day.map((b,i)=>row(b,'d'+i)).join('')}</div>
+   <div class="card sec"><div class="hd"><h3>Kechki takrorlash</h3><span>${T.eve.length} ta vazifa</span></div>${T.eve.map((b,i)=>row(b,'e'+i)).join('')}</div></div>
+  <div><div class="card"><h3>Bugungi kartalar</h3><div class="stats"><div><b>${dueList().length}</b><span>takrorlash</span></div><div><b>${newLeft()}</b><span>yangi</span></div><div><b>${g.rev||0}</b><span>bugun ko'rildi</span></div></div>
+    <div class="row"><button class="pri big" id="go">Kartalarni boshlash</button></div>
+    <div class="row">${T.test?`<button class="pri" id="gt" style="flex:1">Testni boshlash</button>`:''}<a class="btn" href="#hafta" style="flex:1">Bu hafta materiallari</a></div>
+    ${old===null||old>=7?`<div class="note">${old===null?"Hali zaxira nusxa olinmagan.":"Oxirgi zaxira "+old+" kun oldin olingan."} Ma'lumot faqat shu brauzerda saqlanadi: Sozlama bo'limidan faylga saqlab qo'ying.</div>`:''}</div>
+   <div class="card sec"><h3>Eslab qolish qoidasi</h3><p class="muted small" style="margin:6px 0 0">${esc(["Javobni ochishdan oldin albatta o'zingiz ayting: miya eslashga urinib ko'rganda mustahkamlanadi.","Bilmagan kartadan xafa bo'lmang: u ertaga qaytadi va shunda yaxshiroq eslab qolasiz.","Har bir yangi so'zni ovoz chiqarib ayting va bitta gapda ishlating.","Kam bo'lsa ham har kuni: 7 kunlik uzilish 1 haftalik ishni yo'qqa chiqaradi.","Gapirganingizni yozib oling: o'z xatoingizni eshitish eng tez o'rgatadi.","Kasallikni rasm bilan bog'lang: Wikipedia'dagi rasmni ko'rib, nemischa nomini ayting.","Uxlashdan oldingi takrorlash eng yaxshi yodda qoladi: kechki takrorlashni qoldirmang."][today()%7])}</p></div></div></div>`;
+  v.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const g=L(),id=b.dataset.b,on=g.b.includes(id);g.b=on?g.b.filter(x=>x!==id):[...g.b,id];save();vToday();if(!on&&g.b.length>=tot)toast("Bugungi reja bajarildi. Barakalla!")});
+  v.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>startTimer(+b.dataset.t,b.dataset.n));
+  $('go').onclick=()=>{location.hash='kartalar'};if($('gt'))$('gt').onclick=()=>{testWk=wk;location.hash='test'}}
+/* ---------- HAFTA ---------- */
+let viewWk=0;
+function vWeek(){const wk=viewWk||curWk(),K=kind(wk),locked=wk>curWk(),cs=CARDS.filter(c=>c.wk===wk);
+  let body='';
+  if(K.k==='lang'){const w=W[K.i];body=`<div class="cols"><div><div class="card"><div class="muted small ff">Grammatika</div><h3 style="font-size:21px;margin-top:4px">${esc(w.g)}</h3><div class="rule">${esc(w.gx)}</div>
+   ${w.ex.map(e=>`<div class="ex">${spk(e[0])}<div><b lang="de">${esc(e[0])}</b><span>${esc(e[1])}</span></div></div>`).join('')}</div>
+   <div class="card sec"><div class="muted small ff">Vazifalar</div><table><tbody><tr><td><b>Tinglash</b></td><td>${esc(w.lis)} <a href="https://learngerman.dw.com/de/" target="_blank" rel="noopener">ochish</a></td></tr><tr><td><b>Gapirish</b></td><td>${esc(w.spk)}</td></tr><tr><td><b>Yozish</b></td><td>${esc(w.wr)}</td></tr></tbody></table></div></div>
+   <div class="card"><div class="hd"><h3>So'zlar va iboralar: ${esc(w.m)}</h3><span>${cs.length} ta</span></div><div class="scroll"><table><tbody>${cs.map(c=>`<tr><td>${spk(c.de)}</td><td><b lang="de">${esc(c.de)}</b>${c.fach?`<div class="muted small">${esc(c.fach)}</div>`:''}</td><td>${esc(c.uz)}${c.note?`<div class="muted small">${esc(c.note)}</div>`:''}</td></tr>`).join('')}</tbody></table></div></div></div>`}
+  else if(K.k==='sysA')body=`<div class="cols"><div>${blkSys(K.i,'ana').split('<div class="card sec">')[0]}</div><div><div class="card">${blkSys(K.i,'ana').split('<div class="card sec">')[1]}</div></div>`;
+  else if(K.k==='sysD')body=blkSys(K.i,'dis');
+  else if(K.k==='rev')body=`<div class="card"><p>Bu ikki hafta barcha 12 ta tizimni takrorlaysiz. Bilim bo'limida istalgan tizimni oching.</p><div class="row">${SYS.map((m,i)=>`<a class="btn" href="#bilim" data-sys="${i}">${esc(m.uz)}</a>`).join('')}</div></div>`;
+  else if(K.k==='ls'||K.k==='sim')body=`<div class="cols"><div>${blkLS(K.i,-1).replace(/<div class="card sec">[\s\S]*$/,'')}</div><div>${'<div class="card sec" style="margin-top:0">'+blkLS(K.i,-1).split('<div class="card sec">')[1]}${K.k==='ls'&&K.j>=0?blkAuf(K.j):''}${K.k==='sim'?`<div class="card sec"><h3>Simulyatsiya tartibi</h3><p class="muted">1-stansiya: anamnez + Aufklärung (23 daq). 2-stansiya: 2 ta bemorni taqdim etish (23 daq). 3-stansiya: Arztbrief (22 daq). Qoliplar: Bilim → Qoliplar.</p></div>`:''}</div></div>`;
+  else if(K.k==='tpl')body=blkTpl(Math.min(K.i,4));
+  else body=`<div class="card"><h3>Kenntnisprüfung bosqichi</h3><p>KP Innere Medizin va Chirurgie bo'yicha mündlich-praktisch imtihon: bemor taqdimoti va savol-javob. Qo'shimcha: Notfallmedizin, klinik farmakologiya, tasviriy tekshiruvlar, radiatsiyadan himoya va shifokor huquqi.</p><p class="muted">Asosiy manbalar: AMBOSS'ning KP o'quv rejasi, Herold "Innere Medizin", Gréser "Kenntnisprüfung Medizin erfolgreich bestehen". Bilim → Manbalar.</p></div>`;
+  v.innerHTML=`<div class="weeknav"><button id="pw" ${wk<=1?'disabled':''} aria-label="Oldingi hafta">‹</button><div style="flex:1"><div class="muted small ff">${wk}-hafta · ${esc(K.ph)}</div><h2>${esc(K.t)}</h2></div><button id="nw" aria-label="Keyingi hafta">›</button></div>
+  ${locked?`<div class="note">Bu hafta hali boshlanmagan. Ko'rib chiqishingiz mumkin; kartalari ${wk}-haftada ochiladi.</div>`:''}<div style="margin-top:16px">${body}</div>
+  ${cs.length?`<div class="row"><button class="pri" id="tw" ${locked?'disabled':''}>Shu hafta testi${S.tests[wk]!=null?' (eng yaxshi: '+S.tests[wk]+'/10)':''}</button></div>`:''}`;
+  $('pw').onclick=()=>{viewWk=wk-1;vWeek();scrollTo(0,0)};$('nw').onclick=()=>{viewWk=wk+1;vWeek();scrollTo(0,0)};
+  bindSpk(v);bindJumps(v);if($('tw'))$('tw').onclick=()=>{testWk=wk;location.hash='test'}}
+function bindJumps(r){r.querySelectorAll('[data-sys]').forEach(a=>a.onclick=()=>{bTab='sys';bSel=+a.dataset.sys});r.querySelectorAll('[data-ddx]').forEach(a=>a.onclick=()=>{bTab='game';gameLS=+a.dataset.ddx})}
+/* ---------- KARTALAR ---------- */
+let Q=[],cur=null,shown=false,typed='',total=0,delAsk='';
+function buildQ(){const due=dueList().sort(()=>Math.random()-.5).map(c=>c.id),nw=newList().slice(0,newLeft()).map(c=>c.id);
+  Q=[];while(due.length||nw.length){if(due.length)Q.push(due.shift());if(due.length)Q.push(due.shift());if(nw.length)Q.push(nw.shift())}total=Q.length;next()}
+function next(){cur=Q.shift()||null;shown=false;typed='';drawCard()}
+const norm=s=>String(s).toLowerCase().replace(/[.,!?;:()]/g,'').replace(/ß/g,'ss').replace(/\s+/g,' ').trim();
+const noArt=s=>norm(s).replace(/^(der|die|das|ein|eine)\s+/,'');
+function drawCard(){const box=$('fc');if(!box)return;const c=allCards().find(x=>x.id===cur);
+  if(!c){box.innerHTML=`<div class="meta"><span>Tugadi</span></div><div class="q">Bugungi kartalar tugadi.</div><p class="muted">Ertaga yangi takrorlashlar chiqadi. Kechqurun qaytsangiz, kunduzi qiyin bo'lgan kartalar bo'ladi.</p><div class="grow"></div><div class="row"><a class="btn" href="#bugun">Bugungi rejaga qaytish</a></div>`;return}
+  const done=total-Q.length-1,isNew=!S.prog[c.id];
+  let verd='';if(shown&&typed.trim()){verd=norm(typed)===norm(c.de)?'<div class="verd ok">To\'g\'ri!</div>':noArt(typed)===noArt(c.de)?'<div class="verd ok">So\'z to\'g\'ri, artiklni tekshiring.</div>':`<div class="verd bad">Siz yozdingiz: ${esc(typed)}</div>`}
+  box.innerHTML=`<div class="meta"><span>${esc(c.deck)}${isNew?' · yangi':''}</span><span>${Math.max(0,done)+1} / ${total}</span></div><div class="q">${esc(c.uz)}</div>`+
+   (shown?`<div style="display:flex;gap:12px;align-items:center"><button class="spk" id="spk" aria-label="Tinglash">${ISP}</button><div class="a" lang="de">${esc(c.de)}</div></div>${c.fach?`<div class="f">Shifokor tili: <b>${esc(c.fach)}</b></div>`:''}${c.note?`<div class="n" lang="de">${esc(c.note)}</div>`:''}${verd}<div class="grow"></div>
+    <div class="rate">${[["Bilmadim","yana"],["Qiyin","tezroq"],["Yaxshi","odatdagi"],["Oson","uzoqroq"]].map((r,i)=>`<button data-r="${i}">${r[0]}<small>${i+1} · ${r[1]}</small></button>`).join('')}</div>`
+   :`<div class="grow"></div><label for="ans">Nemischa javob (yozing yoki ichingizda ayting)</label><input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" lang="de"><div class="row"><button class="pri big" id="rev">Javobni ko'rish</button></div>`)+
+   `<div class="prog"><i style="width:${total?Math.round(Math.max(0,done)/total*100):0}%"></i></div>`;
+  if(shown){$('spk').onclick=()=>say(c.de);box.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>rate(+b.dataset.r))}
+  else{const a=$('ans');a.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();reveal()}};$('rev').onclick=reveal;if(matchMedia('(pointer:fine)').matches)a.focus()}}
+function reveal(){typed=$('ans').value;shown=true;drawCard();const c=allCards().find(x=>x.id===cur);if(c)say(c.de)}
+function rate(q){const t=today(),isNew=!S.prog[cur],p=Object.assign({ivl:0,ease:2.5,reps:0,lapses:0,due:t},S.prog[cur]);
+  if(q===0){p.lapses++;p.ease=Math.max(1.3,p.ease-.2);p.ivl=0;Q.push(cur);total++}
+  else if(q===1){p.ivl=Math.max(1,Math.round(p.ivl*1.2));p.ease=Math.max(1.3,p.ease-.15)}
+  else if(q===2){p.ivl=p.ivl<1?1:p.ivl<3?3:Math.round(p.ivl*p.ease)}
+  else{p.ivl=p.ivl<1?4:Math.round(p.ivl*p.ease*1.3);p.ease+=.15}
+  p.due=t+p.ivl;p.reps++;S.prog[cur]=p;const g=L();g.rev=(g.rev||0)+1;if(isNew)g.neu=(g.neu||0)+1;save();next()}
+function vCards(){
+  v.innerHTML=`<div class="cols"><div><h2 style="margin-bottom:14px">Kartalar</h2><div class="fc" id="fc"></div><div class="row"><button id="gtw">Shu hafta testi</button><a class="btn" href="#hafta">Hafta materiallari</a></div><p class="muted small">Kompyuterda: Enter - javobni ochish, 1-4 - baholash. Javob ochilganda nemischa talaffuz eshittiriladi.</p></div>
+  <div><div class="card"><h3>O'z kartangizni qo'shing</h3><form id="add"><label for="fu">O'zbekcha</label><input id="fu" required><label for="fg">Nemischa (artikl bilan)</label><input id="fg" required lang="de" autocapitalize="off">
+   <label for="ff">Shifokor tili / lotincha (ixtiyoriy)</label><input id="ff"><label for="fn">Eslatma (ixtiyoriy)</label><input id="fn"><div class="row"><button class="pri">Qo'shish</button></div></form></div>
+   <div class="card sec"><div class="hd"><h3>Barcha kartalar</h3><span>${allCards().length} ta</span></div><label for="fs">Qidirish</label><input id="fs" placeholder="so'z yoki tarjima"><div class="scroll" style="max-height:440px;overflow-y:auto;margin-top:8px"><table><tbody id="tb"></tbody></table></div></div></div></div>`;
+  $('add').onsubmit=e=>{e.preventDefault();const g=id=>$(id).value.trim();S.custom.push({id:'u'+Date.now().toString(36),wk:0,deck:"Mening kartalarim",uz:g('fu'),de:g('fg'),fach:g('ff'),note:g('fn')});save();['fu','fg','ff','fn'].forEach(i=>$(i).value='');toast("Karta qo'shildi");list();if(!cur)buildQ()};
+  $('fs').oninput=list;$('gtw').onclick=()=>{testWk=curWk();location.hash='test'};list();buildQ()}
+function list(){const q=norm(($('fs')||{}).value||''),t=today(),tb=$('tb');if(!tb)return;
+  tb.innerHTML=allCards().filter(c=>!q||norm(c.uz+' '+c.de+' '+c.fach).includes(q)).slice(0,500).map(c=>{const p=S.prog[c.id],lk=c.wk>curWk(),nx=lk?c.wk+'-haftada':!p?'yangi':p.due<=t?'bugun':(p.due-t)+' kundan keyin';
+   return `<tr><td><b lang="de">${esc(c.de)}</b><div class="muted small">${esc(c.uz)}</div></td><td class="small muted" style="white-space:nowrap">${nx}</td><td>${c.id[0]==='u'?`<button class="tl" data-del="${esc(c.id)}">${delAsk===c.id?'Rostdan?':"O'chirish"}</button>`:''}</td></tr>`}).join('');
+  tb.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const id=b.dataset.del;if(delAsk!==id){delAsk=id;list();return}S.custom=S.custom.filter(c=>c.id!==id);delete S.prog[id];delAsk='';Q=Q.filter(x=>x!==id);save();list()})}
+document.addEventListener('keydown',e=>{if(location.hash!=='#kartalar'||!shown||e.target.tagName==='INPUT')return;const n=+e.key;if(n>=1&&n<=4)rate(n-1)});
+/* ---------- TEST ---------- */
+let testWk=0,TQ=[],ti=0,score=0,tShown=false;
+function vTest(){const wk=testWk||curWk(),big=[13,26,52].includes(wk);
+  let pool=CARDS.filter(c=>big?c.wk<=wk:c.wk===wk);if(!pool.length)pool=CARDS.filter(c=>c.wk<=wk);
+  TQ=pool.sort(()=>Math.random()-.5).slice(0,big?20:10);ti=0;score=0;tShown=false;
+  v.innerHTML=`<h2 style="margin-bottom:6px">${big?"Katta test: 1-"+wk+"-haftalar":wk+"-hafta testi"}</h2><p class="muted" style="margin:0 0 16px">O'zbekcha berilgan so'z yoki gapni nemischa yozing.</p><div class="fc" id="tq" style="max-width:720px"></div>`;drawT()}
+function drawT(){const box=$('tq'),n=TQ.length,wk=testWk||curWk();
+  if(ti>=n){const s10=Math.round(score/n*10);S.tests[wk]=Math.max(S.tests[wk]||0,s10);save();
+   box.innerHTML=`<div class="meta"><span>Natija</span></div><div class="q">${score} / ${n}</div><p class="muted">${s10>=8?"Ajoyib natija. Keyingi haftaga tayyorsiz.":"Xato qilgan so'zlaringiz kartalarda tez-tez chiqadi. Hafta bo'limini qayta o'qib, ertaga yana urinib ko'ring."}</p><div class="grow"></div><div class="row"><button class="pri" id="again">Qayta urinish</button><a class="btn" href="#bugun">Bugungi rejaga</a></div>`;$('again').onclick=vTest;return}
+  const c=TQ[ti];
+  box.innerHTML=`<div class="meta"><span>Savol ${ti+1} / ${n}</span><span>To'g'ri: ${score}</span></div><div class="q">${esc(c.uz)}</div><div class="grow"></div>
+   <label for="ta2">Nemischa</label><input id="ta2" autocomplete="off" autocapitalize="off" spellcheck="false" lang="de"><div id="tr"></div><div class="row"><button class="pri big" id="tc">Tekshirish</button></div><div class="prog"><i style="width:${Math.round(ti/n*100)}%"></i></div>`;
+  const inp=$('ta2'),go=()=>{if(!tShown){const a=inp.value,okk=norm(a)===norm(c.de)||noArt(a)===noArt(c.de);if(okk)score++;
+     else{const p=S.prog[c.id];if(p){p.due=today();p.ivl=0}save()}
+     $('tr').innerHTML=`<div class="verd ${okk?'ok':'bad'}">${okk?"To'g'ri!":"To'g'ri javob:"}</div><div class="a" lang="de" style="font-size:22px">${esc(c.de)}</div>`;$('tc').textContent='Keyingisi';tShown=true;inp.disabled=true;say(c.de)}
+    else{tShown=false;ti++;drawT()}};
+  $('tc').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};if(matchMedia('(pointer:fine)').matches)inp.focus()}
+/* ---------- BILIM ---------- */
+let bTab='sys',bSel=0,gameLS=-1,GQ=null,gAns=false;
+const BT=[["sys","Organ tizimlari"],["ls","Simptomlar va DDx"],["game","DDx o'yini"],["auf","Aufklärung"],["tpl","Qoliplar"],["road","5 yillik yo'l"],["res","Manbalar"]];
+function vBilim(){
+  const sub=(arr,cur,key)=>`<div class="pills" role="tablist">${arr.map((x,i)=>`<button role="tab" aria-selected="${i===cur}" data-${key}="${i}">${esc(x)}</button>`).join('')}</div>`;
+  let body='';
+  if(bTab==='sys')body=sub(SYS.map(m=>m.uz),bSel,'sel')+blkSys(Math.min(bSel,11),'all');
+  else if(bTab==='ls')body=sub(LS.map(x=>x.uz),bSel,'sel')+blkLS(Math.min(bSel,19),-1);
+  else if(bTab==='auf')body=sub(AUF.map(a=>a[0]),bSel,'sel')+blkAuf(Math.min(bSel,11));
+  else if(bTab==='tpl')body=sub(TPL.map(t=>t.n),bSel,'sel')+blkTpl(Math.min(bSel,TPL.length-1));
+  else if(bTab==='game')body=`<div class="card" style="max-width:760px"><p class="muted" style="margin-top:0">Bemor belgisi beriladi: qaysi kasallik? Kasalliklarni bir-biridan ajratishni shunday o'rganasiz.</p><label for="gls">Simptom</label><select id="gls"><option value="-1">Hammasi aralash</option>${LS.map((x,i)=>`<option value="${i}" ${i===gameLS?'selected':''}>${esc(x.uz)} · ${esc(x.de)}</option>`).join('')}</select><div id="game" style="margin-top:16px"></div></div>`;
+  else if(bTab==='road')body=`<div class="card"><p class="muted" style="margin-top:0">Maqsad: FSP / FaMed → Berufserlaubnis → Kenntnisprüfung → Approbation. Har bir bosqich keyingisining poydevori: nemis tilidagi tibbiy bilim ham til imtihoniga, ham KP'ga kerak.</p>${ROAD.map((r,i)=>`<div class="phase${i===Math.min(6,Math.floor((curWk()-1)/26))?' now':''}"><b class="ff">${esc(r[0])} · ${esc(r[1])}</b><p>${esc(r[2])}</p></div>`).join('')}
+    <div class="note">Muhim: Leipzig Saksoniyada joylashgan. Saksoniyada til imtihoni faqat Saksoniya shifokorlar palatasida (SLÄK) FSP shaklida topshiriladi; FaMed u yerda rasmiy tan olinganlar ro'yxatida yo'q. Tayyorgarlik bir xil: anamnez, hujjatlashtirish, shifokor bilan suhbat. Qaror qilishdan oldin Landesdirektion Sachsen'dan aniqlang.</div></div>`;
+  else body=`<div class="card"><table class="stack"><thead><tr><th>Turi</th><th>Manba</th><th>Izoh</th></tr></thead><tbody>${RES.map(r=>`<tr><td>${esc(r[0])}</td><td><a href="${esc(r[2])}" target="_blank" rel="noopener">${esc(r[1])}</a></td><td class="muted">${esc(r[3])}</td></tr>`).join('')}</tbody></table></div>`;
+  v.innerHTML=`<h2 style="margin-bottom:12px">Bilim bazasi</h2><div class="pills main">${BT.map(b=>`<button data-bt="${b[0]}" aria-selected="${b[0]===bTab}">${b[1]}</button>`).join('')}</div><div style="margin-top:14px">${body}</div>`;
+  v.querySelectorAll('[data-bt]').forEach(b=>b.onclick=()=>{bTab=b.dataset.bt;bSel=0;GQ=null;vBilim()});
+  v.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{bSel=+b.dataset.sel;vBilim()});
+  bindSpk(v);bindJumps(v);v.querySelectorAll('[data-ddx]').forEach(a=>a.addEventListener('click',()=>{GQ=null;setTimeout(vBilim)}));
+  if(bTab==='game'){$('gls').onchange=e=>{gameLS=+e.target.value;GQ=null;drawGame()};drawGame()}
+  const sel=v.querySelector('.pills:not(.main) [aria-selected=true]');if(sel)sel.scrollIntoView({block:'nearest',inline:'center'})}
+function newGQ(){const li=gameLS>=0?gameLS:Math.floor(Math.random()*LS.length),x=LS[li],k=Math.floor(Math.random()*x.ddx.length);
+  const others=x.ddx.map((d,i)=>i).filter(i=>i!==k).sort(()=>Math.random()-.5).slice(0,3);GQ={li,k,opts:[k,...others].sort(()=>Math.random()-.5)};gAns=false}
+function drawGame(){const box=$('game');if(!box)return;if(!GQ)newGQ();const x=LS[GQ.li],d=x.ddx[GQ.k];
+  box.innerHTML=`<div class="fc" style="min-height:0"><div class="meta"><span>${esc(x.uz)} · ${esc(x.de)}</span></div><div class="q" lang="de" style="font-size:21px">${esc(d[1])}</div>
+   <div class="opts">${GQ.opts.map(o=>`<button data-o="${o}" class="${gAns?(o===GQ.k?'right':'wrong'):''}" ${gAns?'disabled':''}>${esc(x.ddx[o][0])}</button>`).join('')}</div>
+   ${gAns?`<div class="verd ${gAns==='ok'?'ok':'bad'}">${gAns==='ok'?"To'g'ri!":"To'g'ri javob: "+esc(d[0])}</div><p class="muted small">${esc(d[0])}: ${esc(d[2])}</p><div class="row"><button class="pri" id="gn">Keyingi savol</button>${spk(d[0])}</div>`:''}</div><p class="muted small">Umumiy natija: ${S.ddx.ok} / ${S.ddx.all} to'g'ri</p>`;
+  box.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{const ok=+b.dataset.o===GQ.k;gAns=ok?'ok':'no';S.ddx.all++;if(ok)S.ddx.ok++;save();drawGame()});
+  if($('gn'))$('gn').onclick=()=>{GQ=null;drawGame()};bindSpk(box)}
+/* ---------- REJA ---------- */
+function vPlan(){const cw=curWk(),grp=[[1,13,"1-3-oylar · Til poydevori"],[14,26,"4-6-oylar · Til va tibbiy so'zlar"],[27,52,"7-12-oylar · Tibbiyot asoslari nemis tilida"],[53,72,"13-17-oylar · Simptomdan tashxisga"],[73,78,"18-oy · FSP / FaMed qoliplari"],[79,104,"19-24-oylar · Imtihon rejimi"]];
+  v.innerHTML=`<h2>2 yillik batafsil reja</h2><p class="muted" style="max-width:66ch">104 hafta, har kuni aniq vazifalar. Har haftaning 7-kuni takrorlash va test. Haftani bosib, uning materiallarini oching. Undan keyingi KP bosqichi: Bilim → 5 yillik yo'l.</p>
+  ${grp.map(g=>`<div class="month"><h3>${g[2]}</h3><div class="wk">${Array.from({length:g[1]-g[0]+1},(_,j)=>{const n=g[0]+j,K=kind(n),sc=S.tests[n];return `<a href="#hafta" data-w="${n}" class="${n===cw?'cur':n<cw?'past':''}"><small>${n}-hafta${n===cw?' · hozir':''}</small><b>${esc(K.t)}</b>${K.k==='lang'?`<span>${esc(W[K.i].g)}</span>`:''}${sc!=null?`<i class="badge${sc>=8?' g':''}">${sc}/10</i>`:''}</a>`}).join('')}</div></div>`).join('')}
+  <div class="row" style="margin-top:24px"><a class="btn" href="#sozlama">Sozlamalar va zaxira nusxa</a></div>`;
+  v.querySelectorAll('[data-w]').forEach(a=>a.onclick=()=>{viewWk=+a.dataset.w})}
+/* ---------- SOZLAMA ---------- */
+function vSet(){v.innerHTML=`<h2>Sozlamalar</h2><div class="cols"><div class="card"><h3>Reja</h3>
+  <label for="sd">Boshlanish sanasi (1-hafta 1-kuni)</label><input type="date" id="sd" value="${esc(S.start)}">
+  <label for="sn">Kuniga yangi kartalar soni</label><input type="number" id="sn" min="0" max="60" value="${S.newPer}">
+  <div class="row"><button class="pri" id="ss">Saqlash</button></div>
+  <p class="muted small">Saytni telefoningiz bosh ekraniga qo'shing: brauzer menyusidan "Bosh ekranga qo'shish" (Add to Home screen) ni tanlang. Shunda ilova kabi ochiladi va internetsiz ham ishlaydi.</p></div>
+  <div class="card"><h3>Zaxira nusxa</h3><p class="muted small">Taraqqiyotingiz faqat shu brauzerda saqlanadi. Haftada bir marta faylga saqlang. Boshqa telefon yoki kompyuterga o'tsangiz, shu faylni o'sha yerda tiklang.</p>
+  <div class="row"><button class="pri" id="dl">Faylga saqlash</button><label class="btn" for="fi" style="margin:0;color:var(--ink);font-size:15.5px">Fayldan tiklash</label><input type="file" id="fi" accept=".json,application/json" hidden></div>
+  <p class="small" id="im2"></p></div></div>`;
+  $('ss').onclick=()=>{const d=$('sd').value;if(d)S.start=d;S.newPer=Math.max(0,Math.min(60,+$('sn').value||0));save();toast("Saqlandi")};
+  $('dl').onclick=()=>{S.backup=Date.now();save();const b=new Blob([JSON.stringify(S)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='famed-yoli-'+iso(today())+'.json';document.body.appendChild(a);a.click();a.remove();toast("Fayl saqlandi")};
+  $('fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let o;try{o=JSON.parse(r.result)}catch(x){$('im2').textContent="Fayl noto'g'ri.";return}
+   if(!o||typeof o.prog!=='object'){$('im2').textContent="Bu FaMed yo'li fayli emas.";return}
+   $('im2').innerHTML=`Fayldagi taraqqiyot: ${Object.keys(o.prog).length} ta o'rganilgan karta. Hozirgi ma'lumot almashtiriladi. <button class="tl" id="ok2">Tasdiqlash</button>`;
+   $('ok2').onclick=()=>{S=Object.assign(def(),o);save();toast("Tiklandi");vSet()}};r.readAsText(f)}}
+/* ---------- yo'naltirish ---------- */
+const VIEWS={bugun:vToday,hafta:vWeek,kartalar:vCards,test:vTest,bilim:vBilim,reja:vPlan,sozlama:vSet};
+function route(){const h=(location.hash||'#bugun').slice(1),k=VIEWS[h]?h:'bugun';
+  document.querySelectorAll('#tabs a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+(k==='test'?'kartalar':k)));
+  if(k!=='hafta'&&k!=='test')viewWk=0;VIEWS[k]();window.scrollTo(0,0)}
+window.addEventListener('hashchange',route);route();
+let lastDay=today();setInterval(()=>{if(today()!==lastDay){lastDay=today();route()}},60000);
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+</script>
+</body>
+</html>
