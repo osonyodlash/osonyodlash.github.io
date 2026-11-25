@@ -915,13 +915,13 @@ async function vKitob(){
      let buf;try{buf=await f.arrayBuffer()}catch(x){pm.textContent="Faylni o'qib bo'lmadi: "+(x.message||x);return}
      try{await idbPut('book',buf)}catch(x){pm.textContent="Diqqat: faylni telefonda saqlab bo'lmadi, keyingi safar yana tanlashingiz kerak bo'ladi. ("+(x&&x.message||x)+")"}
      pm.textContent="Kitob ochilmoqda...";
-     try{await openPdf(buf);pdfErr='';vKitob()}catch(x){bookBuf=buf;pm.innerHTML="Kitobni sayt ichida ochib bo'lmadi ("+esc(x&&x.message||x)+"). <button class='tiny' id='raw'>PDF'ni alohida oynada ochish</button>";$('raw').onclick=rawOpen}};return}
+     try{await openPdf(buf);pdfErr='';if(PDF.numPages<200)toast("Diqqat: bu fayl kitobga o'xshamaydi ("+PDF.numPages+" sahifa). Kerak bo'lsa 'Boshqa kitob tanlash'ni bosing.");vKitob()}catch(x){bookBuf=buf;pm.innerHTML="Kitobni sayt ichida ochib bo'lmadi ("+esc(x&&x.message||x)+"). <button class='tiny' id='raw'>PDF'ni alohida oynada ochish</button>";$('raw').onclick=rawOpen}};return}
   const N=PDF.numPages;kPage=Math.min(Math.max(1,kPage),N);const B=BOOK.find(b=>kPage>=b[3]&&kPage<=b[4]);
   kb.innerHTML=`<div class="pbar"><button id="kp" aria-label="Oldingi sahifa">‹</button><input id="kn" type="number" min="1" max="${N}" value="${kPage}" aria-label="Sahifa"><span class="muted">/ ${N}</span><button id="kx" aria-label="Keyingi sahifa">›</button><select id="ku" style="width:auto;flex:1;min-width:180px"><option value="">Bobga o'tish...</option>${BOOK.slice().sort((a,b)=>a[3]-b[3]).map(b=>`<option value="${b[3]}">${b[0]}. ${esc(b[1])}</option>`).join('')}</select></div>
-   ${B?`<p class="muted small" style="margin:0 0 10px">${B[0]}-bob: ${esc(B[1])} · ${esc(B[2])}</p>`:''}<div id="pdfv"><canvas id="pc"></canvas></div><div class="row"><button class="tiny" id="raw">Alohida oynada ochish</button></div>`;
+   ${B?`<p class="muted small" style="margin:0 0 10px">${B[0]}-bob: ${esc(B[1])} · ${esc(B[2])}</p>`:''}<div id="pdfv"><canvas id="pc"></canvas></div><div class="row"><button class="tiny" id="raw">Alohida oynada ochish</button><button class="tiny" id="chg">Boshqa kitob tanlash</button></div>`;
   const draw=async()=>{try{const pg=await PDF.getPage(kPage),cv=$('pc');if(!cv)return;const w=Math.max(280,$('pdfv').clientWidth-20),vp0=pg.getViewport({scale:1}),sc=Math.min(2.2,w/vp0.width),dpr=Math.min(2,window.devicePixelRatio||1),vp=pg.getViewport({scale:sc*dpr});cv.width=Math.floor(vp.width);cv.height=Math.floor(vp.height);cv.style.width=Math.floor(vp.width/dpr)+'px';await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise}catch(e){$('pdfv').innerHTML=`<p style="color:#fff">Sahifani chizib bo'lmadi (${esc(e&&e.message||e)}). "Alohida oynada ochish" tugmasini bosing.</p>`}};
   const goP=n=>{kPage=Math.min(Math.max(1,n),N);vKitob()};
-  $('kp').onclick=()=>goP(kPage-1);$('kx').onclick=()=>goP(kPage+1);$('kn').onchange=e=>goP(+e.target.value);$('ku').onchange=e=>{if(e.target.value)goP(+e.target.value)};$('raw').onclick=rawOpen;
+  $('kp').onclick=()=>goP(kPage-1);$('kx').onclick=()=>goP(kPage+1);$('kn').onchange=e=>goP(+e.target.value);$('ku').onchange=e=>{if(e.target.value)goP(+e.target.value)};$('raw').onclick=rawOpen;$('chg').onclick=async()=>{try{await idbPut('book',null)}catch(e){}PDF=null;bookBuf=null;kPage=1;vKitob()};
   draw()}
 /* ---------- GRAMMATIKA ---------- */
 let gSel=0;
