@@ -79,3 +79,11 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 ## 25.11.2026 — «📖 Lesen Teil 3» bir martalik (scope `L3`)
 - `imtihon` function: new scope `L3` (`l3Page`, same engine as `L2`): main Lesen 3 tickets 1–39 shuffled (no 1a/3b variants), 10 letters per ticket (A–L or X; no l→i conversion), result `kind = "lesen3"` → image to teacher and student, then access closes. `exam_access_scope_check` now allows `L3`.
 - Give: `insert into exam_access (tg_id, scope, once, expires_at) values (<ID>, 'L3', true, now() + interval '7 days');` (if the ID already has a row: `update exam_access set scope='L3', once=true, started_at=null, used_at=null, expires_at=now()+interval '7 days' where tg_id=<ID>;`)
+
+## 26.11.2026 — tashqi foydalanuvchilar natijasi ham ustozga (belgi bilan)
+- `imtihon` function: results of @telcB2_imtihon_bot users now DO go to the teacher (this replaces the 23.11 «not sent» rule), with a first line that sets them apart from his own students:
+  - paid tariff buyers (`exam_quiet`): «🌐 TASHQI XARIDOR — @telcB2_imtihon_bot (pullik ta'rif)» (`OUT_PAID`, via `outTag()`); results are still saved and still kept out of the Lesen 1 ranking;
+  - free trial (scope `FREE`): «🎁 TASHQI · BEPUL SINOV — @telcB2_imtihon_bot» (`OUT_FREE`); still not saved to `exam_results`.
+  - Own students get no label. The buyer's page still says «saqlandi» instead of «ustozga yuborildi» (`quietPage`).
+- Free trial is once per Telegram account AND once per phone: `freeDevUsed()` refuses a new account on a device (`device_lock.dev`) where another account already has an `exam_free` row.
+
