@@ -79,3 +79,10 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 ## 25.11.2026 — «📖 Lesen Teil 3» bir martalik (scope `L3`)
 - `imtihon` function: new scope `L3` (`l3Page`, same engine as `L2`): main Lesen 3 tickets 1–39 shuffled (no 1a/3b variants), 10 letters per ticket (A–L or X; no l→i conversion), result `kind = "lesen3"` → image to teacher and student, then access closes. `exam_access_scope_check` now allows `L3`.
 - Give: `insert into exam_access (tg_id, scope, once, expires_at) values (<ID>, 'L3', true, now() + interval '7 days');` (if the ID already has a row: `update exam_access set scope='L3', once=true, started_at=null, used_at=null, expires_at=now()+interval '7 days' where tg_id=<ID>;`)
+
+## 26.11.2026 — 🇩🇪 telc B1 Sprechen (AI) — faqat ruxsat berilgan ID lar
+- Exam bot, «Nur mündlich»: `telc/ai.js` checks `B1_IDS` (now `5596845456`); for those IDs it loads `telc/ai_b1.js` instead of the B2 Sprechen. Everyone else is unchanged.
+- `ai_b1.js`: telc Deutsch B1 format — Teil 1 Einander kennenlernen (15), Teil 2 Über ein Thema sprechen (30, 53 topics from the teacher's PDF «B1 Sprechen 2.teil», text A = student, text B = AI partner), Teil 3 Gemeinsam etwas planen (30, 55 tasks from «Sprechen B1 Teil 3 – TELC mit FARRUX»). Total 75, pass 45. AI scores 5 criteria × 0–5 per Teil (=25), converted ×15/25 and ×30/25.
+- Server: Supabase function `sprechen_b1` (`/turn`, `/eval`, `/tts`, `/done`), only for IDs in `bot_state.sprechen_b1_users` (+ teacher). `/done` sends the B1 result to the teacher and the student in Telegram (logged in `ai_turns` with `bot = 'exam_b1'`).
+- The student also needs: `exam_access` scope `M` (opens «Nur mündlich» only) and a row in `exam_quiet` (so the `imtihon` function does not send its B2-format Mündlich message).
+- Add a student: add the ID to `B1_IDS` in `telc/ai.js` AND `update bot_state set value = value || ', <ID>' where key = 'sprechen_b1_users';` AND `insert into exam_access (tg_id, scope, expires_at) values (<ID>, 'M', now() + interval '30 days');` AND `insert into exam_quiet (tg_id, note) values (<ID>, 'B1 Sprechen');`

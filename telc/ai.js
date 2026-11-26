@@ -190,7 +190,26 @@
     post("/tts", { text: text, voice: "Charon" }).then(play, function () { done(); speakFallback(text); });
   }
 
+  // 26.11.2026: telc B1 Sprechen (ustoz so'rovi) — faqat B1_IDS dagi o'quvchi imtihon botida B2 o'rniga ai_b1.js (B1 imtihoni) ni oladi.
+  // Boshqa o'quvchilar uchun hech narsa o'zgarmaydi. Server tomoni: sprechen_b1 funksiyasi (bot_state.sprechen_b1_users bilan tekshiradi).
+  var B1_IDS = ["5596845456"];
+  var AI_BASE = (function () { try { var s = document.currentScript && document.currentScript.src; if (s && /\/ai\.js/.test(s)) return s.replace(/ai\.js.*$/, ""); } catch (e) {} return "https://osonyodlash.github.io/telc/"; })();
+  function b1User(EX) {
+    var id = "";
+    try { id = String((Telegram.WebApp.initDataUnsafe.user || {}).id || ""); } catch (e) {}
+    if (!id) { try { id = String((JSON.parse(new URLSearchParams(EX.initData || "").get("user") || "{}") || {}).id || ""); } catch (e) {} }
+    return !!id && B1_IDS.indexOf(id) >= 0;
+  }
   function mount(el, data) {
+    if (data && data.exam && !window.__aiB1Loaded && b1User(data.exam)) {
+      el.innerHTML = '<div style="padding:40px 16px;text-align:center;font:600 16px -apple-system,system-ui,sans-serif;color:#5b6577">⏳ telc B1 · Sprechen yuklanmoqda…</div>';
+      var sc = document.createElement("script");
+      sc.src = AI_BASE + "ai_b1.js?v=1";
+      sc.onload = function () { try { window.AISprech.mount(el, data); } catch (e) { el.innerHTML = '<div class="ai-err">⚠️ Yuklashda xato. Botni yopib, qayta oching.</div>'; } };
+      sc.onerror = function () { el.innerHTML = '<div style="padding:40px 16px;text-align:center">⚠️ Internet aloqasini tekshiring va botni qayta oching.</div>'; };
+      document.head.appendChild(sc);
+      return;
+    }
     css();
     data = data || {};
     var T2 = (data.t2 || []).map(function (m) { return { title: m.t, uz: m.u, head: m.ot || m.t, text: m.od || "", textUz: m.ou || "" }; });
