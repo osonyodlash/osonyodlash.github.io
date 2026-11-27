@@ -49,13 +49,13 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
 <body><div class="box" id="m"><div class="sp"></div>Tekshirilmoqda…</div>
 <script>
 (async function(){
-  const FN="https://hveicvjjqiehjxkwqobr.supabase.co/functions/v1/tg";
+  const FN="https://yhljeyxcporqienvdjax.supabase.co/functions/v1/platforma";
   const m=document.getElementById("m");
   const show=(h)=>{m.innerHTML=h};
   const W=window.Telegram&&Telegram.WebApp; const init=W?W.initData:"";
   try{W&&W.ready();W&&W.expand();}catch(e){}
   try{if(W&&/^(tdesktop|macos|weba|webk|web|unigram)$/.test(W.platform)&&W.isVersionAtLeast&&W.isVersionAtLeast("8.0")&&!W.isFullscreen)W.requestFullscreen();}catch(e){}
-  const fam=(location.hash.match(/[#&]k=([\w-]+)/)||[])[1]||"";
+  const fam=""; // 28.11.2026: #k= shaxsiy havolalar (begona server) o'chirildi
   const DV="https://yhljeyxcporqienvdjax.supabase.co/functions/v1/qurilma";
   async function getDev(W){
     var K="telc_dev",a="",b="",DS=null,ok=function(s){return /^[a-f0-9]{32}$/.test(s)};

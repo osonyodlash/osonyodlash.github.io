@@ -8,7 +8,6 @@ The telc B2 prep site is at `telc/`. Students open it ONLY through the Telegram 
 - `telc/admin.html` — admin panel (opened in the bot with /panel).
 - `telc/*.js`, `telc/h`, `l1`, … — images. They are public, which is fine.
 - `tools/pack.mjs` — encrypt/decrypt.
-- `telc/me.bin` — Behzod's personal copy (separate key). **Do not touch, change or delete it.**
 
 ## Changing the site
 The key (`TELC_KEY`) is not in this repo. Ask the admin for it and never write it into a file.
@@ -96,4 +95,4 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
   `/admin` (`telc/admin.html`: list, user, set, kick, days, day, weeks, week, sendimg; admin = ustoz yoki `main_users.is_admin`),
   `/webhook` (@Shogirtlarim_uchun_bot: /start, /panel; sir `bot_state.main_wh_secret`), `/setup` (cron_secret; `what`: set | info | test).
 - Jadvallar: `main_users`, `main_visits`, `main_stats` (kun 21:00 da yopiladi, SQL `main_day()`); SQL: `main_open`, `main_ping`, `main_day_rows`. Eski statistika begona serverda qoldi (ko'chirib bo'lmadi).
-- `ochiq` funksiyasi endi zaxira (ishlatilmaydi). Eski `tg` serverida faqat `#k=` shaxsiy havolalar (`me.bin`) qoldi.
+- `ochiq` funksiyasi endi zaxira (ishlatilmaydi). `#k=` shaxsiy havolalar va `telc/me.bin` (Behzodning nusxasi) ustozning qarori bilan 28.11.2026 da o'chirildi. Sayt endi begona `hveicvjjqiehjxkwqobr` serveriga umuman murojaat qilmaydi — uni qaytarmang.
