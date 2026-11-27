@@ -33,7 +33,7 @@ h2{font-size:14px;margin:18px 0 8px;color:var(--mu)}.msg{padding:40px 16px;text-
 <div class="tools" id="tools"><input id="q" placeholder="Ism yoki @username…"><select id="sort"><option value="last">Oxirgi kirish</option><option value="time">Ko'p vaqt</option><option value="visits">Ko'p kirish</option><option value="first">Yangi qo'shilgan</option></select></div></header>
 <main id="main"><div class="msg">Yuklanmoqda…</div></main><main id="wmain" hidden></main><main id="dmain" hidden></main>
 <script>
-const FN="https://hveicvjjqiehjxkwqobr.supabase.co/functions/v1/tg/admin";
+const FN="https://yhljeyxcporqienvdjax.supabase.co/functions/v1/platforma/admin";
 const W=window.Telegram&&Telegram.WebApp;try{W.ready();W.expand()}catch(e){}
   try{if(W&&/^(tdesktop|macos|weba|webk|web|unigram)$/.test(W.platform)&&W.isVersionAtLeast&&W.isVersionAtLeast("8.0")&&!W.isFullscreen)W.requestFullscreen();}catch(e){}
 const api=(op,x={})=>fetch(FN,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:W?W.initData:"",op,...x})}).then(r=>r.json());

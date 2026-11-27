@@ -88,8 +88,8 @@ a.b{display:inline-block;margin-top:14px;background:#3b6ef5;color:#fff;padding:1
   const ATT=(reason)=>{try{if(init)fetch("https://yhljeyxcporqienvdjax.supabase.co/functions/v1/hisobot/attempt",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({initData:init,bot:"platforma",reason:reason,plat:W?W.platform:"web"}),keepalive:true}).catch(()=>{})}catch(e){}};
   if(!fam&&init){const dj=await devCheck(W,init); if(dj&&dj.err==="maint"){ATT("blocked");return show("🛠 Texnik ishlar ketayotgani sababli vaqtinchalik kirib bo‘lmaydi.");} if(dj&&dj.err==="device"){ATT("device");return show("📱 "+devMsg(dj));} DJ=dj;}
   let r;
-  // 28.11.2026: platforma endi o'z loyihamizdagi ochiq funksiyasidan ochiladi (eski tg serveri faqat #k= shaxsiy havolalar uchun)
-  const OQ0="https://yhljeyxcporqienvdjax.supabase.co/functions/v1/ochiq";
+  // 28.11.2026: platforma endi o'z loyihamizdagi platforma funksiyasidan ochiladi (eski tg serveri faqat #k= shaxsiy havolalar uchun)
+  const OQ0="https://yhljeyxcporqienvdjax.supabase.co/functions/v1/platforma";
   try{ r=await (await fetch((fam?FN:OQ0)+"/open",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(fam?{fam}:{initData:init,plat:W?W.platform:"web"})})).json(); }
   catch(e){ return show("⚠️ Internet aloqasini tekshiring va qayta oching."); }
   if(r.err==="notg") return show("🔒 Bu sayt faqat Telegram bot orqali ochiladi."+(r.bot?`<br><a class="b" href="https://t.me/${r.bot}">@${r.bot} ni ochish</a>`:""));
