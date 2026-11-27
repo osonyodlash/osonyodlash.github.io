@@ -87,3 +87,9 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 - The student also needs: `exam_access` scope `M` (opens «Nur mündlich» only) and a row in `exam_quiet` (so the `imtihon` function does not send its B2-format Mündlich message).
 - Add a student: add the ID to `B1_IDS` in `telc/ai.js` AND `update bot_state set value = value || ', <ID>' where key = 'sprechen_b1_users';` AND `insert into exam_access (tg_id, scope, expires_at) values (<ID>, 'M', now() + interval '30 days');` AND `insert into exam_quiet (tg_id, note) values (<ID>, 'B1 Sprechen');`
 - Daily limit (26.11.2026): `sprechen_b1` allows each student 5 full B1 exams per day (each Teil can be started 5 times per Samarkand day; turns/evals/TTS capped accordingly, teacher unlimited). Change: `update bot_state set value = '<N>' where key = 'sprechen_b1_daylimit';`
+
+## 28.11.2026 — TELC_KEY yangilandi, platforma o'z serverimizga ko'chirildi
+- `TELC_KEY` almashtirildi (eskisi begona odamda bor edi). `app.bin` va `exam.bin` yangi kalit bilan qayta shifrlandi. Yangi kalit faqat Supabase `yhljeyxcporqienvdjax` → Edge Functions → Secrets → `TELC_KEY` da (bu loyihada `EXAM_KEY` yo'q). Faylga yozmang.
+- Eski `telc-b2` loyihasiga (`hveicvjjqiehjxkwqobr`, funksiya `tg`) kirish yo'q va u yerda eski kalit qolgan — u endi `app.bin` ni ocha olmaydi.
+- Shuning uchun `telc/index.html` platformani endi `yhljeyxcporqienvdjax` → `ochiq` funksiyasidan ochadi (`/open`, `/ping`): ustoz, o'quvchilar guruhi a'zolari (`EXAM_GROUP_ID`, imtihon boti tokeni bilan) va `main_access` dagi IDlar; `blocked_users` rad etiladi; `/ping` guruhdan chiqqan/bloklangan o'quvchining sahifasini yopadi.
+- Eski `tg` serverida qolgan narsalar: `#k=` shaxsiy havolalar (`me.bin`), `/panel` admin paneli statistikasi, asosiy botning webhooki (/start). Ular endi bizning nazoratimizda emas.
