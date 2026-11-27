@@ -91,5 +91,9 @@ Added 20.11.2026. telc B2 «Schriftlicher Ausdruck»: a random Beschwerde topic,
 ## 28.11.2026 — TELC_KEY yangilandi, platforma o'z serverimizga ko'chirildi
 - `TELC_KEY` almashtirildi (eskisi begona odamda bor edi). `app.bin` va `exam.bin` yangi kalit bilan qayta shifrlandi. Yangi kalit faqat Supabase `yhljeyxcporqienvdjax` → Edge Functions → Secrets → `TELC_KEY` da (bu loyihada `EXAM_KEY` yo'q). Faylga yozmang.
 - Eski `telc-b2` loyihasiga (`hveicvjjqiehjxkwqobr`, funksiya `tg`) kirish yo'q va u yerda eski kalit qolgan — u endi `app.bin` ni ocha olmaydi.
-- Shuning uchun `telc/index.html` platformani endi `yhljeyxcporqienvdjax` → `ochiq` funksiyasidan ochadi (`/open`, `/ping`): ustoz, o'quvchilar guruhi a'zolari (`EXAM_GROUP_ID`, imtihon boti tokeni bilan) va `main_access` dagi IDlar; `blocked_users` rad etiladi; `/ping` guruhdan chiqqan/bloklangan o'quvchining sahifasini yopadi.
-- Eski `tg` serverida qolgan narsalar: `#k=` shaxsiy havolalar (`me.bin`), `/panel` admin paneli statistikasi, asosiy botning webhooki (/start). Ular endi bizning nazoratimizda emas.
+- Asosiy bot to'liq o'z loyihamizga ko'chirildi: Supabase `yhljeyxcporqienvdjax` → funksiya `platforma`:
+  `/open` (ustoz, guruh a'zolari — `EXAM_GROUP_ID`, `main_access`; `blocked_users` rad etiladi), `/ping` (vaqt/bo'lim/to'g'ri-xato; kick, blok, guruhdan chiqish → sahifa yopiladi),
+  `/admin` (`telc/admin.html`: list, user, set, kick, days, day, weeks, week, sendimg; admin = ustoz yoki `main_users.is_admin`),
+  `/webhook` (@Shogirtlarim_uchun_bot: /start, /panel; sir `bot_state.main_wh_secret`), `/setup` (cron_secret; `what`: set | info | test).
+- Jadvallar: `main_users`, `main_visits`, `main_stats` (kun 21:00 da yopiladi, SQL `main_day()`); SQL: `main_open`, `main_ping`, `main_day_rows`. Eski statistika begona serverda qoldi (ko'chirib bo'lmadi).
+- `ochiq` funksiyasi endi zaxira (ishlatilmaydi). Eski `tg` serverida faqat `#k=` shaxsiy havolalar (`me.bin`) qoldi.
